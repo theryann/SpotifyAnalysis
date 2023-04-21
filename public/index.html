@@ -3,16 +3,16 @@
 <head>
     <title>records &bull; svg test</title>
 	<meta name="description" content="Skeleton for the third course exercise of Web and Multimedia Engineering">
-	
+
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 
-    <link rel="stylesheet" href="styles/graph.css">    
-  
-    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <link rel="stylesheet" href="styles/graph.css">
+
+    <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="js/main.js"></script>
-    
+
 </head>
 
 <body>
@@ -21,20 +21,16 @@
     <div id="artists-wave" height="100px" width="100px" style="float:left; margin:10px"></div>
     <div id="album-scale" width="500px" style="float:left; margin:10px">
     </div>
-    
+
     <div id="top-weekly-bar" width="500px" style="float:left; margin:10px"></div>
     <div id="top-times-bar" width="500px" style="float:left; margin:10px"></div>
     <div id="top-songs-bar" width="500px" style="float:left; margin:10px"></div>
     <div id="top-artists-bar" width="500px" style="float:left; margin:10px"></div>
     <div style="float:left; margin:10px">
         <div id="graph"></div>
-        <div id="graph-controls">
-            <button id="zoom-out"  class="navigate-graph-button" >Out</button>
-            <button id="zoom-in"   class="navigate-graph-button" >In</button>
-            <button id="zoom-full" class="navigate-graph-button" >Full</button>
-        </div>
+        <div id="graph-controls"></div>
     </div>
-    
+
 </body>
 
 </html>

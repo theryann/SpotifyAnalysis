@@ -344,14 +344,17 @@ async function forceGraph(diagramWidth=1000) {
     var graph = d3
         .select("#graph")
         .style("width", diagramWidth +"px")
-        .style("height", diagramWidth +"px")
+        .style("height", diagramWidth/2 +"px")
         .append("svg")
         .attr("width", diagramWidth)
-        .attr("height", diagramWidth)
+        .attr("height", diagramWidth/2)
         .attr("viewBox", `-${diagramWidth} -${diagramWidth/2} ${diagramWidth*4} ${diagramWidth*4}`)
-    graph.append('g')
+
+    let zoomGroup = graph.append('g')
+        .attr("id", "zoom-group");
+    zoomGroup.append('g')
         .attr("class", "links");
-    graph.append('g')
+    zoomGroup.append('g')
         .attr("class", "nodes");
 
 
@@ -391,10 +394,10 @@ async function forceGraph(diagramWidth=1000) {
                 return bubble;
             })
             .attr('transform', function(d) { return `translate(${d.x}, ${d.y})` })
-            .on('click', function(d) {
-                let diameter = 2*bubbleRadius(d.streams);
-                graph.attr("viewBox", `${d.x - 2*diameter} ${d.y - 2*diameter} ${4*diameter} ${4*diameter}`)
-            })
+            // .on('click', function(d) {
+            //     let diameter = 2*bubbleRadius(d.streams);
+            //     graph.attr("viewBox", `${d.x - 2*diameter} ${d.y - 2*diameter} ${4*diameter} ${4*diameter}`)
+            // })
     }
     function updateLinks() {
         // update edges
@@ -416,70 +419,48 @@ async function forceGraph(diagramWidth=1000) {
     ///////////////////////////////////
     // navigating the svg
     ///////////////////////////////////
-    graph.call(
-        d3.zoom()
-        .on("zoom", zoomed)
-    )
-
-    function zoomed() {
-        let transform = d3.zoomTransform(graph.node())
-        let box = graph.attr("viewBox").split(" ").map(n => Number(n));
-        box[0] -= transform.x
-        box[1] -= transform.y
-
-        box[2] = diagramWidth * 4 / transform.k
-        box[3] = diagramWidth * 4 / transform.k
-        graph.attr("viewBox", box.join(" "));
-
-    }
+    let zoom = d3.zoom()
+        .on('zoom', (e) => {
+            d3.select("#zoom-group")
+                .attr("transform", e.transform)
+        })
+    d3.select("#graph svg").call(zoom)
 
 
     // zooming
-    let zoomInButton = document.getElementById("zoom-in");
-    let zoomOutButton = document.getElementById("zoom-out");
-    let zoomHomeButton = document.getElementById("zoom-full");
-    zoomInButton.onclick   = () => {zoom('in')};
-    zoomOutButton.onclick  = () => {zoom('out')};
-    zoomHomeButton.onclick = () => {zoom('full')};
+
+    let graphControls = document.getElementById("graph-controls");
+
+    let zoomInButton = document.createElement("button");
+    let zoomOutButton = document.createElement("button");
+    let zoomHomeButton = document.createElement("button");
 
 
-    function zoom(direction, factor=1.3) {
-        // get svg
-        let current = d3.select("#graph svg");
-        let box = current.attr("viewBox").split(" ").map(n => Number(n));
-        [startX, startY, dimX, dimY] = [box[0], box[1], box[2], box[3]]
+    zoomInButton.setAttribute('class', 'navigate-graph-button')
+    zoomOutButton.setAttribute('class', 'navigate-graph-button')
+    zoomHomeButton.setAttribute('class', 'navigate-graph-button')
 
-        // decide zoom direction
+    zoomInButton.innerText = 'In'
+    zoomOutButton.innerText = 'Out'
+    zoomHomeButton.innerText = 'Full'
 
-        // set home and return
-        if (direction === 'full') {
-            // find bounding box
-            let minX = Math.min(...nodes.map(n => n.x)) * 1.05;
-            let maxX = Math.max(...nodes.map(n => n.x)) * 1.05;
-            let minY = Math.min(...nodes.map(n => n.y)) * 1.05;
-            let maxY = Math.max(...nodes.map(n => n.y)) * 1.05;
-            let dimX = (maxX - minX);
-            let dimY = (maxY - minY);
+    zoomInButton.onclick   = () => {
+        d3.select('#graph svg')
+          .call(zoom.scaleBy, 1.3)
+    };
+    zoomOutButton.onclick  = () => {
+        d3.select('#graph svg')
+          .call(zoom.scaleBy, 0.7)
+    };
+    zoomHomeButton.onclick = () => {
+        d3.select('#graph svg')
+          .transition()
+          .call(zoom.scaleTo, 1)
+    };
 
-            current.attr("viewBox", `${minX} ${minY} ${dimX} ${dimY}`);
-            return;
-        }
-
-        if (direction === 'out') {
-            factor = 1 / factor;
-        }
-
-        // adjust viewBox
-        let middleX = startX + (dimX / 2);
-        let middleY = startY + (dimY / 2);
-        dimX = dimX / factor;
-        dimY = dimY / factor;
-        startX =  middleX - (dimX / 2);
-        startY =  middleY - (dimY / 2);
-
-        current.attr("viewBox", `${startX} ${startY} ${dimX} ${dimY}`);
-    }
-
+    graphControls.appendChild(zoomInButton)
+    graphControls.appendChild(zoomOutButton)
+    graphControls.appendChild(zoomHomeButton)
 
 }
 
@@ -694,7 +675,7 @@ async function progressChart(type='daily', timeFrame=0, diagramWidth=1000) {
 window.onload = function() {
     // pieChart()
     vinyChart(500);
-    forceGraph(500);
+    forceGraph(1000);
     albumLine()
     waveChart(300);
     topBarchart('songs', type='bar', diagramWidth=1000, limit=60);
