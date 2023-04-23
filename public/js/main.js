@@ -476,7 +476,7 @@ async function albumLine(diagramWidth=1000) {
     }
 
     const width  = diagramWidth - margin.left - margin.right;
-    const height = diagramWidth / 2 - margin.top  - margin.bottom;
+    const height = diagramWidth - margin.top  - margin.bottom;
 
     const albumHeight = 13;
     const dataBaseline = height - margin.bottom - albumHeight;

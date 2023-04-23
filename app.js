@@ -20,17 +20,17 @@ app.get('/', (req, res) => {
 })
 
 
-app.get('/songs/total-streams', (req, res) => {    
+app.get('/songs/total-streams', (req, res) => {
     let total_streams = `
     SELECT count(*) as 'total-streams'
     FROM Stream
-    `; 
+    `;
     db.all(total_streams, [], (err, rows)=> {
         if (err) throw err;
         res.json(rows);
-    });  
+    });
 });
-app.get('/songs/top', (req, res) => {      
+app.get('/songs/top', (req, res) => {
     let top_songs = `
         SELECT
             Song.ID as 'ID',
@@ -44,7 +44,7 @@ app.get('/songs/top', (req, res) => {
     if ( req.query.hasOwnProperty("limit") ) {
         top_songs += '\nLIMIT ' + req.query.limit;
     }
- 
+
     db.all(top_songs, [], (err, rows)=> {
         if (err) throw err;
         res.json(rows);
@@ -52,7 +52,7 @@ app.get('/songs/top', (req, res) => {
 });
 
 
-app.get('/artists/top', (req, res) => {  
+app.get('/artists/top', (req, res) => {
     let limit  = 20;
     let offset = 0;
     if ( req.query.hasOwnProperty("limit") ) {
@@ -61,9 +61,9 @@ app.get('/artists/top', (req, res) => {
     if ( req.query.hasOwnProperty("offset") ) {
         offset = req.query.offset;
     }
-    
+
     let top_artists = `
-    SELECT 
+    SELECT
         artist.name as 'artist',
         count(timeStamp) as streams,
         artist.imgSmall as img,
@@ -75,25 +75,25 @@ app.get('/artists/top', (req, res) => {
     GROUP BY artist
     ORDER BY streams desc
     LIMIT ${limit} OFFSET ${offset}
-    `;  
+    `;
     db.all(top_artists, [], (err, rows)=> {
-        if (err) throw err;        
+        if (err) throw err;
         res.json(rows);
     });
 });
-app.get('/artists/total', (req, res) => {   
+app.get('/artists/total', (req, res) => {
     let total_artists = `
     SELECT count(*) as 'total-artists'
     FROM artist
-    `; 
+    `;
     db.all(total_artists, [], (err, rows)=> {
         if (err) throw err;
         res.json(rows);
-    });    
+    });
 });
-app.get('/artists/id/:id', (req, res) => {    
+app.get('/artists/id/:id', (req, res) => {
     let all_artists = `
-    SELECT 
+    SELECT
         artist.name as 'artist',
         artist.ID as id,
         count(timeStamp) as streams,
@@ -108,11 +108,11 @@ app.get('/artists/id/:id', (req, res) => {
     db.all(all_artists, [], (err, rows)=> {
         if (err) throw err;
         res.json(rows[0]);
-    });    
+    });
 });
-app.get('/artists/all', (req, res) => {  
+app.get('/artists/all', (req, res) => {
     let all_artists = `
-    SELECT 
+    SELECT
         artist.name as 'artist',
         count(timeStamp) as streams,
         artist.imgSmall as img,
@@ -124,24 +124,24 @@ app.get('/artists/all', (req, res) => {
     GROUP BY artist
     ORDER BY artist desc
     `;
-    
+
     if ( req.query.hasOwnProperty("limit") ) {
         all_artists += '\nLIMIT ' + req.query.limit;
         if ( req.query.hasOwnProperty("offset") ) {
             all_artists += ' OFFSET ' + req.query.limit;
         }
     }
-    
+
     db.all(all_artists, [], (err, rows)=> {
         if (err)throw err;
         res.json(rows);
-    });    
+    });
 });
 
 
-app.get('/album/by-year', (req, res) => {    
+app.get('/album/by-year', (req, res) => {
     let albums = `
-    SELECT 
+    SELECT
         Album.name,
         Album.ID as id,
         SUBSTR(Album.releaseDate, 0, 5) as year,
@@ -154,11 +154,11 @@ app.get('/album/by-year', (req, res) => {
     db.all(albums, [], (err, rows)=> {
         if (err) throw err;
         res.json(rows);
-    });    
+    });
 });
-app.get('/album/id/:id', (req, res) => {    
+app.get('/album/id/:id', (req, res) => {
     let album = `
-    SELECT 
+    SELECT
         Album.ID    as id,
         Album.name  as name,
         Artist.name as artist,
@@ -174,9 +174,9 @@ app.get('/album/id/:id', (req, res) => {
     db.all(album, [], (err, rows)=> {
         if (err) throw err;
         res.json(rows[0]);
-    });    
+    });
 });
-app.get('/album/top', (req, res) => {  
+app.get('/album/top', (req, res) => {
     let limit  = 20;
     let offset = 0;
     if ( req.query.hasOwnProperty("limit") ) {
@@ -185,9 +185,9 @@ app.get('/album/top', (req, res) => {
     if ( req.query.hasOwnProperty("offset") ) {
         offset = req.query.offset;
     }
-    
+
     let top_albums = `
-        SELECT 
+        SELECT
             Album.ID as 'ID',
             Album.name as 'album',
             Artist.name as 'artist',
@@ -209,17 +209,17 @@ app.get('/album/top', (req, res) => {
 
         JOIN Album ON Album.ID = albumsRanked.ID
         JOIN Artist ON Artist.ID = Album.artistID
-    `;  
+    `;
     db.all(top_albums, [], (err, rows)=> {
-        if (err) throw err;        
+        if (err) throw err;
         res.json(rows);
     });
 });
 
 
-app.get('/vis/force-graph/nodes', (req, res) => {   
+app.get('/vis/force-graph/nodes', (req, res) => {
     let node_query = `
-        SELECT 
+        SELECT
             artist.ID as id,
             artist.name as 'name',
             count(timeStamp) as streams,
@@ -230,37 +230,37 @@ app.get('/vis/force-graph/nodes', (req, res) => {
         GROUP BY name
         ORDER BY streams desc
     `;
- 
+
     db.all(node_query, [], (err, rows)=> {
         if (err) throw err;
         res.json(rows);
     });
 });
-app.get('/vis/force-graph/edges', (req, res) => {    
+app.get('/vis/force-graph/edges', (req, res) => {
     let edge_query = `
-    SELECT 
+    SELECT
         a.artistID as source,
         b.artistID as target,
         count(*)   as weight
-    FROM 
+    FROM
         Genre a,
         Genre b
-    WHERE 
-        a.genre = b.genre 
+    WHERE
+        a.genre = b.genre
         AND
         a.artistID != b.artistID	-- remeove edges to same node
         AND
         a.artistID > b.artistID 	-- total order to not double each edge
 
     GROUP BY source, target
-    HAVING weight > 0	
+    HAVING weight > 0
     ORDER BY weight desc
     `;
 
     if ( req.query.hasOwnProperty("limit") ) {
         edge_query += '\nLIMIT ' + req.query.limit;
     }
-    
+
     db.all(edge_query, [], (err, rows)=> {
         if (err) throw err;
         res.json(rows);
@@ -268,8 +268,8 @@ app.get('/vis/force-graph/edges', (req, res) => {
 });
 
 
-app.get('/times/top', (req, res) => { 
-    // streams per times of day  
+app.get('/times/top', (req, res) => {
+    // streams per times of day
     let top_times = `
         SELECT
             substr(Stream.timeStamp, 12,4) as 'time',
@@ -281,16 +281,16 @@ app.get('/times/top', (req, res) => {
     if ( req.query.hasOwnProperty("limit") ) {
         top_times += '\nLIMIT ' + req.query.limit;
     }
- 
+
     db.all(top_times, [], (err, rows)=> {
         if (err) throw err;
         res.json(rows);
     });
 });
-app.get('/times/monthly', (req, res) => { 
+app.get('/times/monthly', (req, res) => {
     // streams per month
     let months = `
-    SELECT 
+    SELECT
         SUBSTR(Stream.timeStamp, 0, 8) as 'month',
         COUNT(*) as 'streams'
     FROM Stream
@@ -300,16 +300,16 @@ app.get('/times/monthly', (req, res) => {
     if ( req.query.hasOwnProperty("limit") ) {
         months += '\nLIMIT ' + req.query.limit;
     }
- 
+
     db.all(months, [], (err, rows)=> {
         if (err) throw err;
         res.json(rows);
     });
 });
-app.get('/times/weekly', (req, res) => { 
+app.get('/times/weekly', (req, res) => {
     // streams per month
     let months = `
-        SELECT 
+        SELECT
             strftime('%Y|%W', Stream.timeStamp) as week,
             count(*) as 'streams'
         FROM Stream
@@ -319,16 +319,16 @@ app.get('/times/weekly', (req, res) => {
     if ( req.query.hasOwnProperty("limit") ) {
         months += '\nLIMIT ' + req.query.limit;
     }
- 
+
     db.all(months, [], (err, rows)=> {
         if (err) throw err;
         res.json(rows);
     });
 });
-app.get('/times/yearly', (req, res) => { 
+app.get('/times/yearly', (req, res) => {
     // streams per year
     let years = `
-    SELECT 
+    SELECT
         SUBSTR(Stream.timeStamp, 0, 5) as 'year',
         COUNT(*) as 'streams'
     FROM Stream
@@ -338,16 +338,16 @@ app.get('/times/yearly', (req, res) => {
     if ( req.query.hasOwnProperty("limit") ) {
         years += '\nLIMIT ' + req.query.limit;
     }
- 
+
     db.all(years, [], (err, rows)=> {
         if (err) throw err;
         res.json(rows);
     });
 });
-app.get('/times/daily', (req, res) => { 
+app.get('/times/daily', (req, res) => {
     // streams per day
     let days = `
-    SELECT 
+    SELECT
         SUBSTR(Stream.timeStamp, 0, 11) as 'day',
         COUNT(*) as 'streams'
     FROM Stream
@@ -357,13 +357,13 @@ app.get('/times/daily', (req, res) => {
     if ( req.query.hasOwnProperty("limit") ) {
         days += '\nLIMIT ' + req.query.limit;
     }
- 
+
     db.all(days, [], (err, rows)=> {
         if (err) throw err;
         res.json(rows);
     });
 });
-app.get('/times/song/:id', (req, res) => { 
+app.get('/times/song/:id', (req, res) => {
     // streams per day for this song
     let song = `
     SELECT
@@ -374,19 +374,19 @@ app.get('/times/song/:id', (req, res) => {
     GROUP BY day
     ORDER BY day
     `;
- 
+
     db.all(song, [], (err, rows)=> {
         if (err) throw err;
         res.json(rows);
     });
 });
-app.get('/times/artist/:id', (req, res) => { 
+app.get('/times/artist/:id', (req, res) => {
     // streams per day for this artist
     let artist = `
     SELECT
         substr( Stream.timeStamp, 0, 11) AS 'day',
         count(*) as streams
-        
+
     FROM Stream
     JOIN writtenBy ON writtenBy.songID = Stream.songID
     JOIN Artist ON Artist.ID = writtenBy.artistID
@@ -395,19 +395,19 @@ app.get('/times/artist/:id', (req, res) => {
     GROUP BY day, Artist.ID
     ORDER BY day
     `;
- 
+
     db.all(artist, [], (err, rows)=> {
         if (err) throw err;
         res.json(rows);
     });
 });
-app.get('/times/album/:id', (req, res) => { 
+app.get('/times/album/:id', (req, res) => {
     // streams per day for this album
     let album = `
     SELECT
         substr(Stream.timeStamp, 0, 11) as 'day',
         count(*) as streams
-        
+
     FROM Stream
     JOIN Song ON Song.ID = Stream.songID
 
@@ -415,20 +415,20 @@ app.get('/times/album/:id', (req, res) => {
     GROUP BY day
     ORDER BY day
     `;
- 
+
     db.all(album, [], (err, rows)=> {
         if (err) throw err;
         res.json(rows);
     });
 });
-app.get('/times/genre/:genre', (req, res) => { 
+app.get('/times/genre/:genre', (req, res) => {
     // streams per day for this genre
     let genre = decodeURIComponent(req.params.genre); // can include spaces ('post rock') and thus must be encoded and decoded to URI
     let genre_query = `
     SELECT
         substr( Stream.timeStamp, 0, 11) AS 'day',
         count(*) as streams
-        
+
     FROM Stream
     JOIN writtenBy ON writtenBy.songID = Stream.songID
     JOIN Artist ON Artist.ID = writtenBy.artistID
@@ -438,7 +438,7 @@ app.get('/times/genre/:genre', (req, res) => {
     GROUP BY day, Genre.genre
     ORDER BY day
     `;
- 
+
     db.all(genre_query, [], (err, rows)=> {
         if (err) throw err;
         res.json(rows);
@@ -446,43 +446,40 @@ app.get('/times/genre/:genre', (req, res) => {
 });
 
 
-app.get('/search/song/:search', (req, res) => { 
+app.get('/search/:search', (req, res) => {
     // search for string in titles, album names and lyrics
     // and return these songs
     let searchText = decodeURIComponent(req.params.search); // can include spaces ('post rock') and thus must be encoded and decoded to URI
-    let search_query = `
-    SELECT 
+    let songSearchQuery = `
+    SELECT
         Song.title as title,
         Song.ID as ID,
         Album.name as 'album',
-        Song.lyrics as lyrics
-        
+        CASE WHEN INSTR(Song.lyrics, '${searchText}') = 0
+            THEN Song.lyrics
+            ELSE SUBSTR(
+                Song.lyrics,
+                INSTR(Song.lyrics, '${searchText}') - 10,
+                100)
+        END as lyrics
+
     FROM Song
     JOIN Album ON Album.ID = Song.albumID
 
-
-    WHERE 
+    WHERE
         title LIKE '%${searchText}%'
         OR
         album LIKE '%${searchText}%'
         OR
         lyrics LIKE '%${searchText}%'
 
+    GROUP BY Song.ID
     ORDER BY title, album, lyrics
     LIMIT 50
     `;
- 
-    db.all(search_query, [], (err, rows)=> {
-        if (err) throw err;
-        res.json(rows);
-    });
-});
-app.get('/search/artist/:search', (req, res) => { 
-    // search for string in titles, album names and lyrics
-    // and return these songs
-    let searchText = decodeURIComponent(req.params.search); // can include spaces ('post rock') and thus must be encoded and decoded to URI
-    let search_query = `
-    SELECT 
+
+    let artistSearchQuery = `
+    SELECT
         Artist.ID as ID,
         Artist.name as artist
     FROM Artist
@@ -490,10 +487,17 @@ app.get('/search/artist/:search', (req, res) => {
     ORDER BY artist
     LIMIT 50
     `;
- 
-    db.all(search_query, [], (err, rows)=> {
+    let results = {
+        songs: [],
+        artists: []
+    }
+    db.all(songSearchQuery, [], (err, songRows) => {
         if (err) throw err;
-        res.json(rows);
+        results.songs = songRows;
+        db.all(artistSearchQuery, [], (err, artistRows) => {
+            results.artists = artistRows;
+            res.json( results )
+        })
     });
 });
 
