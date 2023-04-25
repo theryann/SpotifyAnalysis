@@ -145,19 +145,15 @@ async function vinyChart(diagramWidth=500) {
         .attr("height",width*1.1)
         .attr("rx",7)
         .attr("fill", "#880000")
-    // add total number of artists to record cover
-    const resTotalArtists  = await fetch("/artists/total");
-    const totalArtistsJSON = await resTotalArtists.json();
-    const totalArtists = totalArtistsJSON[0]["total-artists"];
 
-    pie.append("text")
+    const totalArtistsLabel = pie.append("text")
         .attr("x", (width/2)*1.35+4)
         .attr("y", -width/4)
         .attr("text-anchor", "end")
         .attr("font-size", pieWidth*8)
         .attr("font-family", font)
         .attr("fill", "white")
-        .text(totalArtists)
+        .text('...')
     pie.append("text")
         .attr("x", (width/2)*1.3+4)
         .attr("y", -width/4+pieWidth*2)
@@ -167,11 +163,20 @@ async function vinyChart(diagramWidth=500) {
         .attr("fill", "white")
         .text("artists streamed")
 
+    // add total number of artists to record cover
+    fetch("/artists/total")
+        .then(resTotalArtists => resTotalArtists.json())
+        .then(totalArtistsJSON => {
+            totalArtistsLabel.text( totalArtistsJSON["total-artists"] );
+        })
+        .catch(error => {
+            console.error("Error:", error);
+        });
 
 
 
     // add bars
-    for (var i = 0; i < artists.length; i++ ) {
+    for (var i = 0; i < artists.length; i++ ) {  // for loop to break after top artists
         var artist = artists[i];
         var radius = width/2 - (padding*i);
         var angle  = (artist.streams * maxCurve) / highestSong / radius * width/2;
@@ -200,6 +205,7 @@ async function vinyChart(diagramWidth=500) {
             .attr("d", arc)
             .attr("fill", stepColor(artist.streams, highestSong))
             .attr("rx", "2px")
+            .style("mix-blend-mode", "screen")
 
         // add artist name
         pie.append("text")
@@ -476,7 +482,7 @@ async function albumLine(diagramWidth=1000) {
     }
 
     const width  = diagramWidth - margin.left - margin.right;
-    const height = diagramWidth - margin.top  - margin.bottom;
+    const height = diagramWidth * 1.5 - margin.top  - margin.bottom;
 
     const albumHeight = 13;
     const dataBaseline = height - margin.bottom - albumHeight;

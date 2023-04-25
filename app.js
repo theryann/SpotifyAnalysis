@@ -86,7 +86,7 @@ app.get('/artists/total', (req, res) => {
     SELECT count(*) as 'total-artists'
     FROM artist
     `;
-    db.all(total_artists, [], (err, rows)=> {
+    db.get(total_artists, [], (err, rows)=> {
         if (err) throw err;
         res.json(rows);
     });
@@ -197,7 +197,7 @@ app.get('/album/top', (req, res) => {
         (
             SELECT
                 Song.albumID as 'ID',
-                count(*)   as 'streams'
+                count(*)     as 'streams'
             FROM Stream
             JOIN Song ON Stream.songID = Song.ID
 
