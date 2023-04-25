@@ -104,7 +104,7 @@ async function pieChart() {
 
 
 async function vinyChart(diagramWidth=500) {
-    const response = await fetch("/artists/top");
+    const response = await fetch("/artists/top"); // ?oldest=2023-04-24
     const artists  = await response.json();
 
     // pi - vinyl - chart

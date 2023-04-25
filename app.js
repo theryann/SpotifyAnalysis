@@ -55,11 +55,15 @@ app.get('/songs/top', (req, res) => {
 app.get('/artists/top', (req, res) => {
     let limit  = 20;
     let offset = 0;
+    let whereClause = '';
     if ( req.query.hasOwnProperty("limit") ) {
         limit = req.query.limit;
     }
     if ( req.query.hasOwnProperty("offset") ) {
         offset = req.query.offset;
+    }
+    if ( req.query.hasOwnProperty("oldest") ) {
+        whereClause = `WHERE Stream.timeStamp >= '${req.query.oldest}'`;  // oldest date to include
     }
 
     let top_artists = `
@@ -71,7 +75,7 @@ app.get('/artists/top', (req, res) => {
     FROM Stream
         JOIN writtenBy ON writtenBy.songID = Stream.songID
         JOIN Artist ON Artist.ID = writtenBy.artistID
-    WHERE artist.name != 'Die drei ???'
+    ${whereClause}
     GROUP BY artist
     ORDER BY streams desc
     LIMIT ${limit} OFFSET ${offset}
