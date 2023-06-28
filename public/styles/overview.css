@@ -1,0 +1,57 @@
+:root {
+    --clr-text: #232323;
+    --clr-background: rgb(221, 221, 221);
+    --clr-white: rgb(250, 250, 250);
+    --clr-primary: rgb(43, 255, 61);
+    --clr-shade: rgb(200, 200, 200);
+}
+
+body {
+    color: var(--clr-text);
+    background-color: var(--clr-background);
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+#wrapper {
+    width: min(100% - 1rem, 100ch);
+    margin-inline: auto;
+}
+
+.stat-tabs {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.stat-tabs > label {
+    cursor: pointer;
+    width: 10ch;
+    font-weight: bolder;
+    background-color: var(--clr-shade);
+    padding: 1rem;
+    order: 1;
+    text-align: center;
+    margin-right: .5rem;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
+
+.tab-content {
+    width: 100%;
+    display: none;
+}
+
+.stat-tabs input[type="radio"] {
+    display: none;
+}
+.stat-tabs .tab-content {
+    order: 2;
+    background: var(--clr-white);
+    padding: 1rem;
+}
+
+.stat-tabs input[type="radio"]:checked + label {
+    background-color:  var(--clr-white);
+}
+.stat-tabs input[type="radio"]:checked + label + .tab-content {
+    display: block;
+}

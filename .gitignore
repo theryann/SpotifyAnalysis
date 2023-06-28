@@ -3,4 +3,5 @@ node_modules/
 package-lock.json
 history.csv
 song_database.json
+fetch-database.bat
 *.db
