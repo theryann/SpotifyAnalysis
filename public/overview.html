@@ -5,31 +5,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Overview</title>
     <link rel="stylesheet" href="styles/overview.css">
+    <script src="js/overview.js"></script>
+
 
 </head>
+
+<header>overview</header>
+
 <body>
 <div id="wrapper">
+
     <div class="stat-tabs">
         <input type="radio" name="stat-tabs-radio" id="tab-songs" checked="checked">
-        <label for="tab-songs">Songs</label>
-        <div class="tab-content">
-
-            
-
+        <label for="tab-songs">songs</label>
+        <div class="tab-content" id="songs-content">
+            <div class="loader"></div>
         </div>
 
         <input type="radio" name="stat-tabs-radio" id="tab-artists">
-        <label for="tab-artists">Artists</label>
-        <div class="tab-content">
-        Lorem ipsum dolor sit amet, neque magnam nisi perspicindis voluptates, fugit culpa quae! Dicta alias commodi quidem! Sunt tempora qui numquam magni.
+        <label for="tab-artists">artists</label>
+        <div class="tab-content" id="artists-content">
+            <div class="loader"></div>
         </div>
 
-        <input type="radio" name="stat-tabs-radio" id="tab-genres">
-        <label for="tab-genres">Genres</label>
-        <div class="tab-content">
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Repudiandae nemoquam magni.
+        <input type="radio" name="stat-tabs-radio" id="tab-albums">
+        <label for="tab-albums">albums</label>
+        <div class="tab-content" id="albums-content">
+            <div class="loader"></div>
         </div>
+
     </div>
+
 
 </div>
 

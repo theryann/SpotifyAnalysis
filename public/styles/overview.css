@@ -2,21 +2,23 @@
     --clr-text: #232323;
     --clr-background: rgb(221, 221, 221);
     --clr-white: rgb(250, 250, 250);
-    --clr-primary: rgb(43, 255, 61);
+    --clr-primary: rgb(91, 212, 99);
     --clr-shade: rgb(200, 200, 200);
+    --clr-highlight: rgb(240, 240, 240);
 }
 
 body {
+    margin: 0;
     color: var(--clr-text);
     background-color: var(--clr-background);
-    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-family: Arial, Helvetica, sans-serif;
 }
-
 #wrapper {
     width: min(100% - 1rem, 100ch);
     margin-inline: auto;
 }
 
+/* TAB Managemant */
 .stat-tabs {
     display: flex;
     flex-wrap: wrap;
@@ -33,7 +35,12 @@ body {
     margin-right: .5rem;
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
+    user-select: none;
 }
+.stat-tabs > label:hover {
+    background-color: var(--clr-highlight);
+}
+
 
 .tab-content {
     width: 100%;
@@ -54,4 +61,61 @@ body {
 }
 .stat-tabs input[type="radio"]:checked + label + .tab-content {
     display: block;
+}
+
+/* TABLE */
+.overview-table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.overview-table tr:nth-child(even) {
+    background-color: var(--clr-background);
+}
+.overview-table td {
+    padding: 5px;
+}
+.icon-cell {
+    width: 10px;
+}
+.stream-number {
+    text-align: right;
+}
+.overview-table td {
+    vertical-align: middle;
+    height: 5ch;
+}
+.overview-table img {
+    height: 4ch;
+    width: 4ch;
+    border-radius: 50%;
+    margin-right: 1rem;
+}
+
+/* LOADER */
+.loader {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 5px solid var(--clr-background);
+    border-top: 5px solid rgba(0,0,0,0);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    position: relative;
+    left: 50%;
+    top: 50%;
+
+}
+@keyframes spin {
+    0%   {transform: rotate(0deg);}
+    100% {transform: rotate(360deg);}
+}
+
+header {
+    background-color: var(--clr-primary);
+    margin-bottom: 1em;
+    text-align: center;
+    padding: 1rem;
+    font-size: 2em;
+    color: var(--clr-white);
 }
