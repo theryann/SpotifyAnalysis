@@ -31,6 +31,14 @@ app.get('/songs/total-streams', (req, res) => {
     });
 });
 app.get('/songs/top', (req, res) => {
+    let where_artist = '';
+    if ( req.query.hasOwnProperty("artist") ) {
+        where_artist = `
+        JOIN writtenBy ON writtenBy.songID = Song.ID
+        JOIN Artist ON Artist.ID = writtenBy.artistID
+        WHERE Artist.ID = '${req.query.artist}'
+        `;
+    }
     let top_songs = `
         SELECT
             Song.ID as 'ID',
@@ -38,9 +46,12 @@ app.get('/songs/top', (req, res) => {
             count(*)   as 'streams'
         FROM Stream
         JOIN Song ON Stream.songID = Song.ID
+        ${where_artist}
         GROUP BY title
         ORDER BY streams desc
     `;
+
+
     if ( req.query.hasOwnProperty("limit") ) {
         top_songs += '\nLIMIT ' + req.query.limit;
     }

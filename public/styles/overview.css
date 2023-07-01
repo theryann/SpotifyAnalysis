@@ -26,15 +26,15 @@ body {
 
 .stat-tabs > label {
     cursor: pointer;
-    width: 10ch;
+    width: 8ch;
     font-weight: bolder;
     background-color: var(--clr-shade);
     padding: 1rem;
     order: 1;
     text-align: center;
     margin-right: .5rem;
-    border-top-left-radius: 5px;
-    border-top-right-radius: 5px;
+    /* border-top-left-radius: 5px;
+    border-top-right-radius: 5px; */
     user-select: none;
 }
 .stat-tabs > label:hover {
@@ -43,7 +43,7 @@ body {
 
 
 .tab-content {
-    width: 100%;
+    width: min(100%, 65ch);
     display: none;
 }
 
@@ -75,6 +75,9 @@ body {
 .overview-table td {
     padding: 5px;
 }
+/* .overview-table tr {
+    border-bottom: 1px solid black;
+} */
 .icon-cell {
     width: 10px;
 }
@@ -83,13 +86,13 @@ body {
 }
 .overview-table td {
     vertical-align: middle;
-    height: 5ch;
+    height: 2ch;
 }
 .overview-table img {
-    height: 4ch;
-    width: 4ch;
-    border-radius: 50%;
-    margin-right: 1rem;
+    height: calc(100% - .4ch);
+    aspect-ratio: 1/1;
+    /* border-radius: 50%; */
+    margin-right: .5em;
 }
 
 /* LOADER */
@@ -104,8 +107,8 @@ body {
     position: relative;
     left: 50%;
     top: 50%;
-
 }
+
 @keyframes spin {
     0%   {transform: rotate(0deg);}
     100% {transform: rotate(360deg);}
@@ -118,4 +121,16 @@ header {
     padding: 1rem;
     font-size: 2em;
     color: var(--clr-white);
+}
+
+footer {
+    background-color: var(--clr-shade);
+    margin-top: 1em;
+    text-align: center;
+    padding: 1rem;
+    font-size: 2em;
+    color: var(--clr-white);
+    content: " ";
+    bottom: 0;
+    position: relative;
 }
