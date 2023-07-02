@@ -118,7 +118,7 @@ async function vinyChart(diagramWidth=500) {
     const font = "Arial"
 
     var pie = d3
-        .select("#artists-pie")
+        .select("#artists-vinyl")
         .append("svg")
         .attr("width", width)
         .attr("height", width)
@@ -691,3 +691,5 @@ window.onload = function() {
     topBarchart('weekly', type='line', diagramWidth=1000, limit=10000);
     // progressChart(type='yearly');
 }
+
+export {vinyChart}

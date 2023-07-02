@@ -1,3 +1,5 @@
+import { vinyChart } from "./main.js";
+
 function makeTable(data, identifier) {
     let table = document.createElement('table');
     table.classList = "overview-table"
@@ -25,7 +27,7 @@ function makeTable(data, identifier) {
 }
 
 window.onload = () => {
-    let limit = 10;
+    let limit = 8;
     let songPromise   = fetch(`/songs/top?limit=${limit}`).then(res => res.json());
     let artistPromise = fetch(`/artists/top?limit=${limit}`).then(res => res.json());
     let albumPromise  = fetch(`/album/top?limit=${limit}`).then(res => res.json());
@@ -51,4 +53,9 @@ window.onload = () => {
 
 
     })
+
+    console.log("test1")
+    vinyChart(400);
+    console.log("test2")
+
 }
