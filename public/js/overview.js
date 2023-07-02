@@ -7,15 +7,21 @@ function makeTable(data, identifier) {
     data.forEach(d => {
         let row = table.insertRow();
 
-        if (d.hasOwnProperty("img")) {
-            let img = document.createElement("img")
-            img.src = d.img;
-            let imgCell = row.insertCell();
-            imgCell.appendChild(img)
-            imgCell.classList = "icon-cell"
-        }
+        let img = document.createElement("img")
+        img.src = d.img;
+        let imgCell = row.insertCell();
+        imgCell.appendChild(img)
+        imgCell.classList = "icon-cell"
+
         let item = row.insertCell();
-        item.textContent = d[identifier];
+        let itemLink = document.createElement('a')
+
+        itemLink.textContent = d[identifier];
+        itemLink.classList = 'hyperlink'
+        switch (identifier) {
+            case 'artist': itemLink.href = `/artist.html?artist-id=${d.id}`
+        }
+        item.appendChild(itemLink);
 
         let streams = row.insertCell();
         streams.classList = "stream-number";
@@ -59,3 +65,5 @@ window.onload = () => {
     console.log("test2")
 
 }
+
+export {makeTable}

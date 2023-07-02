@@ -43,9 +43,11 @@ app.get('/songs/top', (req, res) => {
         SELECT
             Song.ID as 'ID',
             Song.title as 'title',
+            Album.imgSmall as 'img',
             count(*)   as 'streams'
         FROM Stream
         JOIN Song ON Stream.songID = Song.ID
+        JOIN Album On Album.ID = Song.albumID
         ${where_artist}
         GROUP BY title
         ORDER BY streams desc
@@ -496,6 +498,7 @@ app.get('/search/:search', (req, res) => {
     let artistSearchQuery = `
     SELECT
         Artist.ID as ID,
+        Artist.imgSmall as img,
         Artist.name as artist
     FROM Artist
     WHERE Artist.name LIKE '%${searchText}%'

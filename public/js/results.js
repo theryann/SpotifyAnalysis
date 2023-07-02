@@ -6,7 +6,7 @@ function markKeyword(text, keyword) {
         let index = text.indexOf(keyword);
         text = text.slice(index, index + 100)
     }
-    console.log(text.length)
+
     text = text.replaceAll(keyword, `<em class="search-highlight">${keyword}</em>`)
     return text
 }
@@ -62,10 +62,16 @@ window.onload = async () => {
         let resultArticle = document.createElement("article")
         resultArticle.classList = 'search-result';
 
-        let resultArtist = document.createElement("div")
+        let artistImg = document.createElement("img")
+        artistImg.classList = 'search-result__img';
+        artistImg.src = artist.img;
+
+        let resultArtist = document.createElement("a")
+        resultArtist.href = `/artist.html?artist-id=${artist.ID}`
         resultArtist.classList = 'search-result__title';
         resultArtist.innerHTML = markKeyword(artist.artist, keyword);
 
+        resultArticle.appendChild(artistImg)
         resultArticle.appendChild(resultArtist)
         sectionArtists.appendChild(resultArticle);
 
