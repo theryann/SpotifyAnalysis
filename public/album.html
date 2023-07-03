@@ -5,14 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Artist</title>
     <link rel="stylesheet" href="styles/overview.css">
-    <script type="module" src="js/artist-page.js"></script>
+    <script type="module" src="js/album-page.js"></script>
 
 
 </head>
 
 <header>
     <a href="overview.html"><img src="assets/back.png" alt="back_link"></a>
-    artist
+    album
 </header>
 
 <body>
@@ -30,11 +30,26 @@
                 <span id="item-info__streams"></span>
             </td>
             <td>
-                <img src="" id="item-info__img" alt="item_logo.jpg">
+                <div id="album-cover">
+                    <div id="album-cover__record">
+                        <div id="album-cover__hole">
+                            <img src="">
+                        </div>
+                    </div>
+                    <div id="album-cover__cover">
+                        <img src="">
+                    </div>
+                </div>
             </td>
         </tr>
     </table>
 
+    <details id="lyrics-unfold" open>
+        <summary class=".details__summary">tracklist</summary>
+        <hr class="lyrics-unfold__hr">
+
+        <table class="item-info" id="item-info__tracklist"></table>
+    </details>
 
     <div class="loader"></div>
 

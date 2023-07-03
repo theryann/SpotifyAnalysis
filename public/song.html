@@ -17,7 +17,7 @@
 <body>
 <div id="wrapper">
     <form action="results.html" class="search-bar">
-        <input type="search" name="keyword-search" id="keyword-search-input" placeholder="artists, titles, albums, lyrics, ...">
+        <input type="search" name="keyword-search" id="keyword-search-input" placeholder="artists, titles, albums, lyrics, ..." >
         <button type="submit" id="keyword-search-input-btn">search</button>
     </form>
 
@@ -28,7 +28,11 @@
                 <p id="item-info__name"></p>
                 <span id="item-info__streams"></span>
             </td>
-            <td> <img src="" id="item-info__img" alt="item_logo.jpg"> </td>
+            <td>
+                <a href="" id="item-info__album-link">
+                    <img src="" id="item-info__img" alt="item_logo.jpg">
+                </a>
+            </td>
         </tr>
         <tr id="item-info__artists"></tr>
     </table>
@@ -38,6 +42,7 @@
 
         <details id="lyrics-unfold" open>
             <summary>lyrics</summary>
+            <hr class="lyrics-unfold__hr">
         </details>
     </div>
 
@@ -50,5 +55,5 @@
 
 </body>
 
-<footer></footer>
+
 </html>

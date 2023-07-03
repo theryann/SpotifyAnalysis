@@ -23,6 +23,7 @@ function makeTable(data, identifier) {
         switch (identifier) {
             case 'artist': itemLink.href = `/artist.html?artist-id=${d.id}`; break;
             case 'title': itemLink.href = `/song.html?song-id=${d.ID}`; break;
+            case 'album': itemLink.href = `/album.html?album-id=${d.ID}`; break;
         }
         item.appendChild(itemLink);
 
@@ -33,6 +34,16 @@ function makeTable(data, identifier) {
 
     });
     return table;
+}
+
+function makeTimestamp(milliseconds) {
+    let durationMin = Math.floor(milliseconds / 1000 / 60);
+    let remainingSec = Math.floor((milliseconds / 1000) - durationMin * 60)
+
+    remainingSec = remainingSec.toString()
+    remainingSec = (remainingSec.length > 1) ? remainingSec: '0'.concat(remainingSec)
+
+    return `${durationMin}:${remainingSec} min`;
 }
 
 window.onload = () => {
@@ -69,4 +80,4 @@ window.onload = () => {
 
 }
 
-export {makeTable}
+export {makeTable, makeTimestamp}

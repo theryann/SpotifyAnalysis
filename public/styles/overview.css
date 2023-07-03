@@ -27,7 +27,7 @@ a {
 .stat-tabs {
     display: flex;
     flex-wrap: wrap;
-    filter: drop-shadow(0px 0px 5px var(--clr-shade));
+    filter: drop-shadow(0px 0px 2px var(--clr-shade));
 }
 
 .stat-tabs > label {
@@ -241,6 +241,9 @@ table[class="item-info"] {
 #item-info__streams::before {
     content: "total streams: ";
 }
+.details__summary {
+    padding-bottom: 1em;
+}
 
 /* SONG PAGE */
 #info-layout {
@@ -249,22 +252,34 @@ table[class="item-info"] {
     grid-template-columns: 50% 50%;
     gap: 1em;
 }
-#song-info-table {
-    border-right: 1px solid var(--clr-shade);
+
+#lyrics-unfold summary {
+    border-radius: 5px;
 }
+#lyrics-unfold {
+    padding: .5em;
+    border-radius: 3px;
+    border: 1px solid var(--clr-shade);
+}
+.lyrics-unfold__hr {
+    border: none;
+    border-top: 1px solid var(--clr-shade);
+}
+/* #lyrics-unfold[open] {
+    height: 30em;
+    overflow-y: scroll;
+} */
+
 
 @media screen and (max-width: 600px) {
     #info-layout {
         grid-template-columns: auto;
         gap: 0;
     }
-    #song-info-table {
-        border: unset;
-    }
+
     #lyrics-unfold {
         margin-top: 1em;
         padding-top: 1em;
-        border-top: 1px solid var(--clr-shade);
     }
 
 }
@@ -282,4 +297,68 @@ table[class="item-info"] {
 }
 .artist-label:hover {
     text-decoration: underline;
+}
+
+/* ALBUM HTML */
+#album-cover {
+    float: right;
+    transform: translate(-5em, 25%);
+    filter: drop-shadow(3px 3px 5px var(--clr-shade));
+}
+
+
+#album-cover__cover {
+    height: 10em;
+    aspect-ratio: 1/1;
+    background-color: var(--clr-text-secondary);
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
+    transform: translateY(-100%);
+    overflow: hidden;
+    border-right: 1px solid var(--clr-text)
+
+
+}
+#album-cover__cover img {
+    max-width: 100%;
+}
+#album-cover__hole img {
+    max-width: 100%;
+    border-radius: 50%;
+    transform: rotate(45deg);
+}
+
+#album-cover__record {
+    height: 10em;
+    aspect-ratio: 1/1;
+    background-color: var(--clr-text);
+
+    background:
+    linear-gradient(
+        40deg,
+        var(--clr-text) 0% 45%,
+        var(--clr-text-secondary) 45% 55%,
+        var(--clr-text) 55%
+    );
+
+    border-radius: 50%;
+    translate: 50%;
+    animation: spin 20s linear infinite;
+}
+
+
+
+#album-cover__hole {
+    height: 3em;
+    aspect-ratio: 1/1;
+    background-color: var(--clr-text-secondary);
+    border-radius: 50%;
+    transform: translate(3.5em, 3.5em);
+}
+
+#album-cover-songlist {
+    /* transform: translateX(-100%); */
+    /* transform: translateY(100%); */
+    list-style-type: none;
+    max-height: 100%;
 }

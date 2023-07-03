@@ -21,7 +21,16 @@ window.onload = async () => {
     let resSongs = await fetch(`/songs/top?artist=${artistID}`)
     let artistSongs = await resSongs.json();
 
-    wrapper.appendChild( makeTable(artistSongs, 'title') )
+    let details = document.createElement('details')
+    details.open = true;
+
+    let detailsSummary = document.createElement('summary')
+    detailsSummary.innerText = 'songs'
+    detailsSummary.classList = 'details__summary'
+    details.appendChild(detailsSummary)
+    details.appendChild( makeTable(artistSongs, 'title') )
+    wrapper.appendChild(details)
+
 
     loader.remove()
 

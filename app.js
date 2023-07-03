@@ -69,6 +69,7 @@ app.get('/songs/id/:id', (req, res) => {
         Song.*,
         Album.imgBig,
         Album.imgSmall,
+        Album.name as 'albumName',
         count(Stream.timeStamp) as 'streams'
     FROM Stream
     JOIN Song ON Song.ID = Stream.songID
@@ -214,10 +215,15 @@ app.get('/album/id/:id', (req, res) => {
         Album.totaltracks as 'totalAtracks',
         Album.type,
         Album.imgBig,
-        Album.imgSmall
-    FROM Album
+        Album.imgSmall,
+        count(Album.ID) as streams
+    FROM Stream
+    JOIN writtenBy ON writtenBy.songID = Stream.songID
+    JOIN Song ON Song.ID = writtenBy.songID
+    JOIN Album ON ALbum.ID = Song.albumID
     JOIN Artist ON Artist.ID = Album.artistID
     WHERE Album.ID = '${req.params.id}'
+    GROUP BY Album.ID
     `;
     db.all(album, [], (err, rows)=> {
         if (err) throw err;
@@ -259,6 +265,18 @@ app.get('/album/top', (req, res) => {
         JOIN Artist ON Artist.ID = Album.artistID
     `;
     db.all(top_albums, [], (err, rows)=> {
+        if (err) throw err;
+        res.json(rows);
+    });
+});
+app.get('/album/tracklist/:id', (req, res) => {
+    let tracklist = `
+    SELECT *
+    FROM Song
+    WHERE Song.albumID = '${req.params.id}'
+    ORDER BY Song.trackNumber
+    `;
+    db.all(tracklist, [], (err, rows)=> {
         if (err) throw err;
         res.json(rows);
     });
@@ -503,6 +521,7 @@ app.get('/search/:search', (req, res) => {
         Song.title as title,
         Song.ID as ID,
         Album.name as 'album',
+        Album.ID as 'albumID',
         CASE WHEN INSTR(Song.lyrics, '${searchText}') = 0
             THEN Song.lyrics
             ELSE SUBSTR(

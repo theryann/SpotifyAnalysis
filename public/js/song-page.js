@@ -1,7 +1,9 @@
+import { makeTimestamp } from "./overview.js";
 
 window.onload = async () => {
     const loader = document.querySelector('.loader');
     const fieldSongImg = document.getElementById('item-info__img')
+    const fieldAlbumLink = document.getElementById('item-info__album-link')
     const fieldSongName = document.getElementById('item-info__name')
     const fieldSongStreams = document.getElementById('item-info__streams')
     const fieldArtistList = document.querySelector('.item-info')
@@ -16,6 +18,8 @@ window.onload = async () => {
     let songInfo = await res.json();
 
     fieldSongImg.src = songInfo.imgBig;
+    fieldAlbumLink.href = `album.html?album-id=${songInfo.albumID}`;
+
     fieldSongName.innerText = songInfo.title;
     fieldSongStreams.innerText = songInfo.streams;
 
@@ -49,12 +53,19 @@ window.onload = async () => {
     fieldLyrics.appendChild(lyrics)
 
     // info table
-    let durationMin = Math.floor(songInfo.duration / 1000 / 60);
-    let remainingSec = Math.floor((songInfo.duration / 1000) - durationMin * 60)
+
     let infoTableHTML = `
     <tr>
+        <td>album</td>
+        <td>
+        <a class="hyperlink" href="album.html?album-id=${songInfo.albumID}">
+            ${songInfo.albumName}
+        </a>
+        </td>
+    </tr>
+    <tr>
         <td>duration</td>
-        <td>${durationMin}:${remainingSec} min</td>
+        <td>${makeTimestamp(songInfo.duration)}</td>
     </tr>
     <tr>
         <td>tempo</td>
@@ -63,6 +74,10 @@ window.onload = async () => {
     <tr>
         <td>explicit</td>
         <td>${Boolean(songInfo.explicit)}</td>
+    </tr>
+    <tr>
+        <td>mode</td>
+        <td>${(songInfo.mode == 0) ? 'minor' : 'major'}</td>
     </tr>
     `
     infoTable.innerHTML = infoTableHTML

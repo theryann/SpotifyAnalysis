@@ -34,7 +34,6 @@ window.onload = async () => {
 
     let res = await fetch(`/search/${keyword}`);
     let searchResults = await res.json();
-    loader.remove();
     resultText.innerText = `${searchResults.artists.length + searchResults.songs.length} results found for: "${keyword}"`
 
 
@@ -50,16 +49,22 @@ window.onload = async () => {
         resultTitle.innerHTML = markKeyword(song.title, keyword);
         resultLink.appendChild(resultTitle)
 
+        let albumLink = document.createElement('a')
+        albumLink.classList = 'hyperlink'
+        albumLink.href = `album.html?album-id=${song.albumID}`
+
         let resultAlbum = document.createElement("div")
         resultAlbum.classList = 'search-result__album';
         resultAlbum.innerHTML = "album: " +  markKeyword(song.album, keyword);
+        albumLink.appendChild(resultAlbum)
+
 
         let resultLyrics = document.createElement("div")
         resultLyrics.classList = 'search-result__lyrics';
         resultLyrics.innerHTML = markKeyword(song.lyrics, keyword);
 
         resultArticle.appendChild(resultLink)
-        resultArticle.appendChild(resultAlbum)
+        resultArticle.appendChild(albumLink)
         if (song.lyrics !== "%not available%" && song.lyrics.length > 0) {
             resultArticle.appendChild(resultLyrics)
         }
@@ -85,5 +90,8 @@ window.onload = async () => {
         sectionArtists.appendChild(resultArticle);
 
     });
+
+    loader.remove();
+
 
 }
