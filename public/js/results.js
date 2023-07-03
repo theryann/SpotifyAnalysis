@@ -4,7 +4,12 @@ function markKeyword(text, keyword) {
 
     if (text.length > 100) {
         let index = text.indexOf(keyword);
-        text = text.slice(index, index + 100)
+
+        if (text.includes(keyword)) {
+            text = text.slice(index, index + 100)
+        } else {
+            text = text.slice(0, 100)
+        }
     }
 
     text = text.replaceAll(keyword, `<em class="search-highlight">${keyword}</em>`)

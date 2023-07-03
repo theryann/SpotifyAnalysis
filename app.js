@@ -68,8 +68,10 @@ app.get('/songs/id/:id', (req, res) => {
     SELECT
         Song.*,
         Album.imgBig,
-        Album.imgSmall
-    FROM Song
+        Album.imgSmall,
+        count(Stream.timeStamp) as 'streams'
+    FROM Stream
+    JOIN Song ON Song.ID = Stream.songID
     JOIN Album ON Album.ID = Song.albumID
     WHERE Song.ID = '${req.params.id}'
     `;

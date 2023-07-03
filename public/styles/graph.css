@@ -1,5 +1,6 @@
 :root{
-    --primary-color: orange;
+    --primary-color: rgb(91, 212, 99);
+    /* --primary-color: orange; */
 }
 
 .bubble {

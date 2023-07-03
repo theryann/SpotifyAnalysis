@@ -689,7 +689,7 @@ window.onload = function() {
     topBarchart('times', type='bar', diagramWidth=1000, limit=200);
     topBarchart('albums', type='bar', diagramWidth=1000, limit=30);
     topBarchart('weekly', type='line', diagramWidth=1000, limit=10000);
-    // progressChart(type='yearly');
+    progressChart(type='yearly');
 }
 
 export {vinyChart}

@@ -18,8 +18,11 @@ function makeTable(data, identifier) {
 
         itemLink.textContent = d[identifier];
         itemLink.classList = 'hyperlink'
+
+        // generate link depending on wether data is artist|song|album
         switch (identifier) {
-            case 'artist': itemLink.href = `/artist.html?artist-id=${d.id}`
+            case 'artist': itemLink.href = `/artist.html?artist-id=${d.id}`; break;
+            case 'title': itemLink.href = `/song.html?song-id=${d.ID}`; break;
         }
         item.appendChild(itemLink);
 
@@ -33,7 +36,7 @@ function makeTable(data, identifier) {
 }
 
 window.onload = () => {
-    let limit = 8;
+    let limit = 20;
     let songPromise   = fetch(`/songs/top?limit=${limit}`).then(res => res.json());
     let artistPromise = fetch(`/artists/top?limit=${limit}`).then(res => res.json());
     let albumPromise  = fetch(`/album/top?limit=${limit}`).then(res => res.json());

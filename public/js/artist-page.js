@@ -2,9 +2,9 @@ import { makeTable } from "./overview.js";
 
 window.onload = async () => {
     const loader = document.querySelector('.loader');
-    const fieldArtistImg = document.getElementById('artist-info__img')
-    const fieldArtistName = document.getElementById('artist-info__name')
-    const fieldArtistStreams = document.getElementById('artist-info__streams')
+    const fieldArtistImg = document.getElementById('item-info__img')
+    const fieldArtistName = document.getElementById('item-info__name')
+    const fieldArtistStreams = document.getElementById('item-info__streams')
     const wrapper = document.getElementById('wrapper')
 
     const urlParams = new URLSearchParams(window.location.search);

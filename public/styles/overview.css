@@ -1,7 +1,7 @@
 :root {
     --clr-text: rgb(35, 35, 35);
     --clr-text-secondary: rgb(60, 60, 60);
-    --clr-background: rgb(221, 221, 221);
+    --clr-background: rgb(240, 240, 240);
     --clr-white: rgb(250, 250, 250);
     --clr-primary: rgb(91, 212, 99);
     --clr-primary-darker: rgb(77, 180, 84);
@@ -132,6 +132,14 @@ header {
     font-size: 2em;
     color: var(--clr-white);
 }
+header img {
+    height: 2em;
+    aspect-ratio: 1/1;
+    position: absolute;
+    margin-left: 1em;
+    left: 0;
+    top: 0;
+}
 
 footer {
     background-color: var(--clr-shade);
@@ -205,26 +213,39 @@ footer {
 .search-highlight {
     background-color: var(--clr-primary);
     font-weight: 700;
+    padding: 2px;
+    border-radius: 3px;
 }
 
 
 /* ARTIST PAGE */
-table[class="artist-info"] {
+table[class="item-info"] {
     width: 100%;
     margin-bottom: 2em;
     padding-bottom: 1em;
     border-bottom: 1px solid var(--clr-shade);
 }
 
-#artist-info__img {
+#item-info__img {
     height: 6rem;
     aspect-ratio: 1/1;
     border-radius: 50%;
     float: right;
 }
-#artist-info__name {
+#item-info__name {
     font-size:x-large;
 }
-#artist-info__streams::before {
+#item-info__streams::before {
     content: "total streams: ";
+}
+
+/* SONG PAGE */
+#info-layout {
+    display: grid;
+    width: 100%;
+    grid-template-columns: 50% 50%;
+}
+
+.no-stretch {
+    max-height: 0;
 }
