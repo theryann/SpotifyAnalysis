@@ -19,6 +19,9 @@ body {
     width: min(100% - 1rem, 100ch);
     margin-inline: auto;
 }
+a {
+    text-decoration: none;
+}
 
 /* TAB Managemant */
 .stat-tabs {
@@ -244,8 +247,39 @@ table[class="item-info"] {
     display: grid;
     width: 100%;
     grid-template-columns: 50% 50%;
+    gap: 1em;
+}
+#song-info-table {
+    border-right: 1px solid var(--clr-shade);
+}
+
+@media screen and (max-width: 600px) {
+    #info-layout {
+        grid-template-columns: auto;
+        gap: 0;
+    }
+    #song-info-table {
+        border: unset;
+    }
+    #lyrics-unfold {
+        margin-top: 1em;
+        padding-top: 1em;
+        border-top: 1px solid var(--clr-shade);
+    }
+
 }
 
 .no-stretch {
     max-height: 0;
+}
+
+
+.artist-label {
+    color: var(--clr-text);
+    margin-right: 1em;;
+    text-decoration: none;
+
+}
+.artist-label:hover {
+    text-decoration: underline;
 }

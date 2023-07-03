@@ -75,9 +75,23 @@ app.get('/songs/id/:id', (req, res) => {
     JOIN Album ON Album.ID = Song.albumID
     WHERE Song.ID = '${req.params.id}'
     `;
+
+    let artistsQuery = `
+    SELECT
+        Artist.name,
+        Artist.ID,
+        Artist.imgBig as 'img'
+    FROM writtenBy
+    JOIN Artist ON Artist.ID = writtenBy.artistID
+    WHERE writtenBy.songID = '${req.params.id}'
+    `
     db.get(songQuery, [], (err, row)=> {
         if (err) throw err;
-        res.json(row);
+        db.all(artistsQuery, [], (err, artistsRows)=> {
+            if (err) throw err;
+            row.artists = artistsRows;
+            res.json(row);
+        });
     });
 });
 

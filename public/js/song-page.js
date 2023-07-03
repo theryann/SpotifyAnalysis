@@ -4,7 +4,9 @@ window.onload = async () => {
     const fieldSongImg = document.getElementById('item-info__img')
     const fieldSongName = document.getElementById('item-info__name')
     const fieldSongStreams = document.getElementById('item-info__streams')
+    const fieldArtistList = document.querySelector('.item-info')
     const fieldLyrics = document.getElementById('lyrics-unfold')
+    const infoTable = document.getElementById('song-info-table')
     const wrapper = document.getElementById('wrapper')
 
     const urlParams = new URLSearchParams(window.location.search);
@@ -17,10 +19,53 @@ window.onload = async () => {
     fieldSongName.innerText = songInfo.title;
     fieldSongStreams.innerText = songInfo.streams;
 
+    // artists
+    songInfo.artists.forEach(artist => {
+        let artistLink = document.createElement('a')
+        artistLink.href = `artist.html?artist-id=${artist.ID}`
+
+        let artistImg = document.createElement('img')
+        artistImg.src = artist.img
+        artistImg.classList = "search-result__img"
+        artistLink.appendChild(artistImg)
+
+        let artistLabel = document.createElement('span')
+        artistLabel.innerText = artist.name
+        artistLabel.classList = "artist-label"
+        artistLink.appendChild(artistLabel)
+
+        let tr = document.createElement('tr')
+        let td = document.createElement('td')
+        tr.appendChild(td)
+        td.appendChild(artistLink)
+
+        fieldArtistList.appendChild(tr)
+    })
+
+
     // lyrics
     let lyrics = document.createElement('p')
     lyrics.innerText = songInfo.lyrics
     fieldLyrics.appendChild(lyrics)
+
+    // info table
+    let durationMin = Math.floor(songInfo.duration / 1000 / 60);
+    let remainingSec = Math.floor((songInfo.duration / 1000) - durationMin * 60)
+    let infoTableHTML = `
+    <tr>
+        <td>duration</td>
+        <td>${durationMin}:${remainingSec} min</td>
+    </tr>
+    <tr>
+        <td>tempo</td>
+        <td>${Math.round(songInfo.tempo)} BPM</td>
+    </tr>
+    <tr>
+        <td>explicit</td>
+        <td>${Boolean(songInfo.explicit)}</td>
+    </tr>
+    `
+    infoTable.innerHTML = infoTableHTML
 
 
     loader.remove()

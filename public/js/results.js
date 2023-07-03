@@ -42,9 +42,13 @@ window.onload = async () => {
         let resultArticle = document.createElement("article")
         resultArticle.classList = 'search-result';
 
+        let resultLink = document.createElement("a")
+        resultLink.href = `song.html?song-id=${song.ID}`
+
         let resultTitle = document.createElement("div")
         resultTitle.classList = 'search-result__title';
         resultTitle.innerHTML = markKeyword(song.title, keyword);
+        resultLink.appendChild(resultTitle)
 
         let resultAlbum = document.createElement("div")
         resultAlbum.classList = 'search-result__album';
@@ -54,7 +58,7 @@ window.onload = async () => {
         resultLyrics.classList = 'search-result__lyrics';
         resultLyrics.innerHTML = markKeyword(song.lyrics, keyword);
 
-        resultArticle.appendChild(resultTitle)
+        resultArticle.appendChild(resultLink)
         resultArticle.appendChild(resultAlbum)
         if (song.lyrics !== "%not available%" && song.lyrics.length > 0) {
             resultArticle.appendChild(resultLyrics)
