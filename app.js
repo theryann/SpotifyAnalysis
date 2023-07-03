@@ -63,6 +63,21 @@ app.get('/songs/top', (req, res) => {
         res.json(rows);
     });
 });
+app.get('/songs/id/:id', (req, res) => {
+    let songQuery = `
+    SELECT
+        Song.*,
+        Album.imgBig,
+        Album.imgSmall
+    FROM Song
+    JOIN Album ON Album.ID = Song.albumID
+    WHERE Song.ID = '${req.params.id}'
+    `;
+    db.get(songQuery, [], (err, row)=> {
+        if (err) throw err;
+        res.json(row);
+    });
+});
 
 
 app.get('/artists/top', (req, res) => {
