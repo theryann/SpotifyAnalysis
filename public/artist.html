@@ -22,18 +22,28 @@
         <button type="submit" id="keyword-search-input-btn">search</button>
     </form>
 
-
     <table class="item-info">
         <tr>
             <td>
                 <p id="item-info__name"></p>
-                <span id="item-info__streams"></span>
+                <table>
+                    <tr>
+                        <td>total streams:</td>
+                        <td id="item-info__streams"></td>
+                    </tr>
+                </table>
+
             </td>
             <td>
                 <img src="" id="item-info__img" alt="item_logo.jpg">
             </td>
         </tr>
     </table>
+
+    <div id="artist-album-list"></div>
+    <hr class="lyrics-unfold__hr">
+    <div id="artist-single-list"></div>
+
 
 
     <div class="loader"></div>

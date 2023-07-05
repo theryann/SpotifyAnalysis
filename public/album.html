@@ -6,8 +6,6 @@
     <title>Artist</title>
     <link rel="stylesheet" href="styles/overview.css">
     <script type="module" src="js/album-page.js"></script>
-
-
 </head>
 
 <header>
@@ -27,7 +25,18 @@
         <tr>
             <td>
                 <p id="item-info__name"></p>
-                <span id="item-info__streams"></span>
+                <p id="item-info__extra"></p><br>
+                <table class="item-info">
+                    <tr>
+                        <td>release:</td>
+                        <td id="item-info__year"></td>
+                    </tr>
+                    <tr>
+                        <td>total streams:</td>
+                        <td id="item-info__streams"></td>
+                    </tr>
+                </table>
+
             </td>
             <td>
                 <div id="album-cover">

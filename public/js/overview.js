@@ -22,8 +22,8 @@ function makeTable(data, identifier) {
         // generate link depending on wether data is artist|song|album
         switch (identifier) {
             case 'artist': itemLink.href = `/artist.html?artist-id=${d.id}`; break;
-            case 'title': itemLink.href = `/song.html?song-id=${d.ID}`; break;
-            case 'album': itemLink.href = `/album.html?album-id=${d.ID}`; break;
+            case 'title': itemLink.href  = `/song.html?song-id=${d.ID}`; break;
+            case 'album': itemLink.href  = `/album.html?album-id=${d.ID}`; break;
         }
         item.appendChild(itemLink);
 
@@ -47,14 +47,26 @@ function makeTimestamp(milliseconds) {
 }
 
 window.onload = () => {
-    let limit = 20;
-    let songPromise   = fetch(`/songs/top?limit=${limit}`).then(res => res.json());
-    let artistPromise = fetch(`/artists/top?limit=${limit}`).then(res => res.json());
-    let albumPromise  = fetch(`/album/top?limit=${limit}`).then(res => res.json());
+
+    // timeframe to consider (earliest included date)
+    let timeLimitDays = 30;
+    let order = '&order=playtime'
+
+    let today = Date.now();
+    let timeLimit = today - timeLimitDays * 3600 * 24 * 1000
+    let cutoffTimestamp = (new Date(timeLimit)).toISOString()
+
+    let limit = 8; // number of results
+    let songPromise   = fetch(`/songs/top?limit=${limit}${order}&oldest=${cutoffTimestamp}`).then(res => res.json());
+    let artistPromise = fetch(`/artists/top?limit=${limit}${order}&oldest=${cutoffTimestamp}`).then(res => res.json());
+    let albumPromise  = fetch(`/album/top?limit=${limit}${order}&oldest=${cutoffTimestamp}`).then(res => res.json());
 
     let songTab = document.getElementById('songs-content');
     let artistsTab = document.getElementById('artists-content');
     let albumTab = document.getElementById('albums-content');
+    let labelTimeFrame = document.getElementById('label-timeframe');
+
+    labelTimeFrame.innerText = `last ${timeLimitDays} days`;
 
     let allLoaders = document.getElementsByClassName("loader");
 
@@ -74,10 +86,7 @@ window.onload = () => {
 
     })
 
-    console.log("test1")
     vinyChart(400);
-    console.log("test2")
-
 }
 
 export {makeTable, makeTimestamp}

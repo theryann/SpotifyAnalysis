@@ -7,6 +7,8 @@ window.onload = async () => {
     const fieldAlbumHole = document.querySelector('#album-cover__hole img')
     const fieldAlbumName = document.getElementById('item-info__name')
     const fieldAlbumStreams = document.getElementById('item-info__streams')
+    const fieldArtistName = document.getElementById('item-info__extra')
+    const fieldYear = document.getElementById('item-info__year')
     const fieldTracklist = document.getElementById('item-info__tracklist')
 
     const wrapper = document.getElementById('wrapper')
@@ -21,6 +23,27 @@ window.onload = async () => {
     fieldAlbumImg.src = albumInfo.imgBig;
     fieldAlbumName.innerText = albumInfo.name
     fieldAlbumStreams.innerText = albumInfo.streams
+
+    const artistLink = document.createElement('a')
+    const artistLabel = document.createElement('span')
+
+    artistLink.href = `artist.html?artist-id=${albumInfo.artistID}`
+    artistLink.classList = 'hyperlink'
+
+
+    artistLabel.innerText = albumInfo.artist
+
+    let artistImg = document.createElement('img')
+    artistImg.src = albumInfo.artistImg
+    artistImg.classList = "search-result__img"
+    artistLink.appendChild(artistImg)
+    artistLink.appendChild(artistLabel)
+
+
+    fieldArtistName.appendChild(artistLink)
+
+
+    fieldYear.innerText = new Date(albumInfo.releaseDate).toLocaleDateString()
 
     let resTracklist = await fetch(`/album/tracklist/${albumID}`)
     let albumTracklist = await resTracklist.json();

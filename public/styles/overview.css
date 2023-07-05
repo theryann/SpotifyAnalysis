@@ -23,6 +23,7 @@ a {
     text-decoration: none;
 }
 
+
 /* TAB Managemant */
 .stat-tabs {
     display: flex;
@@ -126,6 +127,13 @@ a {
     0%   {transform: rotate(0deg);}
     100% {transform: rotate(360deg);}
 }
+@keyframes wobble {
+    0%   {transform: translateY(0em);}
+    /* 33%   {transform: translateY(-.4em);}
+    66%   {transform: translateY(.4em);} */
+    100%   {transform: translateY(0em);}
+
+}
 
 header {
     background-color: var(--clr-primary);
@@ -226,7 +234,7 @@ table[class="item-info"] {
     width: 100%;
     margin-bottom: 2em;
     padding-bottom: 1em;
-    border-bottom: 1px solid var(--clr-shade);
+    /* border-bottom: 1px solid var(--clr-shade); */
 }
 
 #item-info__img {
@@ -238,12 +246,18 @@ table[class="item-info"] {
 #item-info__name {
     font-size:x-large;
 }
-#item-info__streams::before {
-    content: "total streams: ";
-}
+
 .details__summary {
     padding-bottom: 1em;
 }
+
+.album-cover {
+    box-shadow: 3px 3px 3px var(--clr-shade);
+    border-radius: 3px;
+    max-width: 100%;
+    margin-right: 1em;
+}
+
 
 /* SONG PAGE */
 #info-layout {
@@ -316,8 +330,6 @@ table[class="item-info"] {
     transform: translateY(-100%);
     overflow: hidden;
     border-right: 1px solid var(--clr-text)
-
-
 }
 #album-cover__cover img {
     max-width: 100%;
@@ -362,3 +374,4 @@ table[class="item-info"] {
     list-style-type: none;
     max-height: 100%;
 }
+
