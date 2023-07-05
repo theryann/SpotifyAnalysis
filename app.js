@@ -31,26 +31,33 @@ app.get('/songs/total-streams', (req, res) => {
     });
 });
 app.get('/songs/top', (req, res) => {
-    let where_artist = '';
+    let where_clause = '';
+    let order = 'streams';
+    if ( req.query.order == 'playtime' ) {
+        order = 'sumPlaytimeMS';
+    }
     if ( req.query.hasOwnProperty("artist") ) {
-        where_artist = `
+        where_clause = `
         JOIN writtenBy ON writtenBy.songID = Song.ID
         JOIN Artist ON Artist.ID = writtenBy.artistID
         WHERE Artist.ID = '${req.query.artist}'
         `;
+    } else if ( req.query.hasOwnProperty("oldest") ) {
+        where_clause = `WHERE Stream.timeStamp >= '${req.query.oldest}'`;  // oldest date to include
     }
     let top_songs = `
         SELECT
-            Song.ID as 'ID',
-            Song.title as 'title',
-            Album.imgSmall as 'img',
-            count(*)   as 'streams'
+            Song.ID as            'ID',
+            Song.title as         'title',
+            Album.imgSmall as     'img',
+            count(*) as           'streams',
+            sum(Song.duration) as 'sumPlaytimeMS'
         FROM Stream
         JOIN Song ON Stream.songID = Song.ID
         JOIN Album On Album.ID = Song.albumID
-        ${where_artist}
-        GROUP BY title
-        ORDER BY streams desc
+        ${where_clause}
+        GROUP BY Song.ID
+        ORDER BY ${order} desc
     `;
 
 
@@ -100,6 +107,7 @@ app.get('/songs/id/:id', (req, res) => {
 app.get('/artists/top', (req, res) => {
     let limit  = 20;
     let offset = 0;
+    let order = 'streams';
     let whereClause = '';
     if ( req.query.hasOwnProperty("limit") ) {
         limit = req.query.limit;
@@ -110,19 +118,24 @@ app.get('/artists/top', (req, res) => {
     if ( req.query.hasOwnProperty("oldest") ) {
         whereClause = `WHERE Stream.timeStamp >= '${req.query.oldest}'`;  // oldest date to include
     }
+    if ( req.query.order == 'playtime' ) {
+        order = 'sumPlaytimeMS';
+    }
 
     let top_artists = `
     SELECT
         artist.name as 'artist',
         count(timeStamp) as streams,
+        sum(Song.duration) as sumPlaytimeMS,
         artist.imgSmall as img,
         artist.ID as id
     FROM Stream
         JOIN writtenBy ON writtenBy.songID = Stream.songID
         JOIN Artist ON Artist.ID = writtenBy.artistID
+        JOIN Song ON Song.ID = writtenBy.songID
     ${whereClause}
     GROUP BY artist
-    ORDER BY streams desc
+    ORDER BY ${order} desc
     LIMIT ${limit} OFFSET ${offset}
     `;
     db.all(top_artists, [], (err, rows)=> {
@@ -205,12 +218,26 @@ app.get('/album/by-year', (req, res) => {
         res.json(rows);
     });
 });
+app.get('/album/by-artist/:id', (req, res) => {
+    let albums = `
+    SELECT *
+    FROM Album
+    WHERE Album.artistID = '${req.params.id}'
+    ORDER BY Album.type, Album.releaseDate
+    `;
+    db.all(albums, [], (err, rows)=> {
+        if (err) throw err;
+        res.json(rows);
+    });
+});
 app.get('/album/id/:id', (req, res) => {
     let album = `
     SELECT
         Album.ID    as id,
         Album.name  as name,
         Artist.name as artist,
+        Artist.ID   as artistID,
+        Artist.imgSmall   as 'artistImg',
         Album.releaseDate as 'releaseDate',
         Album.totaltracks as 'totalAtracks',
         Album.type,
@@ -233,11 +260,19 @@ app.get('/album/id/:id', (req, res) => {
 app.get('/album/top', (req, res) => {
     let limit  = 20;
     let offset = 0;
+    let where_clause = "";
+    let order = 'streams';
+    if ( req.query.order == 'playtime' ) {
+        order = 'sumPlaytimeMS';
+    }
     if ( req.query.hasOwnProperty("limit") ) {
         limit = req.query.limit;
     }
     if ( req.query.hasOwnProperty("offset") ) {
         offset = req.query.offset;
+    }
+    if ( req.query.hasOwnProperty("oldest") ) {
+        where_clause = `WHERE Stream.timeStamp >= '${req.query.oldest}'`;  // oldest date to include
     }
 
     let top_albums = `
@@ -251,13 +286,14 @@ app.get('/album/top', (req, res) => {
         (
             SELECT
                 Song.albumID as 'ID',
-                count(*)     as 'streams'
+                count(*)     as 'streams',
+                sum(Song.duration) as 'sumPlaytimeMS'
             FROM Stream
             JOIN Song ON Stream.songID = Song.ID
-
+            ${where_clause}
             GROUP BY Song.albumID
             HAVING albumID NOT NULL
-            ORDER BY streams desc
+            ORDER BY ${order} desc
             LIMIT ${limit} OFFSET ${offset}
         ) AS albumsRanked
 
