@@ -24,12 +24,11 @@ window.onload = async () => {
     fieldAlbumName.innerText = albumInfo.name
     fieldAlbumStreams.innerText = albumInfo.streams
 
-    const artistLink = document.createElement('a')
+    const artistLink  = document.createElement('a')
     const artistLabel = document.createElement('span')
 
     artistLink.href = `artist.html?artist-id=${albumInfo.artistID}`
     artistLink.classList = 'hyperlink'
-
 
     artistLabel.innerText = albumInfo.artist
 

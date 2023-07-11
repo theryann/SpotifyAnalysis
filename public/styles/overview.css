@@ -174,13 +174,16 @@ footer {
 
 .search-bar input[type="search"] {
     width: calc(100% - 11ch);
+    font-size: larger;
     height: 2em;
+    border: none;
 }
 .search-bar button[type="submit"] {
-    width: 10ch;
+    font-size: larger;
+    width: 11ch;
     height: 2em;
+    float: inline-end;
     background-color: var(--clr-primary);
-    border-radius: 3px;
     border: hidden;
     color: var(--clr-white);
 
@@ -375,3 +378,43 @@ table[class="item-info"] {
     max-height: 100%;
 }
 
+
+/* HISTORY PAGE */
+
+.overline {
+    margin-top: 3em;
+    padding: 1em;
+    padding-top: 1em;
+    position: sticky;
+    top: 0;
+    background: var(--clr-white);
+    z-index: 1;
+    /* box-shadow: 0 3px 10px var(--clr-shade); */
+}
+
+#song-log__table td:first-child {
+    padding-right: 1em;
+    color: var(--clr-text);
+}
+
+#song-log__table tr:hover {
+    background-color: var(--clr-shade);
+}
+#song-log__table img {
+    vertical-align: center;
+    margin-right: 1em;
+    border-radius: 50%;
+    aspect-ratio: 1/1;
+    height: 1em;
+}
+
+@keyframes fade-out {
+    from {
+        opacity: 1;
+        translate: 0em;
+    }
+    to {
+        opacity: 0;
+        translate: 0 -1em;
+    }
+}

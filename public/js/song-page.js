@@ -48,9 +48,18 @@ window.onload = async () => {
 
 
     // lyrics
-    let lyrics = document.createElement('p')
-    lyrics.innerText = songInfo.lyrics
-    fieldLyrics.appendChild(lyrics)
+    if (songInfo.lyrics === '%not available%') {
+        fieldLyrics.style = "animation: fade-out 2s ease-in;"
+        // fieldLyrics.remove();
+        setTimeout( function() {
+            fieldLyrics.remove();
+        }, 2000)
+    } else {
+        let lyrics = document.createElement('p')
+        lyrics.innerText = songInfo.lyrics
+        fieldLyrics.appendChild(lyrics)
+
+    }
 
     // info table
 

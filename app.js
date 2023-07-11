@@ -102,6 +102,31 @@ app.get('/songs/id/:id', (req, res) => {
         });
     });
 });
+app.get('/songs/history', (req, res) => {
+    let offset = 0;
+    if (req.query.hasOwnProperty('offset')) {
+        offset = req.query.offset;
+    }
+
+    let query = `
+    SELECT
+        Stream.timeStamp,
+        Song.ID,
+        Song.title,
+        Album.imgSmall as 'img'
+    FROM Stream
+    JOIN Song ON Song.ID = Stream.songID
+    JOIN Album ON Album.ID = Song.albumID
+    ORDER BY Stream.timeStamp desc
+    LIMIT 20
+    OFFSET ${offset}
+    `;
+
+    db.all(query, [], (err, rows)=> {
+        if (err) throw err;
+        res.json(rows)
+    });
+});
 
 
 app.get('/artists/top', (req, res) => {
@@ -239,11 +264,11 @@ app.get('/album/id/:id', (req, res) => {
         Artist.ID   as artistID,
         Artist.imgSmall   as 'artistImg',
         Album.releaseDate as 'releaseDate',
-        Album.totaltracks as 'totalAtracks',
+        Album.totaltracks as 'totalTracks',
         Album.type,
         Album.imgBig,
         Album.imgSmall,
-        count(Album.ID) as streams
+        count(timeStamp) as streams
     FROM Stream
     JOIN writtenBy ON writtenBy.songID = Stream.songID
     JOIN Song ON Song.ID = writtenBy.songID
@@ -281,6 +306,7 @@ app.get('/album/top', (req, res) => {
             Album.name as 'album',
             Artist.name as 'artist',
             albumsRanked.streams as 'streams',
+            albumsRanked.sumPlaytimeMS as 'sumPlaytimeMS',
             Album.imgSmall as 'img'
         FROM
         (

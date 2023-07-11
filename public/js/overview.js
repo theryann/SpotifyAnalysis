@@ -1,4 +1,5 @@
 import { vinyChart } from "./main.js";
+import { loadSongs } from "./log.js";
 
 function makeTable(data, identifier) {
     let table = document.createElement('table');
@@ -30,6 +31,7 @@ function makeTable(data, identifier) {
         let streams = row.insertCell();
         streams.classList = "stream-number";
         streams.textContent = d.streams;
+        streams.textContent = makeTimestamp(d.sumPlaytimeMS);
 
 
     });
@@ -37,20 +39,30 @@ function makeTable(data, identifier) {
 }
 
 function makeTimestamp(milliseconds) {
-    let durationMin = Math.floor(milliseconds / 1000 / 60);
-    let remainingSec = Math.floor((milliseconds / 1000) - durationMin * 60)
+    let durationMin   = Math.floor(milliseconds / 1000 / 60);
+    let durationHours = Math.floor(durationMin / 60);
+    let remainingSec  = Math.floor((milliseconds / 1000) - durationMin * 60)
+    let timeStamp = '';
+
+    if (durationHours > 0) {
+        timeStamp += `${durationHours}h `
+        durationMin -= durationHours * 60;
+        durationMin = (durationMin.toString().length > 1) ? durationMin : '0'.concat(durationMin)
+    }
 
     remainingSec = remainingSec.toString()
-    remainingSec = (remainingSec.length > 1) ? remainingSec: '0'.concat(remainingSec)
+    remainingSec = (remainingSec.length > 1) ? remainingSec : '0'.concat(remainingSec)
 
-    return `${durationMin}:${remainingSec} min`;
+    timeStamp += `${durationMin}:${remainingSec} min`;
+    return timeStamp;
 }
 
 window.onload = () => {
 
     // timeframe to consider (earliest included date)
-    let timeLimitDays = 30;
-    let order = '&order=playtime'
+    let timeLimitDays = 10;
+    let order = ''
+    order = '&order=playtime'
 
     let today = Date.now();
     let timeLimit = today - timeLimitDays * 3600 * 24 * 1000
@@ -85,6 +97,8 @@ window.onload = () => {
 
 
     })
+
+    loadSongs(0);
 
     vinyChart(400);
 }
