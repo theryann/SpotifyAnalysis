@@ -26,37 +26,44 @@
         <button type="submit" id="keyword-search-input-btn">search</button>
     </form>
 
-    <h2 id="label-timeframe"></h2>
 
-    <div class="stat-tabs">
-        <input type="radio" name="stat-tabs-radio" id="tab-songs" checked="checked">
-        <label for="tab-songs">songs</label>
-        <div class="tab-content" id="songs-content">
-            <div id="loader-songs" class="loader"></div>
+    <div class="halfs-grid">
+        <!-- left half (ranked lists) -->
+        <div>
+            <h2 id="label-timeframe"></h2>
+            <div class="stat-tabs">
+                <input type="radio" name="stat-tabs-radio" id="tab-songs" checked="checked">
+                <label for="tab-songs">songs</label>
+                <div class="tab-content" id="songs-content">
+                    <div id="loader-songs" class="loader"></div>
+                </div>
+
+                <input type="radio" name="stat-tabs-radio" id="tab-artists">
+                <label for="tab-artists">artists</label>
+                <div class="tab-content" id="artists-content">
+                    <div id="loader-artists" class="loader"></div>
+                </div>
+
+                <input type="radio" name="stat-tabs-radio" id="tab-albums">
+                <label for="tab-albums">albums</label>
+                <div class="tab-content" id="albums-content">
+                    <div id="loader-albums" class="loader"></div>
+                </div>
+            </div>
+
         </div>
 
-        <input type="radio" name="stat-tabs-radio" id="tab-artists">
-        <label for="tab-artists">artists</label>
-        <div class="tab-content" id="artists-content">
-            <div id="loader-artists" class="loader"></div>
-        </div>
-
-        <input type="radio" name="stat-tabs-radio" id="tab-albums">
-        <label for="tab-albums">albums</label>
-        <div class="tab-content" id="albums-content">
-            <div id="loader-albums" class="loader"></div>
-        </div>
-
-        <input type="radio" name="stat-tabs-radio" id="tab-history">
-        <label for="tab-history">history</label>
-        <div class="tab-content" id="albums-content">
+        <!-- right halt (log) -->
+        <div>
+            <h2>recently played <a href="log.html" class="hyperlink">(&#8689; full list)</a></h2>
             <table class="item-info" id="song-log__table"></table>
         </div>
 
-
     </div>
 
-    <div id="artists-vinyl" height="100px" width="100px"></div>
+
+
+    <!-- <div id="artists-vinyl" height="100px" width="100px"></div> -->
 
 
 

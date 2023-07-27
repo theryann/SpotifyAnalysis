@@ -70,6 +70,8 @@ window.onload = () => {
 
     let limit = 8; // number of results
 
+    // Limit
+    $('#label-timeframe').text( `last ${timeLimitDays} days` );
 
     // Songs
     fetch(`/songs/top?limit=${limit}${order}&oldest=${cutoffTimestamp}`)
@@ -96,9 +98,8 @@ window.onload = () => {
     })
 
     //  hositry
-
     loadSongs(0);
-    vinyChart(400);
+    // vinyChart(400);
 
 
 }

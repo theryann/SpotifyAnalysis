@@ -16,7 +16,7 @@ body {
     font-family: Arial, Helvetica, sans-serif;
 }
 #wrapper {
-    width: min(100% - 1rem, 100ch);
+    width: min(100% - 1rem, 120ch);
     margin-inline: auto;
 }
 a {
@@ -33,7 +33,7 @@ a {
 
 .stat-tabs > label {
     cursor: pointer;
-    width: 8ch;
+    width: calc( min(100%, 65ch) / 3 / 1.5 );
     font-weight: bolder;
     background-color: var(--clr-shade);
     padding: 1rem;
@@ -48,7 +48,8 @@ a {
 
 
 .tab-content {
-    width: min(100%, 65ch);
+    width: 100%;
+    /* width: min(100%, 65ch); */
     display: none;
 }
 
@@ -416,5 +417,18 @@ table[class="item-info"] {
     to {
         opacity: 0;
         translate: 0 -1em;
+    }
+}
+
+/* GRIDS */
+.halfs-grid {
+    display: grid;
+    grid-template-columns: auto 40%;
+    gap: 10px;
+    transition: 1s;
+}
+@media screen and (max-width: 600px) {
+    .halfs-grid {
+        grid-template-columns: auto;
     }
 }
