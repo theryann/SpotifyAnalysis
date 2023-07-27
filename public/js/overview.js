@@ -31,7 +31,7 @@ function makeTable(data, identifier) {
         let streams = row.insertCell();
         streams.classList = "stream-number";
         streams.textContent = d.streams;
-        streams.textContent = makeTimestamp(d.sumPlaytimeMS);
+        // streams.textContent = makeTimestamp(d.sumPlaytimeMS);
 
 
     });
@@ -60,9 +60,9 @@ function makeTimestamp(milliseconds) {
 window.onload = () => {
 
     // timeframe to consider (earliest included date)
-    let timeLimitDays = 10;
+    let timeLimitDays = 100;
     let order = ''
-    order = '&order=playtime'
+    // order = '&order=playtime'
 
     let today = Date.now();
     let timeLimit = today - timeLimitDays * 3600 * 24 * 1000
