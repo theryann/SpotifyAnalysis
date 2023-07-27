@@ -57,8 +57,8 @@ function makeTimestamp(milliseconds) {
     return timeStamp;
 }
 
-window.onload = () => {
 
+window.onload = () => {
     // timeframe to consider (earliest included date)
     let timeLimitDays = 100;
     let order = ''
@@ -69,38 +69,38 @@ window.onload = () => {
     let cutoffTimestamp = (new Date(timeLimit)).toISOString()
 
     let limit = 8; // number of results
-    let songPromise   = fetch(`/songs/top?limit=${limit}${order}&oldest=${cutoffTimestamp}`).then(res => res.json());
-    let artistPromise = fetch(`/artists/top?limit=${limit}${order}&oldest=${cutoffTimestamp}`).then(res => res.json());
-    let albumPromise  = fetch(`/album/top?limit=${limit}${order}&oldest=${cutoffTimestamp}`).then(res => res.json());
-
-    let songTab = document.getElementById('songs-content');
-    let artistsTab = document.getElementById('artists-content');
-    let albumTab = document.getElementById('albums-content');
-    let labelTimeFrame = document.getElementById('label-timeframe');
-
-    labelTimeFrame.innerText = `last ${timeLimitDays} days`;
-
-    let allLoaders = document.getElementsByClassName("loader");
-
-    Promise.all([songPromise, artistPromise, albumPromise])
-    .then(results => {
-        let topSongs   = results[0];
-        let topArtists = results[1];
-        let topAlbums  = results[2];
-
-        songTab.appendChild( makeTable(topSongs, "title") )
-        allLoaders[0].remove()
-        artistsTab.appendChild( makeTable(topArtists, "artist") )
-        allLoaders[0].remove()
-        albumTab.appendChild( makeTable(topAlbums, "album") )
-        allLoaders[0].remove()
 
 
+    // Songs
+    fetch(`/songs/top?limit=${limit}${order}&oldest=${cutoffTimestamp}`)
+    .then(res => res.json())
+    .then(songs => {
+        $('#songs-content').append( makeTable(songs, "title") )
+        $('#loader-songs').remove()
     })
 
-    loadSongs(0);
+    // Artists
+    fetch(`/artists/top?limit=${limit}${order}&oldest=${cutoffTimestamp}`)
+    .then(res => res.json())
+    .then(artists => {
+        $('#artists-content').append( makeTable(artists, "artist") )
+        $('#loader-artists').remove()
+    })
 
+    // Albums
+    fetch(`/album/top?limit=${limit}${order}&oldest=${cutoffTimestamp}`)
+    .then(res => res.json())
+    .then(albums => {
+        $('#albums-content').append( makeTable(albums, "album") )
+        $('#loader-albums').remove()
+    })
+
+    //  hositry
+
+    loadSongs(0);
     vinyChart(400);
+
+
 }
 
 export {makeTable, makeTimestamp}
