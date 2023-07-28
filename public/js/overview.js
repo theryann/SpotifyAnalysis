@@ -1,7 +1,7 @@
 import { vinyChart } from "./main.js";
 import { loadSongs } from "./log.js";
 
-function makeTable(data, identifier) {
+function makeTable(data, identifier, byPlaytime=false) {
     let table = document.createElement('table');
     table.classList = "overview-table"
 
@@ -30,8 +30,10 @@ function makeTable(data, identifier) {
 
         let streams = row.insertCell();
         streams.classList = "stream-number";
-        streams.textContent = d.streams;
-        // streams.textContent = makeTimestamp(d.sumPlaytimeMS);
+        streams.textContent = d.streams + " streams";
+        if (byPlaytime) {
+            streams.textContent = makeTimestamp(d.sumPlaytimeMS);
+        }
 
 
     });
@@ -57,18 +59,21 @@ function makeTimestamp(milliseconds) {
     return timeStamp;
 }
 
+function fillOverviewTabs(orderBy='', timeLimitDays = 30, limit=8) {
+    // orderBy ... 'streams' | 'playtime'
+    // timeLimitDays ... timeframe to consider (earliest included date)
 
-window.onload = () => {
-    // timeframe to consider (earliest included date)
-    let timeLimitDays = 100;
+
     let order = ''
-    // order = '&order=playtime'
+    let byPlaytime = false;
+    if (orderBy === 'playtime') {
+        order = '&order=playtime';
+        byPlaytime = true;
+    }
 
     let today = Date.now();
     let timeLimit = today - timeLimitDays * 3600 * 24 * 1000
     let cutoffTimestamp = (new Date(timeLimit)).toISOString()
-
-    let limit = 8; // number of results
 
     // Limit
     $('#label-timeframe').text( `last ${timeLimitDays} days` );
@@ -77,7 +82,7 @@ window.onload = () => {
     fetch(`/songs/top?limit=${limit}${order}&oldest=${cutoffTimestamp}`)
     .then(res => res.json())
     .then(songs => {
-        $('#songs-content').append( makeTable(songs, "title") )
+        $('#songs-content').append( makeTable(songs, "title", byPlaytime) )
         $('#loader-songs').remove()
     })
 
@@ -85,7 +90,7 @@ window.onload = () => {
     fetch(`/artists/top?limit=${limit}${order}&oldest=${cutoffTimestamp}`)
     .then(res => res.json())
     .then(artists => {
-        $('#artists-content').append( makeTable(artists, "artist") )
+        $('#artists-content').append( makeTable(artists, "artist", byPlaytime) )
         $('#loader-artists').remove()
     })
 
@@ -93,12 +98,33 @@ window.onload = () => {
     fetch(`/album/top?limit=${limit}${order}&oldest=${cutoffTimestamp}`)
     .then(res => res.json())
     .then(albums => {
-        $('#albums-content').append( makeTable(albums, "album") )
+        $('#albums-content').append( makeTable(albums, "album", byPlaytime) )
         $('#loader-albums').remove()
     })
+}
 
-    //  hositry
-    loadSongs(0);
+
+window.onload = () => {
+
+    fillOverviewTabs();
+
+    $('#toggle-order').on('click', function() {
+        $('#songs-content').empty().append( $("<div id='loader-songs' class='loader'></div>") );
+        $('#artists-content').empty().append( $("<div id='loader-artists' class='loader'></div>") );
+        $('#albums-content').empty().append( $("<div id='loader-albums' class='loader'></div>") );
+
+
+        // if sort by playtime
+        if ( $(this).is(':checked') ){
+            fillOverviewTabs('playtime');
+        } else {
+            fillOverviewTabs();
+        }
+
+    })
+
+
+    loadSongs(0); // streaming history
     // vinyChart(400);
 
 
