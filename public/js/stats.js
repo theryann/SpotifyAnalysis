@@ -78,7 +78,7 @@ function chart(data, type='bar') {
 
 }
 
-function publicationsByYear(data) {
+function publicationsByYear(data, lowerLimit=0) {
     const margin = {
         top:    6,
         bottom: 50,
@@ -90,6 +90,8 @@ function publicationsByYear(data) {
     const width  = charWidth - margin.left - margin.right;
     const height = charWidth / 3 - margin.top  - margin.bottom;
     const baseline = height - margin.bottom;
+
+    data = data.filter(d => d.year >= lowerLimit)
 
 
     var chart = d3
@@ -106,6 +108,8 @@ function publicationsByYear(data) {
     const minYear = d3.min( data.map(d => d.year) )
     const maxYear = d3.max( data.map(d => d.year) )
 
+    const barWidth = width / (maxYear-minYear) * 0.3;
+
 
     const x = d3
         .scaleLinear()
@@ -113,13 +117,6 @@ function publicationsByYear(data) {
         .range( [0, width] )                     // pixels the values map to
         .nice()                                  // spaces axis description to neatly start and end at axis endpoints
 
-    chart.append('g')
-        .attr('transform', `translate(0, ${height - margin.bottom})`)
-        .call(
-            d3
-            .axisBottom(x)
-            .tickFormat( d3.format('d') )   // eliminates commas in thousender numbers
-        )
 
     const y = d3
         .scaleLinear()
@@ -129,6 +126,15 @@ function publicationsByYear(data) {
     chart.append('g')
         .call(d3.axisLeft(y))
 
+    const yStreams = d3
+        .scaleLinear()
+        .domain( [0, d3.max(data.map(d => d.streams)) ] )
+        .range([baseline, 0])
+        .nice()
+    chart.append('g')
+        .attr('transform', `translate(${width}, 0)`)
+        .call(d3.axisRight(yStreams))
+
     chart.selectAll()
         .data(data)
         .enter()
@@ -137,8 +143,27 @@ function publicationsByYear(data) {
         .attr('x', d => x(d.year))
         .attr('y', d => y(d.publications))
         .attr('height', d => baseline - y(d.publications))
-        .attr('width', width / (maxYear-minYear) * 0.7 )
-        .attr("rx", "3px")
+        .attr('width', barWidth )
+
+    chart.selectAll()
+        .data(data)
+        .enter()
+        .append('rect')
+        .attr('class', 'bar-secondary')
+        .attr('x', d => x(d.year) + barWidth)
+        .attr('y', d => yStreams(d.streams))
+        .attr('height', d => baseline - yStreams(d.streams))
+        .attr('width', barWidth )
+
+    //  append x axis last do be ontop
+    chart.append('g')
+        .attr('transform', `translate(0, ${height - margin.bottom})`)
+        .call(
+            d3
+            .axisBottom(x)
+            .tickFormat( d3.format('d') )   // eliminates commas in thousender numbers
+        )
+
 
 }
 
@@ -162,8 +187,20 @@ $(function() {
         .append($('<h2></h2>')
         .addClass('stat-label')
         .text('publications'))
+        .append(
+            $('<input type="range">')
+            .addClass('year-selector')
+            .attr('min', Math.min(...data.map(d => d.year)))
+            .attr('max', Math.max(...data.map(d => d.year)))
+            .on('change', function() {
+                this.nextSibling.remove()
+                publicationsByYear(data, this.value)
+            })
+        )
 
-        publicationsByYear(data)
+
+
+        publicationsByYear(data, 2000)
     })
 
 })

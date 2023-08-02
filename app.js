@@ -250,10 +250,24 @@ app.get('/album/publications-by-year', (req, res) => {
             SUBSTR(Album.releaseDate, 0, 5)
             as INTEGER
         ) as year,
-        count(*) as publications
-    FROM Album
+        count('year') as           'streams',
+        sum(Song.duration) as 'sumPlaytimeMS',
+        z.publications
+    FROM Stream
+    JOIN Song ON Stream.songID = Song.ID
+    JOIN Album On Album.ID = Song.albumID
+    JOIN (
+        SELECT
+            CAST(
+                SUBSTR(Album.releaseDate, 0, 5)
+                as INTEGER
+            ) as y,
+            count(*) as publications
+        FROM Album
+        GROUP BY y
+    ) as z ON z.y = year
     GROUP BY year
-    ORDER BY year
+    ORDER BY year asc
     `;
     db.all(albums, [], (err, rows)=> {
         if (err) throw err;

@@ -58,6 +58,9 @@
 .bar:hover {
     fill: var(--clr-primary-darker);
 }
+.bar-secondary {
+    fill: var(--clr-contrast);
+}
 
 .further-details {
     float: right;
