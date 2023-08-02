@@ -500,3 +500,9 @@ table[class="item-info"] {
     margin-left: 1ch;
 }
 
+
+/* STATS */
+.stat-label {
+    color: var(--clr-text);
+    border-bottom: 2px solid var(--clr-shade);
+}

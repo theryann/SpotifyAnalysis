@@ -243,6 +243,23 @@ app.get('/album/by-year', (req, res) => {
         res.json(rows);
     });
 });
+app.get('/album/publications-by-year', (req, res) => {
+    let albums = `
+    SELECT
+        CAST(
+            SUBSTR(Album.releaseDate, 0, 5)
+            as INTEGER
+        ) as year,
+        count(*) as publications
+    FROM Album
+    GROUP BY year
+    ORDER BY year
+    `;
+    db.all(albums, [], (err, rows)=> {
+        if (err) throw err;
+        res.json(rows);
+    });
+});
 app.get('/album/by-artist/:id', (req, res) => {
     let albums = `
     SELECT *
@@ -400,11 +417,11 @@ app.get('/times/top', (req, res) => {
     // streams per times of day
     let top_times = `
         SELECT
-            substr(Stream.timeStamp, 12,4) as 'time',
+            substr(Stream.timeStamp, 12,4) as 'timeStamp',
             count(*) as 'streams'
         FROM Stream
-        GROUP BY time
-        ORDER BY time
+        GROUP BY timeStamp
+        ORDER BY timeStamp
     `;
     if ( req.query.hasOwnProperty("limit") ) {
         top_times += '\nLIMIT ' + req.query.limit;
@@ -419,11 +436,11 @@ app.get('/times/monthly', (req, res) => {
     // streams per month
     let months = `
     SELECT
-        SUBSTR(Stream.timeStamp, 0, 8) as 'month',
+        SUBSTR(Stream.timeStamp, 0, 8) as 'time',
         COUNT(*) as 'streams'
     FROM Stream
-    GROUP BY month
-    ORDER BY month
+    GROUP BY time
+    ORDER BY time
     `;
     if ( req.query.hasOwnProperty("limit") ) {
         months += '\nLIMIT ' + req.query.limit;
@@ -431,18 +448,21 @@ app.get('/times/monthly', (req, res) => {
 
     db.all(months, [], (err, rows)=> {
         if (err) throw err;
-        res.json(rows);
+        res.json({
+            ticks: "monthly",
+            data: rows
+        });
     });
 });
 app.get('/times/weekly', (req, res) => {
     // streams per month
     let months = `
         SELECT
-            strftime('%Y|%W', Stream.timeStamp) as week,
+            strftime('%Y|%W', Stream.timeStamp) as time,
             count(*) as 'streams'
         FROM Stream
-        GROUP BY week
-        ORDER BY week
+        GROUP BY time
+        ORDER BY time
     `;
     if ( req.query.hasOwnProperty("limit") ) {
         months += '\nLIMIT ' + req.query.limit;
@@ -450,18 +470,21 @@ app.get('/times/weekly', (req, res) => {
 
     db.all(months, [], (err, rows)=> {
         if (err) throw err;
-        res.json(rows);
+        res.json({
+            ticks: "weekly",
+            data: rows
+        });
     });
 });
 app.get('/times/yearly', (req, res) => {
     // streams per year
     let years = `
     SELECT
-        SUBSTR(Stream.timeStamp, 0, 5) as 'year',
+        SUBSTR(Stream.timeStamp, 0, 5) as 'time',
         COUNT(*) as 'streams'
     FROM Stream
-    GROUP BY year
-    ORDER BY year
+    GROUP BY time
+    ORDER BY time
     `;
     if ( req.query.hasOwnProperty("limit") ) {
         years += '\nLIMIT ' + req.query.limit;
@@ -469,18 +492,21 @@ app.get('/times/yearly', (req, res) => {
 
     db.all(years, [], (err, rows)=> {
         if (err) throw err;
-        res.json(rows);
+        res.json({
+            ticks: "yearly",
+            data: rows
+        });
     });
 });
 app.get('/times/daily', (req, res) => {
     // streams per day
     let days = `
     SELECT
-        SUBSTR(Stream.timeStamp, 0, 11) as 'day',
+        SUBSTR(Stream.timeStamp, 0, 11) as 'time',
         COUNT(*) as 'streams'
     FROM Stream
-    GROUP BY day
-    ORDER BY day
+    GROUP BY time
+    ORDER BY time
     `;
     if ( req.query.hasOwnProperty("limit") ) {
         days += '\nLIMIT ' + req.query.limit;
@@ -488,7 +514,10 @@ app.get('/times/daily', (req, res) => {
 
     db.all(days, [], (err, rows)=> {
         if (err) throw err;
-        res.json(rows);
+        res.json({
+            ticks: "daily",
+            data: rows
+        });
     });
 });
 app.get('/times/song/:id', (req, res) => {
