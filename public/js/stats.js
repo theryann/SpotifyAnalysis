@@ -78,6 +78,70 @@ function chart(data, type='bar') {
 
 }
 
+function publicationsByYear(data) {
+    const margin = {
+        top:    6,
+        bottom: 50,
+        left:   40,
+        right:  40,
+    };
+
+    const charWidth = $('#wrapper').width();
+    const width  = charWidth - margin.left - margin.right;
+    const height = charWidth / 3 - margin.top  - margin.bottom;
+    const baseline = height - margin.bottom;
+
+
+    var chart = d3
+        .select('#wrapper')
+        .append('svg')
+            .attr('width', charWidth)
+            .attr('height', height + margin.top + margin.bottom)
+        .append('g')
+            .attr('transform', `translate(${margin.left}, ${margin.top})`)
+
+    //////////////////////
+    // X - Axis
+    //////////////////////
+    const minYear = d3.min( data.map(d => d.year) )
+    const maxYear = d3.max( data.map(d => d.year) )
+
+
+    const x = d3
+        .scaleLinear()
+        .domain( [minYear - 1, maxYear + 1] )   // value intervall +- 1 to avoid having the data to stretch over the edge as their mid is on the value
+        .range( [0, width] )                     // pixels the values map to
+        .nice()                                  // spaces axis description to neatly start and end at axis endpoints
+
+    chart.append('g')
+        .attr('transform', `translate(0, ${height - margin.bottom})`)
+        .call(
+            d3
+            .axisBottom(x)
+            .tickFormat( d3.format('d') )   // eliminates commas in thousender numbers
+        )
+
+    const y = d3
+        .scaleLinear()
+        .domain( [0, d3.max(data.map(d => d.publications)) ] )
+        .range([baseline, 0])
+        .nice()
+    chart.append('g')
+        .call(d3.axisLeft(y))
+
+    chart.selectAll()
+        .data(data)
+        .enter()
+        .append('rect')
+        .attr('class', 'bar')
+        .attr('x', d => x(d.year))
+        .attr('y', d => y(d.publications))
+        .attr('height', d => baseline - y(d.publications))
+        .attr('width', width / (maxYear-minYear) * 0.7 )
+        .attr("rx", "3px")
+
+}
+
 
 $(function() {
     fetch('/times/monthly')
@@ -90,15 +154,16 @@ $(function() {
 
         chart(data, 'bar')
     })
-    fetch('/times/daily')
+
+    fetch('/album/publications-by-year')
     .then(data => data.json())
     .then(data => {
         $('#wrapper')
         .append($('<h2></h2>')
         .addClass('stat-label')
-        .text(`${data.ticks} streams`))
+        .text('publications'))
 
-        chart(data, 'line')
+        publicationsByYear(data)
     })
 
 })
