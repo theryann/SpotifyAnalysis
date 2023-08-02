@@ -108,7 +108,7 @@ function publicationsByYear(data, lowerLimit=0) {
     const minYear = d3.min( data.map(d => d.year) )
     const maxYear = d3.max( data.map(d => d.year) )
 
-    const barWidth = width / (maxYear-minYear) * 0.3;
+    const barWidth = width / (maxYear - minYear) * 0.3;
 
 
     const x = d3
@@ -135,22 +135,24 @@ function publicationsByYear(data, lowerLimit=0) {
         .attr('transform', `translate(${width}, 0)`)
         .call(d3.axisRight(yStreams))
 
+    // append publications
     chart.selectAll()
         .data(data)
         .enter()
         .append('rect')
         .attr('class', 'bar')
-        .attr('x', d => x(d.year))
+        .attr('x', d => x(d.year) - barWidth)
         .attr('y', d => y(d.publications))
         .attr('height', d => baseline - y(d.publications))
         .attr('width', barWidth )
 
+    // append streams
     chart.selectAll()
         .data(data)
         .enter()
         .append('rect')
         .attr('class', 'bar-secondary')
-        .attr('x', d => x(d.year) + barWidth)
+        .attr('x', d => x(d.year))
         .attr('y', d => yStreams(d.streams))
         .attr('height', d => baseline - yStreams(d.streams))
         .attr('width', barWidth )
@@ -200,7 +202,7 @@ $(function() {
 
 
 
-        publicationsByYear(data, 2000)
+        publicationsByYear(data)
     })
 
 })
