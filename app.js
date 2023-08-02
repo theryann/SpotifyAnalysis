@@ -617,6 +617,50 @@ app.get('/times/genre/:genre', (req, res) => {
 });
 
 
+app.get('/stats/general', (req, res) => {
+    // streams per times of day
+    let stats = `
+    SELECT *
+    FROM
+    (
+        SELECT count(*) as streams
+        FROM Stream
+    ),
+    (
+        SELECT count(*) as artists
+        FROM Artist
+    ),
+    (
+        SELECT count(*) as songs
+        FROM Song
+    ),
+    (
+        SELECT count(*) as albums
+        FROM Album
+    ),
+    (
+        SELECT count(*) as lyrics
+        FROM Song
+        WHERE Song.lyrics != '%not available%'
+    ),
+    (
+        SELECT count(*) as genres
+        FROM (
+            SELECT *
+            FROM Genre
+            GROUP BY Genre.genre
+        )
+    )
+
+    `;
+
+
+    db.get(stats, [], (err, rows)=> {
+        if (err) throw err;
+        res.json(rows);
+    });
+});
+
 app.get('/search/:search', (req, res) => {
     // search for string in titles, album names and lyrics
     // and return these songs
