@@ -3,11 +3,6 @@ let TODAY  = null ;
 
 function loadSongs(offset) {
     const table = document.getElementById('song-log__table')
-    const wrapper = document.getElementById('wrapper');
-
-    const loader = document.createElement('div');
-    loader.classList = 'loader';
-    wrapper.appendChild(loader)
 
     fetch(`/songs/history?offset=${offset}`)
     .then(data => data.json())
@@ -57,8 +52,6 @@ function loadSongs(offset) {
             table.appendChild(row)
 
         })
-
-        loader.remove()
     })
     OFFSET += 20;
 }

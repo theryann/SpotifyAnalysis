@@ -30,7 +30,12 @@ function makeTable(data, identifier, byPlaytime=false) {
 
         let streams = row.insertCell();
         streams.classList = "stream-number";
-        streams.textContent = d.streams + " streams";
+
+        if (d.streams == 1) {
+            streams.textContent = d.streams + " stream";  // exactly 1 because a streams > 1 doesn't cover streams == 0. Which normally can't happen but you'll never know...
+        } else {
+            streams.textContent = d.streams + " streams";
+        }
         if (byPlaytime) {
             streams.textContent = makeTimestamp(d.sumPlaytimeMS);
         }
@@ -59,7 +64,7 @@ function makeTimestamp(milliseconds) {
     return timeStamp;
 }
 
-function fillOverviewTabs(orderBy='', timeLimitDays = 30, limit=8) {
+function fillOverviewTabs(orderBy='', timeLimitDays = 30, limit=10) {
     // orderBy ... 'streams' | 'playtime'
     // timeLimitDays ... timeframe to consider (earliest included date)
 
@@ -106,8 +111,15 @@ function fillOverviewTabs(orderBy='', timeLimitDays = 30, limit=8) {
 
 window.onload = () => {
 
-    fillOverviewTabs();
+    // on site load (bacuse of cache)
+    // if sort by playtime
+    if ( $('#toggle-order').is(':checked') ){
+        fillOverviewTabs('playtime');
+    } else {
+        fillOverviewTabs();
+    }
 
+    // on button click
     $('#toggle-order').on('click', function() {
         $('#songs-content').empty().append( $("<div id='loader-songs' class='loader'></div>") );
         $('#artists-content').empty().append( $("<div id='loader-artists' class='loader'></div>") );
