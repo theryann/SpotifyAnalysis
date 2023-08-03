@@ -51,6 +51,16 @@ function chart(data, type='bar') {
     // add data to chart
     //////////////////////
 
+    // add median line
+    let median = d3.median( data.data.map(d => d.streams) )
+    chart.append('line')
+        .attr('x1', 0)
+        .attr('y1', y(median))
+        .attr('x2', width)
+        .attr('y2', y(median))
+        .attr('class', 'median-line')
+
+
     if (type === 'bar') {
         chart.selectAll()
             .data(data.data)
@@ -74,6 +84,7 @@ function chart(data, type='bar') {
             .attr("d", line(data.data))
             .attr("class", "chart-line")
     }
+
 
 
 }
@@ -146,7 +157,8 @@ function publicationsByYear(data, lowerLimit=0, upperLimit=3000) {
         .attr('y', d => y(d.publications))
         .attr('height', d => baseline - y(d.publications))
         .attr('width', barWidth )
-        .on('click', (d) => {highlightValue(d)})
+        .on('click', d => {console.log(d.publications)})
+
 
 
     // append streams
@@ -159,7 +171,7 @@ function publicationsByYear(data, lowerLimit=0, upperLimit=3000) {
         .attr('y', d => yStreams(d.streams))
         .attr('height', d => baseline - yStreams(d.streams))
         .attr('width', barWidth )
-        .on('click', (d) => {highlightValue(d)})
+        .on('click', (d) => {console.log(d.streams)})
 
 
 
@@ -172,8 +184,16 @@ function publicationsByYear(data, lowerLimit=0, upperLimit=3000) {
             .tickFormat( d3.format('d') )   // eliminates commas in thousender numbers
         )
 
-    function highlightValue(val) {
-        console.log(val)
+    function highlightValue(d) {
+        console.log(d)
+        chart
+        .append('line')
+        .attr('x1', 0)
+        .attr('y1', yStreams(d.streams))
+        .attr('x2', x(d.year))
+        .attr('y2', yStreams(d.streams))
+        .attr('stroke', 'black')
+
     }
 
 

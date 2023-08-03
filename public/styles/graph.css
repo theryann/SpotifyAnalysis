@@ -62,6 +62,11 @@
     fill: var(--clr-contrast);
 }
 
+.median-line {
+    stroke: var(--clr-shade);
+    stroke-width: .2em;
+}
+
 .further-details {
     float: right;
 }
