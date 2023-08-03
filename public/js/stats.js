@@ -78,10 +78,10 @@ function chart(data, type='bar') {
 
 }
 
-function publicationsByYear(data, lowerLimit=0) {
+function publicationsByYear(data, lowerLimit=0, upperLimit=3000) {
     const margin = {
         top:    6,
-        bottom: 50,
+        bottom: 10,
         left:   40,
         right:  40,
     };
@@ -91,12 +91,13 @@ function publicationsByYear(data, lowerLimit=0) {
     const height = charWidth / 3 - margin.top  - margin.bottom;
     const baseline = height - margin.bottom;
 
-    data = data.filter(d => d.year >= lowerLimit)
+    data = data.filter(d => d.year >= lowerLimit && d.year <= upperLimit);
 
 
     var chart = d3
         .select('#wrapper')
         .append('svg')
+            .attr('id', 'svg-publications-by-year')
             .attr('width', charWidth)
             .attr('height', height + margin.top + margin.bottom)
         .append('g')
@@ -171,6 +172,7 @@ function publicationsByYear(data, lowerLimit=0) {
 
 
 $(function() {
+    // monthly streams
     fetch('/times/monthly')
     .then(data => data.json())
     .then(data => {
@@ -182,27 +184,53 @@ $(function() {
         chart(data, 'bar')
     })
 
+    // songs/albuums per year
     fetch('/album/publications-by-year')
     .then(data => data.json())
     .then(data => {
+        let min = Math.min(...data.map(d => d.year));
+        let max = Math.max(...data.map(d => d.year));
+        let mid = min + Math.floor( (max - min) / 2 );
+
         $('#wrapper')
         .append($('<h2></h2>')
         .addClass('stat-label')
         .text('publications'))
         .append(
-            $('<input type="range">')
-            .addClass('year-selector')
-            .attr('min', Math.min(...data.map(d => d.year)))
-            .attr('max', Math.max(...data.map(d => d.year)))
+            $('<form></form>')
+            .append(
+                $('<input type="range">')
+                .addClass('year-selector')
+                .attr('min', min)
+                .attr('max', mid)
+                .attr('value', min)
+            )
+            .append(
+                $('<input type="range">')
+                .addClass('year-selector')
+                .attr('min', mid + 1)
+                .attr('max', max - 1)
+                .attr('value', max - 1)
+            )
+            .append(
+                $('<span></span>')
+                .addClass('slider-annotation')
+                .text(`${min} - ${max}`)
+            )
             .on('change', function() {
+                let boundaries = [];
+                $(this).children().each(function() {
+                    boundaries.push( this.value )
+                })
+                boundaries.sort()
+                publicationsByYear(data, boundaries[0], boundaries[1])
                 this.nextSibling.remove()
-                publicationsByYear(data, this.value)
+                $(this).children('.slider-annotation').text(`${boundaries[0]} - ${boundaries[1]}`)
             })
         )
 
 
-
-        publicationsByYear(data)
+        publicationsByYear(data, min, max)
     })
 
 })

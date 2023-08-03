@@ -513,10 +513,17 @@ table[class="item-info"] {
     background-color: var(--clr-shade);
     height: .2rem;
     /* width: 100%; */
+    margin: 0;
+    margin-bottom: .5em;
 }
 .year-selector::-moz-range-thumb {
     background-color: var(--clr-white);
     border: 3px solid var(--clr-primary);
     width: 1em;
     height: 1em;
+    border-radius: 50%;
+}
+
+.slider-annotation {
+    margin-left: 1em;
 }
