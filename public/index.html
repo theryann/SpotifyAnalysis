@@ -1,38 +1,93 @@
 <!DOCTYPE html>
-<html lang="zxx">
+<html lang="en">
 <head>
-    <title>records &bull; svg test</title>
-	<meta name="description" content="Skeleton for the third course exercise of Web and Multimedia Engineering">
-
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Overview</title>
+    <link rel="stylesheet" href="styles/overview.css">
+    <script type="module" src="js/overview.js"></script>
 
     <link rel="stylesheet" href="styles/graph.css">
-
+    <script src="js/jquery-3.7.0.min.js"></script>
     <script src="https://d3js.org/d3.v7.min.js"></script>
-    <script src="js/main.js"></script>
+
+
 
 </head>
 
+<header>
+    overview
+</header>
+
 <body>
-    <div id="top-artists" height="100px" width="100px" style="float:left; margin:10px"></div>
-    <div id="artists-vinyl" height="100px" width="100px" style="float:left; margin:10px"></div>
-    <div id="artists-wave" height="100px" width="100px" style="float:left; margin:10px"></div>
-    <div id="album-scale" width="500px" style="float:left; margin:10px">
+<div id="wrapper">
+    <form action="results.html" class="search-bar">
+        <input type="search" name="keyword-search" placeholder="artists, titles, albums, lyrics, ...">
+        <button type="submit" id="keyword-search-input-btn">search</button>
+    </form>
+
+    <nav>
+        <a href="#">overview</a>
+        <a href="stats.html">statistics</a>
+        <a href="analytics.html">analytics</a>
+        <a href="log.html">streaming history</a>
+    </nav>
+
+
+    <div class="halfs-grid">
+        <!-- left half (ranked lists) -->
+        <div>
+            <h2 id="label-timeframe"></h2>
+
+            <label class="switch">
+                <input type="checkbox" id="toggle-order">
+                <span class="toogle-slider" ></span>
+            </label>
+            <span>sort by playtime</span>
+            <br/>
+            <br/>
+
+
+            <div class="stat-tabs">
+                <input type="radio" name="stat-tabs-radio" id="tab-songs" checked="checked">
+                <label for="tab-songs">songs</label>
+                <div class="tab-content" id="songs-content">
+                    <div id="loader-songs" class="loader"></div>
+                </div>
+
+                <input type="radio" name="stat-tabs-radio" id="tab-artists">
+                <label for="tab-artists">artists</label>
+                <div class="tab-content" id="artists-content">
+                    <div id="loader-artists" class="loader"></div>
+                </div>
+
+                <input type="radio" name="stat-tabs-radio" id="tab-albums">
+                <label for="tab-albums">albums</label>
+                <div class="tab-content" id="albums-content">
+                    <div id="loader-albums" class="loader"></div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- right halt (log) -->
+        <div>
+            <h2>recently played <a href="log.html" class="hyperlink">(&#8689; full list)</a></h2>
+            <table class="item-info" id="song-log__table"></table>
+        </div>
+
     </div>
 
-    <div id="top-weekly-bar" width="500px" style="float:left; margin:10px"></div>
-    <div id="top-times-bar" width="500px" style="float:left; margin:10px"></div>
-    <div id="top-songs-bar" width="500px" style="float:left; margin:10px"></div>
-    <div id="top-artists-bar" width="500px" style="float:left; margin:10px"></div>
-    <div style="float:left; margin:10px">
-        <div id="graph"></div>
-        <div id="graph-controls"></div>
-    </div>
+
+
+    <!-- <div id="artists-vinyl" height="100px" width="100px"></div> -->
+
+
+
+
+
+</div>
 
 </body>
 
 </html>
-
-

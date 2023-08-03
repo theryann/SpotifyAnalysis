@@ -510,9 +510,8 @@ table[class="item-info"] {
 
 .year-selector {
     appearance: none;
-    background-color: var(--clr-shade);
-    height: .2rem;
-    /* width: 100%; */
+    background-image: linear-gradient(180deg, var(--clr-background) 30%, var(--clr-shade) 30% 70%, var(--clr-background) 70% );
+    height: 1em;
     margin: 0;
     margin-bottom: .5em;
 }

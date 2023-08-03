@@ -146,6 +146,8 @@ function publicationsByYear(data, lowerLimit=0, upperLimit=3000) {
         .attr('y', d => y(d.publications))
         .attr('height', d => baseline - y(d.publications))
         .attr('width', barWidth )
+        .on('click', (d) => {highlightValue(d)})
+
 
     // append streams
     chart.selectAll()
@@ -157,6 +159,9 @@ function publicationsByYear(data, lowerLimit=0, upperLimit=3000) {
         .attr('y', d => yStreams(d.streams))
         .attr('height', d => baseline - yStreams(d.streams))
         .attr('width', barWidth )
+        .on('click', (d) => {highlightValue(d)})
+
+
 
     //  append x axis last do be ontop
     chart.append('g')
@@ -166,6 +171,12 @@ function publicationsByYear(data, lowerLimit=0, upperLimit=3000) {
             .axisBottom(x)
             .tickFormat( d3.format('d') )   // eliminates commas in thousender numbers
         )
+
+    function highlightValue(val) {
+        console.log(val)
+    }
+
+
 
 
 }
