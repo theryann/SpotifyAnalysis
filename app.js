@@ -620,7 +620,7 @@ app.get('/times/genre/:genre', (req, res) => {
 app.get('/stats/general', (req, res) => {
     // streams per times of day
     let stats = `
-    SELECT *
+    SELECT *, nsfw / cast(songs as REAL) as 'nsfw'
     FROM
     (
         SELECT count(*) as streams
@@ -650,6 +650,11 @@ app.get('/stats/general', (req, res) => {
             FROM Genre
             GROUP BY Genre.genre
         )
+    ),
+    (
+        SELECT count(*) as nsfw
+        FROM Song
+        WHERE Song.explicit = 1
     )
 
     `;

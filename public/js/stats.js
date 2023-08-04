@@ -198,7 +198,6 @@ function publicationsByYear(data, lowerLimit=0, upperLimit=3000) {
     }
 }
 
-
 function timeChart(data, htmlID='#wrapper', lowerLimit=0, upperLimit=3000) {
     const margin = {
         top:    40,
@@ -275,8 +274,6 @@ function timeChart(data, htmlID='#wrapper', lowerLimit=0, upperLimit=3000) {
 
 }
 
-
-
 function clock(data) {
     let dim = $('#wrapper').width() / 3
 
@@ -291,7 +288,7 @@ function clock(data) {
     const height = dim - margin.top  - margin.bottom;
 
     var chart = d3
-        .select("#wrapper")
+        .select("#pie-charts")
         .append('svg')
             .attr("id", "day-clock")
             .attr('width', width + margin.left + margin.right)
@@ -337,7 +334,6 @@ function clock(data) {
         let len = dis( d.streams ) * 0.95
         path += ` ${ Math.cos(angleRad) * len },${ Math.sin(angleRad) * len }`
 
-        console.log(angleRad, d)
     }
 
 
@@ -346,6 +342,63 @@ function clock(data) {
         .attr('stroke-width', 2)
         .attr('fill', 'var(--clr-primary)')
         .attr('stroke', 'var(--clr-primary-darker)')
+}
+
+function nsfw(data) {
+    let dim = $('#wrapper').width() / 3
+
+    const margin = {
+        top:    30,
+        bottom: 30,
+        left:   50,
+        right:  30,
+    }
+
+    const width  = dim - margin.left - margin.right;
+    const height = dim - margin.top  - margin.bottom;
+
+    var chart = d3
+        .select("#pie-charts")
+        .append('svg')
+            .attr("id", "day-clock")
+            .attr('width', width + margin.left + margin.right)
+            .attr('height', height + margin.top + margin.bottom)
+        .append('g')
+            .attr('transform', `translate(${dim / 2}, ${ dim / 2})`)
+
+    chart.append('circle')
+        .attr('r', height/2)
+        .attr('x', 0)
+        .attr('y', 0)
+        .attr('fill', 'var(--clr-shade)')
+        .attr('stroke', 'var(--clr-primary)')
+        .attr('stroke-width', 2)
+
+    let arcExplicit = d3.arc()
+        .innerRadius( 0)
+        .outerRadius(height/2)
+        .startAngle(0)
+        .endAngle( data.nsfw * 2 * Math.PI )
+
+    chart.append('path')
+        .attr('d', arcExplicit)
+        .attr('stroke-width', 2)
+        .attr('fill', 'var(--clr-primary)')
+        .attr('stroke', 'var(--clr-primary-darker)')
+
+    let p = data.nsfw
+    chart.append('text')
+        .attr('x', Math.cos(p * Math.PI) * height/4 - Math.PI/2)
+        .attr('y',  -Math.sin(p * Math.PI) * height/4 - Math.PI/2)
+        .text(`explicit (${ Math.round(p*100) }%)`)
+        .style('text-anchor', 'start')
+    chart.append('text')
+        .attr('x', -Math.cos(p * Math.PI) * height/4 - Math.PI/2)
+        .attr('y',  Math.sin(p * Math.PI) * height/4 - Math.PI/2)
+        .text(`safe (${ 100 - Math.round(p*100) }%)`)
+        .style('text-anchor', 'start')
+
+
 }
 
 
@@ -363,7 +416,7 @@ window.onload = () => {
         chart(data, 'bar')
     })
 
-    // songs/albuums per year
+    // songs/albums per year
     fetch('/album/publications-by-year')
     .then(data => data.json())
     .then(data => {
@@ -417,12 +470,22 @@ window.onload = () => {
     fetch('/times/top')
     .then(data => data.json())
     .then(data => {
-        $('#wrapper')
+        $('#pie-charts')
         .append($('<h2></h2>')
         .addClass('stat-label')
         .text(`clock`))
 
-        clock(data)
+        clock(data);
+
+    })
+    // nsfw
+    fetch('/stats/general')
+    .then(data => data.json())
+    .then(data => {
+        $('#wrapper')
+        .append($('<h2></h2>'))
+
+        nsfw(data)
 
     })
 
