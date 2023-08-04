@@ -431,11 +431,11 @@ app.get('/times/top', (req, res) => {
     // streams per times of day
     let top_times = `
         SELECT
-            substr(Stream.timeStamp, 12,4) as 'timeStamp',
+            substr(Stream.timeStamp, 12, 4) as 'time',
             count(*) as 'streams'
         FROM Stream
-        GROUP BY timeStamp
-        ORDER BY timeStamp
+        GROUP BY time
+        ORDER BY time
     `;
     if ( req.query.hasOwnProperty("limit") ) {
         top_times += '\nLIMIT ' + req.query.limit;

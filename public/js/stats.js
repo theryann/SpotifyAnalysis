@@ -4,7 +4,7 @@ function chart(data, type='bar') {
         top:    6,
         bottom: 50,
         left:   40,
-        right:  40,
+        right:  5,
     };
 
     const charWidth = $('#wrapper').width();
@@ -157,7 +157,8 @@ function publicationsByYear(data, lowerLimit=0, upperLimit=3000) {
         .attr('y', d => y(d.publications))
         .attr('height', d => baseline - y(d.publications))
         .attr('width', barWidth )
-        .on('click', d => {console.log(d.publications)})
+        .on('click', (event, d) => {highlightValue(d, "left")})
+
 
 
 
@@ -171,7 +172,7 @@ function publicationsByYear(data, lowerLimit=0, upperLimit=3000) {
         .attr('y', d => yStreams(d.streams))
         .attr('height', d => baseline - yStreams(d.streams))
         .attr('width', barWidth )
-        .on('click', (d) => {console.log(d.streams)})
+        .on('click', (event, d) => {highlightValue(d, "right")})
 
 
 
@@ -184,14 +185,15 @@ function publicationsByYear(data, lowerLimit=0, upperLimit=3000) {
             .tickFormat( d3.format('d') )   // eliminates commas in thousender numbers
         )
 
-    function highlightValue(d) {
-        console.log(d)
+    function highlightValue(d, direction) {
+        let xVal = direction === "left" ? 0 : width;
+        let yVal = direction === "left" ? y(d.publications) : yStreams(d.streams);
         chart
         .append('line')
-        .attr('x1', 0)
-        .attr('y1', yStreams(d.streams))
+        .attr('x1', xVal)
+        .attr('y1', yVal)
         .attr('x2', x(d.year))
-        .attr('y2', yStreams(d.streams))
+        .attr('y2', yVal)
         .attr('stroke', 'black')
 
     }
@@ -200,6 +202,78 @@ function publicationsByYear(data, lowerLimit=0, upperLimit=3000) {
 
 
 }
+
+function clock(data) {
+    let dim = $('#wrapper').width() / 3
+
+    const margin = {
+        top:    30,
+        bottom: 30,
+        left:   50,
+        right:  30,
+    }
+
+    const width  = dim - margin.left - margin.right;
+    const height = dim - margin.top  - margin.bottom;
+
+    var chart = d3
+        .select("#wrapper")
+        .append('svg')
+            .attr("id", "day-clock")
+            .attr('width', width + margin.left + margin.right)
+            .attr('height', height + margin.top + margin.bottom)
+        .append('g')
+            .attr('transform', `translate(${dim / 2}, ${ dim / 2})`)
+
+    const max = d3.max(data, d => d.streams)
+    const dis = d3.scaleLinear()
+        .range([0, height / 2])
+        .domain( [0, max ])
+
+    chart.append('circle')
+        .attr('r', height/2)
+        .attr('x', 0)
+        .attr('y', 0)
+        .attr('fill', 'var(--clr-shade)')
+        .attr('stroke', 'var(--clr-primary)')
+        .attr('stroke-width', 2)
+
+    // adding hour label
+    for (let i = 0; i < 24; i++) {
+        let angle = i * 2*Math.PI/24 - Math.PI / 2
+        chart.append('text')
+            .attr('x', Math.cos(angle) * height/2 * 1.15 - height/2*0.08)
+            .attr('y', Math.sin(angle) * height/2 * 1.15 + height/2*0.05)
+            .attr('fill', 'var(--text-color)')
+            .attr('font-size', '.9em')
+            .text(i)
+    }
+
+    // creating polygon
+    let path = "";
+    let hourFraction = (2 * Math.PI / 24);
+    let minFraction  = (2 * Math.PI / 24 / 12)
+
+    for (let i = 0; i < data.length; i++) {
+        let d = data[i];
+        let hour   = parseInt( d.time.split(':')[0] );
+        let tenMin = parseInt( d.time.split(':')[1] );
+        let angleRad = (hourFraction * hour) + (minFraction * tenMin) - (Math.PI / 2);
+
+        let len = dis( d.streams )
+        path += ` ${ Math.cos(angleRad) * len },${ Math.sin(angleRad) * len }`
+
+        console.log(angleRad, d)
+    }
+
+
+    chart.append('polygon')
+        .attr('points', path)
+        .attr('stroke-width', 2)
+        .attr('fill', 'var(--clr-primary)')
+        .attr('stroke', 'var(--clr-primary-darker)')
+}
+
 
 
 $(function() {
@@ -262,6 +336,20 @@ $(function() {
 
 
         publicationsByYear(data, min, max)
+    })
+
+
+    // clock
+    fetch('/times/top')
+    .then(data => data.json())
+    .then(data => {
+        $('#wrapper')
+        .append($('<h2></h2>')
+        .addClass('stat-label')
+        .text(`clock`))
+
+        clock(data)
+
     })
 
 })
