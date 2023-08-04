@@ -195,13 +195,87 @@ function publicationsByYear(data, lowerLimit=0, upperLimit=3000) {
         .attr('x2', x(d.year))
         .attr('y2', yVal)
         .attr('stroke', 'black')
-
     }
+}
 
+
+function timeChart(data, lowerLimit=0, upperLimit=3000) {
+    const margin = {
+        top:    40,
+        bottom: 30,
+        left:   30,
+        right:  30,
+    };
+
+    // const charWidth = $('#wrapper').width();
+    let wrapper = document.getElementById('wrapper')
+    const charWidth = wrapper.getBoundingClientRect().width
+
+    const width  = charWidth - margin.left - margin.right;
+    const height = charWidth / 4 - margin.top  - margin.bottom;
+    const baseline = height - margin.bottom;
+
+
+
+    var chart = d3
+        .select('#wrapper')
+        .append('svg')
+            .attr('id', 'time-chart')
+            .attr('width', charWidth)
+            .attr('height', height + margin.top + margin.bottom)
+        .append('g')
+            .attr('transform', `translate(${margin.left}, ${margin.top})`)
+
+    //////////////////////
+    // X - Axis
+    //////////////////////
+
+    const x = d3
+        .scaleTime()
+        .domain( [ new Date(data[0].day), new Date(data[data.length-1].day)] )   // value intervall +- 1 to avoid having the data to stretch over the edge as their mid is on the value
+        .range( [0, width] )                     // pixels the values map to
+        .nice()                                  // spaces axis description to neatly start and end at axis endpoints
+
+
+    const yStreams = d3
+        .scaleLinear()
+        .domain( [0, d3.max(data.map(d => d.streams)) ] )
+        .range([baseline, 0])
+        .nice()
+
+    let yTicks = yStreams.ticks().filter(tick => Number.isInteger(tick)) // specify ticks to avoid decimals
+
+    chart.append('g')
+        .attr('transform', `translate(${0}, 0)`)
+        .call(
+            d3.axisLeft(yStreams)
+            .tickValues(yTicks)
+            .tickFormat(d3.format('d'))
+        )
+
+    // append streams
+    chart.selectAll()
+        .data(data)
+        .enter()
+        .append('rect')
+        .attr('class', 'bar')
+        .attr('x', d => x( new Date(d.day) ))
+        .attr('y', d => yStreams(d.streams))
+        .attr('height', d => baseline - yStreams(d.streams))
+        .attr('width', 3 )
+
+
+
+    //  append x axis last do be ontop
+    chart.append('g')
+        .attr('transform', `translate(0, ${height - margin.bottom})`)
+        .call( d3.axisBottom(x) )
 
 
 
 }
+
+
 
 function clock(data) {
     let dim = $('#wrapper').width() / 3
@@ -260,7 +334,7 @@ function clock(data) {
         let tenMin = parseInt( d.time.split(':')[1] );
         let angleRad = (hourFraction * hour) + (minFraction * tenMin) - (Math.PI / 2);
 
-        let len = dis( d.streams )
+        let len = dis( d.streams ) * 0.95
         path += ` ${ Math.cos(angleRad) * len },${ Math.sin(angleRad) * len }`
 
         console.log(angleRad, d)
@@ -276,7 +350,7 @@ function clock(data) {
 
 
 
-$(function() {
+window.onload = () => {
     // monthly streams
     fetch('/times/monthly')
     .then(data => data.json())
@@ -352,4 +426,7 @@ $(function() {
 
     })
 
-})
+}
+
+
+export {timeChart}

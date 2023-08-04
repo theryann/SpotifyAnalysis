@@ -1,4 +1,5 @@
 import { makeTable } from "./overview.js";
+import { timeChart } from "./stats.js";
 
 window.onload = async () => {
     const loader = document.querySelector('.loader');
@@ -19,6 +20,15 @@ window.onload = async () => {
     fieldArtistName.innerText = artistInfo.artist;
     fieldArtistStreams.innerText = artistInfo.streams;
 
+
+
+
+
+    fetch(`/times/artist/${artistID}`)
+    .then(data => data.json())
+    .then(data => {
+        timeChart(data)
+    })
 
     fetch(`/album/by-artist/${artistID}`)
     .then(data => data.json())
