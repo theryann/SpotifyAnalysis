@@ -199,7 +199,7 @@ function publicationsByYear(data, lowerLimit=0, upperLimit=3000) {
 }
 
 
-function timeChart(data, lowerLimit=0, upperLimit=3000) {
+function timeChart(data, htmlID='#wrapper', lowerLimit=0, upperLimit=3000) {
     const margin = {
         top:    40,
         bottom: 30,
@@ -218,7 +218,7 @@ function timeChart(data, lowerLimit=0, upperLimit=3000) {
 
 
     var chart = d3
-        .select('#wrapper')
+        .select(htmlID)
         .append('svg')
             .attr('id', 'time-chart')
             .attr('width', charWidth)

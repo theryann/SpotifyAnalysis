@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Artist</title>
     <link rel="stylesheet" href="styles/overview.css">
+    <link rel="stylesheet" href="styles/graph.css">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
     <script type="module" src="js/album-page.js"></script>
 </head>
 
@@ -52,6 +54,9 @@
             </td>
         </tr>
     </table>
+
+    <div id="streaming-plot"></div>
+
 
     <details id="lyrics-unfold" open>
         <summary class=".details__summary">tracklist</summary>

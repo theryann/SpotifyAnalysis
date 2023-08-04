@@ -1,4 +1,5 @@
 import { makeTimestamp } from "./overview.js";
+import { timeChart } from "./stats.js";
 
 window.onload = async () => {
     const loader = document.querySelector('.loader');
@@ -46,6 +47,12 @@ window.onload = async () => {
         fieldArtistList.appendChild(tr)
     })
 
+
+    fetch(`/times/song/${songID}`)
+    .then(data => data.json())
+    .then(data => {
+        timeChart(data, '#streaming-plot')
+    })
 
     // lyrics
     if (songInfo.lyrics === '%not available%') {

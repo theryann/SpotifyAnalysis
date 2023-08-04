@@ -1,4 +1,5 @@
 import { makeTimestamp } from "./overview.js";
+import { timeChart } from "./stats.js";
 
 
 window.onload = async () => {
@@ -42,7 +43,11 @@ window.onload = async () => {
     fieldArtistName.appendChild(artistLink)
 
 
-    fieldYear.innerText = new Date(albumInfo.releaseDate).toLocaleDateString()
+    fieldYear.innerText = new Date(albumInfo.releaseDate).toLocaleDateString('de-DE', {
+        'day': '2-digit',
+        'month': '2-digit',
+        'year': 'numeric',
+    })
 
     let resTracklist = await fetch(`/album/tracklist/${albumID}`)
     let albumTracklist = await resTracklist.json();
@@ -72,6 +77,11 @@ window.onload = async () => {
         fieldTracklist.appendChild(tr)
     })
 
+    fetch(`/times/album/${albumID}`)
+    .then(data => data.json())
+    .then(data => {
+        timeChart(data, '#streaming-plot')
+    })
 
 
 
