@@ -27,7 +27,7 @@ window.onload = async () => {
     fetch(`/times/artist/${artistID}`)
     .then(data => data.json())
     .then(data => {
-        timeChart(data)
+        timeChart(data, '#streaming-plot')
     })
 
     fetch(`/album/by-artist/${artistID}`)

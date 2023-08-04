@@ -214,7 +214,8 @@ function timeChart(data, htmlID='#wrapper', lowerLimit=0, upperLimit=3000) {
     const height = charWidth / 4 - margin.top  - margin.bottom;
     const baseline = height - margin.bottom;
 
-
+    const parent = document.querySelector(htmlID)
+    parent.classList = parent.classList.remove('placeholder-broad')
 
     var chart = d3
         .select(htmlID)
