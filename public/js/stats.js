@@ -367,16 +367,23 @@ function nsfw(data) {
         .append('g')
             .attr('transform', `translate(${dim / 2}, ${ dim / 2})`)
 
-    chart.append('circle')
-        .attr('r', height/2)
-        .attr('x', 0)
-        .attr('y', 0)
-        .attr('fill', 'var(--clr-shade)')
-        .attr('stroke', 'var(--clr-primary)')
-        .attr('stroke-width', 2)
 
+    // arc base (safe part)
+    let arcBase = d3.arc()
+        .innerRadius(height/4)
+        .outerRadius(height/2)
+        .startAngle(0)
+        .endAngle( 2 * Math.PI )
+
+    chart.append('path')
+    .attr('d', arcBase)
+    .attr('stroke-width', 2)
+    .attr('fill', 'var(--clr-shade)')
+    .attr('stroke', 'var(--clr-primary)')
+
+    // arc nsfw
     let arcExplicit = d3.arc()
-        .innerRadius( 0)
+        .innerRadius( height/4)
         .outerRadius(height/2)
         .startAngle(0)
         .endAngle( data.nsfw * 2 * Math.PI )
@@ -471,11 +478,6 @@ window.onload = () => {
     fetch('/times/top')
     .then(data => data.json())
     .then(data => {
-        $('#pie-charts')
-        .append($('<h2></h2>')
-        .addClass('stat-label')
-        .text(`clock`))
-
         clock(data);
 
     })

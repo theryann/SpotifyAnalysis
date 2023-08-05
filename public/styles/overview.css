@@ -528,6 +528,13 @@ table[class="item-info"] {
     margin-left: 1em;
 }
 
+#pie-charts svg {
+    /* background: var(--clr-white); */
+    margin-right: 1ch;
+    filter: drop-shadow(3px 3px 3px var(--clr-shade))
+}
+
+
 /* PLACEHOLDER */
 
 #streaming-plot {
@@ -537,15 +544,14 @@ table[class="item-info"] {
 
 
 .placeholder-broad {
-    background-image: linear-gradient(
+    background-image: repeating-linear-gradient(
         -45deg,
-        var(--clr-background) 0% 40%,
-        var(--clr-primary) 40% 50%,
-        var(--clr-background) 50%
+        var(--clr-background) 0px 45px,
+        var(--clr-primary) 45px 90px
     );
     background-position: 1;
     width: 100%;
-    height: 5em;
+    height: 100px;
     margin-bottom: 1em;
     border-radius: 10px;
 
@@ -559,11 +565,10 @@ table[class="item-info"] {
 
 @keyframes move-right {
     from {
-        background-position: 0 0;
+        background-position: -2000px 0;
     }
     to {
-
-        background-position: 100em 0;
+        background-position: 0 0;
     }
 
 

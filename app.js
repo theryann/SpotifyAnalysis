@@ -192,9 +192,21 @@ app.get('/artists/id/:id', (req, res) => {
     WHERE artist.ID = '${req.params.id}'
     GROUP BY artist
     `;
-    db.all(all_artists, [], (err, rows)=> {
+
+    let genreQuery = `
+    SELECT Genre.genre
+    FROM Genre
+    WHERE Genre.artistID = '${req.params.id}'
+    `
+
+    db.get(all_artists, [], (err, artistInfo)=> {
         if (err) throw err;
-        res.json(rows[0]);
+
+        db.all(genreQuery, [], (err, genreRows)=> {
+            if (err) throw err;
+            artistInfo['genres'] = genreRows.map(g => g.genre);
+            res.json(artistInfo);
+        });
     });
 });
 app.get('/artists/all', (req, res) => {
@@ -655,7 +667,26 @@ app.get('/stats/general', (req, res) => {
         SELECT count(*) as nsfw
         FROM Song
         WHERE Song.explicit = 1
+    ),
+    (
+        SELECT
+            AVG(d.sumPlaytimeMS) as avgDailyPlaytimeMS
+        FROM (
+            SELECT
+                SUBSTR(Stream.timeStamp, 0, 11) as day,
+                count(*) as streams,
+                sum(Song.duration) as sumPlaytimeMS
+            FROM Stream
+
+            JOIN Song ON Song.ID = Stream.songID
+            JOIN Album ON Album.ID = Song.albumID -- get Artist through album bc there might be multiple artist and they'd get counted individually
+            JOIN Artist ON Artist.ID = Album.artistID
+
+            GROUP BY day
+            ORDER BY day desc
+        ) as d
     )
+
 
     `;
 
