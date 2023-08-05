@@ -1,3 +1,4 @@
+import { makeTimestamp } from "./overview.js";
 
 function chart(data, type='bar') {
     const margin = {
@@ -276,7 +277,7 @@ function timeChart(data, htmlID='#wrapper', lowerLimit=0, upperLimit=3000) {
 }
 
 function clock(data) {
-    let dim = $('#wrapper').width() / 3
+    let dim = $('#wrapper').width() * 0.3
 
     const margin = {
         top:    30,
@@ -311,11 +312,16 @@ function clock(data) {
         .attr('stroke-width', 2)
 
     // adding hour label
+    let hourLabels = chart
+                        .append('g')
+                        .attr('transform', 'translate(5, 0)')
+                        ;
+
     for (let i = 0; i < 24; i++) {
         let angle = i * 2*Math.PI/24 - Math.PI / 2
-        chart.append('text')
-            .attr('x', Math.cos(angle) * height/2 * 1.15 - height/2*0.08)
-            .attr('y', Math.sin(angle) * height/2 * 1.15 + height/2*0.05)
+        hourLabels.append('text')
+            .attr('x', Math.cos(angle) * height/2 * 1.1 - height/2*0.08)
+            .attr('y', Math.sin(angle) * height/2 * 1.1 + height/2*0.05)
             .attr('fill', 'var(--text-color)')
             .attr('font-size', '.9em')
             .text(i)
@@ -346,7 +352,7 @@ function clock(data) {
 }
 
 function nsfw(data) {
-    let dim = $('#wrapper').width() / 3
+    let dim = $('#wrapper').width() * 0.3
 
     const margin = {
         top:    30,
@@ -361,7 +367,7 @@ function nsfw(data) {
     var chart = d3
         .select("#pie-charts")
         .append('svg')
-            .attr("id", "day-clock")
+            .attr("id", "nsfw")
             .attr('width', width + margin.left + margin.right)
             .attr('height', height + margin.top + margin.bottom)
         .append('g')
@@ -396,15 +402,90 @@ function nsfw(data) {
 
     let p = data.nsfw
     chart.append('text')
-        .attr('x', Math.cos(p * Math.PI) * height/4 - Math.PI/2)
-        .attr('y',  -Math.sin(p * Math.PI) * height/4 - Math.PI/2)
-        .text(`explicit (${ Math.round(p*100) }%)`)
-        .style('text-anchor', 'start')
+        .attr('x', 0)
+        .attr('y', '.5em')
+        .text(`${ Math.round(p*100) }%`)
+        .style('text-anchor', 'middle')
+
     chart.append('text')
-        .attr('x', -Math.cos(p * Math.PI) * height/4 - Math.PI/2)
-        .attr('y',  Math.sin(p * Math.PI) * height/4 - Math.PI/2)
-        .text(`safe (${ 100 - Math.round(p*100) }%)`)
-        .style('text-anchor', 'start')
+        .attr('x', 0)
+        .attr('y', -height/2 - margin.top/2)
+        .text( 'rated explicit' )
+        .style('text-anchor', 'middle')
+
+
+
+}
+
+function dailyPlaytime(data) {
+    let dim = $('#wrapper').width() * 0.3
+
+    const margin = {
+        top:    30,
+        bottom: 30,
+        left:   50,
+        right:  30,
+    }
+
+    const width  = dim - margin.left - margin.right;
+    const height = dim - margin.top  - margin.bottom;
+
+    var chart = d3
+        .select("#pie-charts")
+        .append('svg')
+            .attr("id", "day-playtime")
+            .attr('width', width + margin.left + margin.right)
+            .attr('height', height + margin.top + margin.bottom)
+        .append('g')
+            .attr('transform', `translate(${dim / 2}, ${ dim / 2})`)
+
+
+    // arc base
+    let arcBase = d3.arc()
+        .innerRadius(height/4)
+        .outerRadius(height/2)
+        .startAngle(0)
+        .endAngle( 2 * Math.PI )
+
+    chart.append('path')
+    .attr('d', arcBase)
+    .attr('stroke-width', 2)
+    .attr('fill', 'var(--clr-shade)')
+    .attr('stroke', 'var(--clr-primary)')
+
+    // arc playtime
+    let playtimeMS = data.avgDailyPlaytimeMS
+    let p = playtimeMS / (24 * 60 * 60 * 1000)
+
+
+    let arcExplicit = d3.arc()
+        .innerRadius( height/4)
+        .outerRadius(height/2)
+        .startAngle(0)
+        .endAngle( p * 2 * Math.PI )
+
+    chart.append('path')
+        .attr('d', arcExplicit)
+        .attr('stroke-width', 2)
+        .attr('fill', 'var(--clr-primary)')
+        .attr('stroke', 'var(--clr-primary-darker)')
+
+
+    chart.append('text')
+        .attr('x', 0)
+        .attr('y', 0)
+        .text( makeTimestamp(playtimeMS) )
+        .style('text-anchor', 'middle')
+    chart.append('text')
+        .attr('x', 0)
+        .attr('y', '1em')
+        .text( Math.round( p * 100 ) + ' %' )
+        .style('text-anchor', 'middle')
+    chart.append('text')
+        .attr('x', 0)
+        .attr('y', -height/2 - margin.top/2)
+        .text( 'avg time per day' )
+        .style('text-anchor', 'middle')
 
 
 }
@@ -485,10 +566,13 @@ window.onload = () => {
     fetch('/stats/general')
     .then(data => data.json())
     .then(data => {
-        $('#wrapper')
-        .append($('<h2></h2>'))
-
         nsfw(data)
+    })
+    // nsfw
+    fetch('/stats/general')
+    .then(data => data.json())
+    .then(data => {
+        dailyPlaytime(data)
 
     })
 

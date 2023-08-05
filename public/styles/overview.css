@@ -529,8 +529,6 @@ table[class="item-info"] {
 }
 
 #pie-charts svg {
-    /* background: var(--clr-white); */
-    margin-right: 1ch;
     filter: drop-shadow(3px 3px 3px var(--clr-shade))
 }
 

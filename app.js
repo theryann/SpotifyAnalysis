@@ -386,6 +386,52 @@ app.get('/album/tracklist/:id', (req, res) => {
         res.json(rows);
     });
 });
+app.get('/album/noskiplist', (req, res) => {
+    let noskipQuery = `
+    SELECT
+        z.albumID,
+        z.name
+    FROM (
+        SELECT
+            diffTable.albumID as albumID,
+            Album.name,
+            sum(songDiff) as diff
+        FROM (
+            SELECT
+                Song.albumID,
+                Song.ID as 'ID',
+                count(*) as 'streams',
+                CAST(a.streams as REAL) / Album.totalTracks as avgSongPlays,
+                count(*) - (CAST(a.streams as REAL) / Album.totalTracks) as songDiff
+            FROM Stream
+            JOIN Song ON Stream.songID = Song.ID
+            JOIN Album On Album.ID = Song.albumID
+            JOIN (
+                SELECT
+                    Song.albumID as 'ID',
+                    count(*)     as 'streams'
+                FROM Stream
+                JOIN Song ON Stream.songID = Song.ID
+                GROUP BY Song.albumID
+                HAVING albumID NOT NULL
+                ORDER BY streams desc
+            ) as a ON a.ID = Album.ID
+            WHERE Album.type = 'album' AND a.streams > 10
+
+            GROUP BY Song.ID
+            ORDER BY Album.ID
+        ) as diffTable
+        JOIN Album ON Album.ID = albumID
+        GROUP BY diffTable.AlbumID
+        ORDER BY diff asc
+    ) as z
+    WHERE z.diff = 0
+    `;
+    db.all(noskipQuery, [], (err, rows)=> {
+        if (err) throw err;
+        res.json(rows);
+    });
+});
 
 
 app.get('/vis/force-graph/nodes', (req, res) => {

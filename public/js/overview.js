@@ -51,16 +51,19 @@ function makeTimestamp(milliseconds) {
     let remainingSec  = Math.floor((milliseconds / 1000) - durationMin * 60)
     let timeStamp = '';
 
+    remainingSec = remainingSec.toString()
+    remainingSec = (remainingSec.length > 1) ? remainingSec : '0'.concat(remainingSec)
+
     if (durationHours > 0) {
         timeStamp += `${durationHours}h `
         durationMin -= durationHours * 60;
         durationMin = (durationMin.toString().length > 1) ? durationMin : '0'.concat(durationMin)
+        timeStamp += `${durationMin}min ${remainingSec}s`;
+
+    } else {
+        timeStamp += `${durationMin}:${remainingSec} min`;
     }
 
-    remainingSec = remainingSec.toString()
-    remainingSec = (remainingSec.length > 1) ? remainingSec : '0'.concat(remainingSec)
-
-    timeStamp += `${durationMin}:${remainingSec} min`;
     return timeStamp;
 }
 
