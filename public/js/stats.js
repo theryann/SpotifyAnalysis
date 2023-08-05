@@ -69,10 +69,19 @@ function chart(data, type='bar') {
             .append('rect')
             .attr('class', 'bar')
             .attr('x', d => x(d.time))
-            .attr('y', d => y(d.streams))
-            .attr('height', d => baseline - y(d.streams))
+            .attr('y', d => y(0))
+            .attr('height', d => baseline - y(0))
             .attr('width', x.bandwidth() )
             .attr("rx", "3px")
+
+        // Animation
+        chart.selectAll('.bar')
+            .transition()
+            .duration(800)
+            .attr('height', d => baseline - y(d.streams))
+            .attr('y', d => y(d.streams))
+            .delay( (d, i) => i * 50)
+
     }
     else {
         const line = d3
@@ -155,11 +164,20 @@ function publicationsByYear(data, lowerLimit=0, upperLimit=3000) {
         .append('rect')
         .attr('class', 'bar')
         .attr('x', d => x(d.year) - barWidth)
-        .attr('y', d => y(d.publications))
-        .attr('height', d => baseline - y(d.publications))
+        // .attr('y', d => y(d.publications))
+        // .attr('height', d => baseline - y(d.publications))
+        .attr('y', d => y(0))
+        .attr('height', d => baseline - y(0))
         .attr('width', barWidth )
         .on('click', (event, d) => {highlightValue(d, "left")})
 
+    // Animation
+    chart.selectAll('.bar')
+        .transition()
+        .duration(800)
+        .attr('height', d => baseline - y(d.publications))
+        .attr('y', d => y(d.publications))
+        .delay( (d, i) => i * 40)
 
 
 
@@ -170,10 +188,20 @@ function publicationsByYear(data, lowerLimit=0, upperLimit=3000) {
         .append('rect')
         .attr('class', 'bar-secondary')
         .attr('x', d => x(d.year))
-        .attr('y', d => yStreams(d.streams))
-        .attr('height', d => baseline - yStreams(d.streams))
+        .attr('y', d => yStreams(0))
+        .attr('height', d => baseline - yStreams(0))
+        // .attr('y', d => yStreams(d.streams))
+        // .attr('height', d => baseline - yStreams(d.streams))
         .attr('width', barWidth )
         .on('click', (event, d) => {highlightValue(d, "right")})
+
+    // Animation
+    chart.selectAll('.bar-secondary')
+        .transition()
+        .duration(800)
+        .attr('y', d => yStreams(d.streams))
+        .attr('height', d => baseline - yStreams(d.streams))
+        .delay( (d, i) => i * 40)
 
 
 
@@ -392,24 +420,45 @@ function nsfw(data) {
         .innerRadius( height/4)
         .outerRadius(height/2)
         .startAngle(0)
-        .endAngle( data.nsfw * 2 * Math.PI )
+        .endAngle( 0 )
+
 
     chart.append('path')
         .attr('d', arcExplicit)
+        .attr('id', 'nsfw-arc')
         .attr('stroke-width', 2)
         .attr('fill', 'var(--clr-primary)')
         .attr('stroke', 'var(--clr-primary-darker)')
 
+    // Animation
+    chart.select('#nsfw-arc')
+        .transition()
+        .duration(1000)
+        .attrTween('d', function(d) {
+            let interpolate = d3.interpolate(0, data.nsfw * 2 * Math.PI)
+            return function(t) {
+                arcExplicit.endAngle(interpolate(t))
+                return arcExplicit()
+            }
+        })
+
+
     let p = data.nsfw
-    chart.append('text')
+
+    let legend = chart.append('g')
+                    .attr('transform', 'translate(0, -10)')
+    legend.append('text')
         .attr('x', 0)
-        .attr('y', '.5em')
+        .attr('y', 0)
         .text(`${ Math.round(p*100) }%`)
         .style('text-anchor', 'middle')
+        .style('fill', 'var(--clr-text)')
+        .attr('font-size', '2em')
+        .attr('dominant-baseline', 'middle')
 
-    chart.append('text')
+    legend.append('text')
         .attr('x', 0)
-        .attr('y', -height/2 - margin.top/2)
+        .attr('y', '2em')
         .text( 'rated explicit' )
         .style('text-anchor', 'middle')
 
@@ -458,35 +507,52 @@ function dailyPlaytime(data) {
     let p = playtimeMS / (24 * 60 * 60 * 1000)
 
 
-    let arcExplicit = d3.arc()
-        .innerRadius( height/4)
+    let arcPlaytime = d3.arc()
+        .innerRadius(height/4)
         .outerRadius(height/2)
         .startAngle(0)
-        .endAngle( p * 2 * Math.PI )
+        .endAngle( 0 )
 
     chart.append('path')
-        .attr('d', arcExplicit)
+        .attr('d', arcPlaytime)
+        .attr('id', 'playtime-arc')
         .attr('stroke-width', 2)
         .attr('fill', 'var(--clr-primary)')
         .attr('stroke', 'var(--clr-primary-darker)')
 
+    // Animation
+    chart.select('#playtime-arc')
+        .transition()
+        .duration(1000)
+        .attrTween('d', function(d) {
+            let interpolate = d3.interpolate(0, p * 2 * Math.PI)
+            return function(t) {
+                arcPlaytime.endAngle(interpolate(t))
+                return arcPlaytime()
+            }
+        })
 
-    chart.append('text')
+
+
+    let legend = chart.append('g')
+                    .attr('transform', 'translate(0, -10)')
+    legend.append('text')
         .attr('x', 0)
         .attr('y', 0)
-        .text( makeTimestamp(playtimeMS) )
+        .text( `${Math.round(playtimeMS / (60 * 60 * 1000) * 100)/100}h` )
         .style('text-anchor', 'middle')
-    chart.append('text')
-        .attr('x', 0)
-        .attr('y', '1em')
-        .text( Math.round( p * 100 ) + ' %' )
-        .style('text-anchor', 'middle')
-    chart.append('text')
-        .attr('x', 0)
-        .attr('y', -height/2 - margin.top/2)
-        .text( 'avg time per day' )
-        .style('text-anchor', 'middle')
+        .style('font-size', '2em')
+        .attr('fill', 'var(--clr-text)')
+        .attr('dominant-baseline', 'middle')
 
+
+
+    legend.append('text')
+        .attr('x', 0)
+        .attr('y', '2em')
+        .text( `per day (${Math.round( p * 100 )}%)` )
+        .style('text-anchor', 'middle')
+        .attr('fill', 'var(--clr-text)')
 
 }
 

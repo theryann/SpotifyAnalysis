@@ -15,6 +15,7 @@ body {
     color: var(--clr-text);
     background-color: var(--clr-background);
     font-family: Arial, Helvetica, sans-serif;
+    min-height: 1000px;
 }
 #wrapper {
     width: min(100% - 1rem, 120ch);
@@ -561,12 +562,11 @@ table[class="item-info"] {
 }
 
 
-
 .placeholder-broad {
     background-image: repeating-linear-gradient(
         -45deg,
         var(--clr-background) 0px 45px,
-        var(--clr-primary) 45px 90px
+        var(--clr-shade) 45px 90px
     );
     background-position: 1;
     width: 100%;
