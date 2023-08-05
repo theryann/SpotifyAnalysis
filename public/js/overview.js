@@ -67,11 +67,11 @@ function makeTimestamp(milliseconds) {
     return timeStamp;
 }
 
-function fillOverviewTabs(orderBy='', timeLimitDays = 30, limit=10) {
+function fillOverviewTabs(orderBy='streams', limit=10) {
     // orderBy ... 'streams' | 'playtime'
     // timeLimitDays ... timeframe to consider (earliest included date)
 
-
+    // decide unit to order by
     let order = ''
     let byPlaytime = false;
     if (orderBy === 'playtime') {
@@ -79,12 +79,26 @@ function fillOverviewTabs(orderBy='', timeLimitDays = 30, limit=10) {
         byPlaytime = true;
     }
 
+    // decide timeframe
+    let frame =  $('#select-timeframe').find(':selected').val();
+    let cutoffTimestamp;
     let today = Date.now();
-    let timeLimit = today - timeLimitDays * 3600 * 24 * 1000
-    let cutoffTimestamp = (new Date(timeLimit)).toISOString()
 
-    // Limit
-    $('#label-timeframe').text( `last ${timeLimitDays} days` );
+    switch (frame) {
+        case 'month': {
+            let timeLimit = today - 30 * 3600 * 24 * 1000
+            cutoffTimestamp = (new Date(timeLimit)).toISOString()
+            break;
+        }
+        case 'year': {
+            cutoffTimestamp = new Date().getFullYear();
+            break;
+        }
+        case 'alltime': {
+            cutoffTimestamp = '0';
+            break;
+        }
+    }
 
     // Songs
     fetch(`/songs/top?limit=${limit}${order}&oldest=${cutoffTimestamp}`)
@@ -119,24 +133,26 @@ window.onload = () => {
     if ( $('#toggle-order').is(':checked') ){
         fillOverviewTabs('playtime');
     } else {
-        fillOverviewTabs();
+        fillOverviewTabs('streams');
     }
 
-    // on button click
-    $('#toggle-order').on('click', function() {
+    const refreshTable = () => {
         $('#songs-content').empty().append( $("<div id='loader-songs' class='loader'></div>") );
         $('#artists-content').empty().append( $("<div id='loader-artists' class='loader'></div>") );
         $('#albums-content').empty().append( $("<div id='loader-albums' class='loader'></div>") );
 
 
         // if sort by playtime
-        if ( $(this).is(':checked') ){
+        if ( $('#toggle-order').is(':checked') ){
             fillOverviewTabs('playtime');
         } else {
-            fillOverviewTabs();
+            fillOverviewTabs('streams');
         }
 
-    })
+    }
+    // on button click
+    $('#toggle-order').on('click', refreshTable )
+    $('#select-timeframe').on('change', refreshTable )
 
 
     loadSongs(0); // streaming history
