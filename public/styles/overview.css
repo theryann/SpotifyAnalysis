@@ -581,10 +581,25 @@ table[class="item-info"] {
 .placeholder-square {
     background-color: var(--clr-shade);
 }
+.placeholder-circle {
+    background: repeating-linear-gradient(
+        90deg,
+        var(--clr-background) 0px 40px,
+        var(--clr-shade) 40px 100px
+    );
+    width: calc(80ch / 3);
+    aspect-ratio: 1/1;
+    border-radius: 50%;
+
+    animation: move-right 1s ease-in-out infinite;
+    animation-direction: alternate;
+    transform: rotate(30deg);
+
+}
 
 @keyframes move-right {
     from {
-        background-position: -2000px 0;
+        background-position: -200px 0;
     }
     to {
         background-position: 0 0;

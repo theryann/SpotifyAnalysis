@@ -559,6 +559,7 @@ window.onload = () => {
     fetch('/times/top')
     .then(data => data.json())
     .then(data => {
+        $('#pie-charts .placeholder-circle').first().remove()
         clock(data);
 
     })
@@ -566,14 +567,15 @@ window.onload = () => {
     fetch('/stats/general')
     .then(data => data.json())
     .then(data => {
+        $('#pie-charts .placeholder-circle').first().remove()
         nsfw(data)
     })
     // nsfw
     fetch('/stats/general')
     .then(data => data.json())
     .then(data => {
+        $('#pie-charts .placeholder-circle').first().remove()
         dailyPlaytime(data)
-
     })
 
 }
