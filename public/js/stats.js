@@ -318,9 +318,7 @@ function clock(data) {
     const height = dim - margin.top  - margin.bottom;
 
     var chart = d3
-        .select("#pie-charts")
-        .append('svg')
-            .attr("id", "day-clock")
+        .select("#day-clock")
             .attr('width', width + margin.left + margin.right)
             .attr('height', height + margin.top + margin.bottom)
         .append('g')
@@ -377,6 +375,11 @@ function clock(data) {
         .attr('stroke-width', 2)
         .attr('fill', 'var(--clr-primary)')
         .attr('stroke', 'var(--clr-primary-darker)')
+        .attr('transform', 'scale(0, 0)')
+        .transition()
+        .duration(800)
+        .attr('transform', 'scale(1, 1)')
+
 }
 
 function nsfw(data) {
@@ -393,9 +396,7 @@ function nsfw(data) {
     const height = dim - margin.top  - margin.bottom;
 
     var chart = d3
-        .select("#pie-charts")
-        .append('svg')
-            .attr("id", "nsfw")
+        .select("#nsfw")
             .attr('width', width + margin.left + margin.right)
             .attr('height', height + margin.top + margin.bottom)
         .append('g')
@@ -480,9 +481,7 @@ function dailyPlaytime(data) {
     const height = dim - margin.top  - margin.bottom;
 
     var chart = d3
-        .select("#pie-charts")
-        .append('svg')
-            .attr("id", "day-playtime")
+        .select("#day-playtime")
             .attr('width', width + margin.left + margin.right)
             .attr('height', height + margin.top + margin.bottom)
         .append('g')
@@ -591,7 +590,7 @@ function generalStats(data) {
             .style('text-anchor', anchor)
             .attr('dominant-baseline', 'middle')
             .transition()
-            .duration(1000)
+            .duration(300)
             .attr('x', anchor === 'end' ? right - 3 : right + 3)
 
         chart.append('text')
@@ -602,7 +601,7 @@ function generalStats(data) {
             .style('text-anchor', anchor)
             .attr('dominant-baseline', 'middle')
             .transition()
-            .duration(1000)
+            .duration(300)
             .attr('x', anchor === 'end' ? right - 3 : right + 3)
     }
     const bar = function(offset, barWidth) {
@@ -613,7 +612,7 @@ function generalStats(data) {
             .attr('height', barHeight)
             .attr('class', 'general-stat-bar')
             .transition()
-            .duration(1000)
+            .duration(300)
             .attr('width', barWidth)
     }
 
@@ -657,7 +656,7 @@ window.onload = () => {
         $('#general-stats-chart').removeClass('placeholder-broad')
         generalStats(data);
 
-        $('#pie-charts .placeholder-circle').first().remove()
+        $('#day-playtime').removeClass('placeholder-circle')
         dailyPlaytime(data)
     })
 
@@ -665,22 +664,31 @@ window.onload = () => {
     fetch('/times/top')
     .then(data => data.json())
     .then(data => {
-        $('#pie-charts .placeholder-circle').first().remove()
+        $('#day-clock').removeClass('placeholder-circle')
         clock(data);
     })
     // nsfw
     fetch('/stats/general')
     .then(data => data.json())
     .then(data => {
-        $('#pie-charts .placeholder-circle').first().remove()
+        $('#nsfw').removeClass('placeholder-circle')
         nsfw(data)
     })
 
 
-
-
     // monthly streams
     fetch('/times/monthly')
+    .then(data => data.json())
+    .then(data => {
+        $('#wrapper')
+        .append($('<h2></h2>')
+        .addClass('stat-label')
+        .text(`${data.ticks} streams`))
+
+        chart(data, 'bar')
+    })
+    // monthly streams
+    fetch('/times/weekly')
     .then(data => data.json())
     .then(data => {
         $('#wrapper')
