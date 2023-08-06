@@ -85,6 +85,11 @@ function fillOverviewTabs(orderBy='streams', limit=10) {
     let today = Date.now();
 
     switch (frame) {
+        case 'today': {
+            let timeLimit = today
+            cutoffTimestamp = (new Date(timeLimit)).toISOString().slice(0, 10)
+            break;
+        }
         case 'month': {
             let timeLimit = today - 30 * 3600 * 24 * 1000
             cutoffTimestamp = (new Date(timeLimit)).toISOString()

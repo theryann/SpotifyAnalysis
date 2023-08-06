@@ -168,10 +168,10 @@ nav {
 }
 nav a {
     color: var(--clr-white);
+    border-bottom: 3px solid var(--clr-primary);
 }
 
 nav a:hover {
-    /* background-color: var(--clr-primary-darker); */
     cursor: pointer;
     border-bottom: 3px solid var(--clr-white);
 }
@@ -260,7 +260,7 @@ select {
 /* ARTIST PAGE */
 table[class="item-info"] {
     width: 100%;
-    margin-bottom: 2em;
+    margin-bottom: 1em;
     padding-bottom: 1em;
     /* border-bottom: 1px solid var(--clr-shade); */
 }
