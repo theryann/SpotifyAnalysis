@@ -166,20 +166,10 @@ function publicationsByYear(data, lowerLimit=0, upperLimit=3000) {
         .attr('x', d => x(d.year) - barWidth)
         // .attr('y', d => y(d.publications))
         // .attr('height', d => baseline - y(d.publications))
-        .attr('y', d => y(0))
-        .attr('height', d => baseline - y(0))
+        .attr('y', d => y(d.publications))
+        .attr('height', d => baseline - y(d.publications))
         .attr('width', barWidth )
         .on('click', (event, d) => {highlightValue(d, "left")})
-
-    // Animation
-    chart.selectAll('.bar')
-        .transition()
-        .duration(800)
-        .attr('height', d => baseline - y(d.publications))
-        .attr('y', d => y(d.publications))
-        .delay( (d, i) => i * 40)
-
-
 
     // append streams
     chart.selectAll()
@@ -188,21 +178,11 @@ function publicationsByYear(data, lowerLimit=0, upperLimit=3000) {
         .append('rect')
         .attr('class', 'bar-secondary')
         .attr('x', d => x(d.year))
-        .attr('y', d => yStreams(0))
-        .attr('height', d => baseline - yStreams(0))
-        // .attr('y', d => yStreams(d.streams))
-        // .attr('height', d => baseline - yStreams(d.streams))
-        .attr('width', barWidth )
-        .on('click', (event, d) => {highlightValue(d, "right")})
 
-    // Animation
-    chart.selectAll('.bar-secondary')
-        .transition()
-        .duration(800)
         .attr('y', d => yStreams(d.streams))
         .attr('height', d => baseline - yStreams(d.streams))
-        .delay( (d, i) => i * 40)
-
+        .attr('width', barWidth )
+        .on('click', (event, d) => {highlightValue(d, "right")})
 
 
     //  append x axis last do be ontop
@@ -276,11 +256,23 @@ function timeChart(data, htmlID='#wrapper', lowerLimit=0, upperLimit=3000) {
 
     chart.append('g')
         .attr('transform', `translate(${0}, 0)`)
+        .attr('class', 'y-axis')
         .call(
             d3.axisLeft(yStreams)
             .tickValues(yTicks)
             .tickFormat(d3.format('d'))
         )
+
+
+    let yearSet = new Set( data.map(d => d.day.slice(0, 4)) )  // only contain 'smooth' year numbers without dublicates
+    yearSet.forEach(year => {
+        chart.append('line')
+            .attr('x1', x(new Date(year)) )
+            .attr('x2', x(new Date(year)) )
+            .attr('y1', yStreams(0) )
+            .attr('y2', 0 )
+            .attr('class', 'section-line')
+    })
 
     // append streams
     chart.selectAll()
@@ -289,9 +281,17 @@ function timeChart(data, htmlID='#wrapper', lowerLimit=0, upperLimit=3000) {
         .append('rect')
         .attr('class', 'bar')
         .attr('x', d => x( new Date(d.day) ))
-        .attr('y', d => yStreams(d.streams))
-        .attr('height', d => baseline - yStreams(d.streams))
+        .attr('y', d => yStreams(0))
+        .attr('height', d => baseline - yStreams(0))
         .attr('width', 3 )
+
+    // Animation
+    chart.selectAll('.bar')
+        .transition()
+        .duration(800)
+        .attr('height', d => baseline - yStreams(d.streams))
+        .attr('y', d => yStreams(d.streams))
+        .delay( (d, i) => i * 10)
 
 
 
