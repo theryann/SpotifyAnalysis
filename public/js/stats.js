@@ -556,9 +556,129 @@ function dailyPlaytime(data) {
 
 }
 
+function generalStats(data) {
+    let wrapperWidth = $('#wrapper').width()
+
+    const margin = {
+        top:    30,
+        bottom: 30,
+        left:   3,
+        right:  3,
+    }
+
+    let barHeight = 40;
+    let chartHeight = 5 * (barHeight + 6);
+
+
+    const width  = wrapperWidth - margin.left - margin.right;
+    const height = chartHeight - margin.top  - margin.bottom;
+
+    const chart = d3
+        .select("#general-stats-chart")
+        .append('svg')
+            .attr('width', width + margin.left + margin.right)
+            .attr('height', height + margin.top + margin.bottom)
+        .append('g')
+            .attr('transform', `translate(${margin.left}, ${ 3 })`)
+
+
+    const legend = function(offset, right, stat, caption, anchor='end') {
+        chart.append('text')
+            .attr('x', 0)
+            .attr('y',  `${17 + offset * (barHeight + 3) }`)
+            .text( `${stat.toLocaleString()}` )
+            .attr('font-size', '1.5em')
+            .style('text-anchor', anchor)
+            .attr('dominant-baseline', 'middle')
+            .transition()
+            .duration(1000)
+            .attr('x', anchor === 'end' ? right - 3 : right + 3)
+
+        chart.append('text')
+            .attr('x', 0)
+            .attr('y',  `${33 + offset * (barHeight + 3) }`)
+            .text( caption )
+            .attr('font-size', '.8em')
+            .style('text-anchor', anchor)
+            .attr('dominant-baseline', 'middle')
+            .transition()
+            .duration(1000)
+            .attr('x', anchor === 'end' ? right - 3 : right + 3)
+    }
+    const bar = function(offset, barWidth) {
+        chart.append('rect')
+            .attr('x', 0)
+            .attr('y', (barHeight + 3) * offset)
+            .attr('width', 0)
+            .attr('height', barHeight)
+            .attr('class', 'general-stat-bar')
+            .transition()
+            .duration(1000)
+            .attr('width', barWidth)
+    }
+
+    // total streams
+    let full = data.streams;
+
+    const calcWidth = function(val) {
+        return val / data.streams * width;
+    }
+
+    // streams
+    bar(0, width)
+    legend(0, width , data.streams, 'total streams')
+
+    // songs
+    bar(1, calcWidth(data.songs))
+    legend(1, calcWidth(data.songs) , data.songs, 'distinct songs', 'start')
+
+
+    // artists
+    bar(3, calcWidth(data.artists))
+    legend(3, calcWidth(data.artists) , data.artists, 'artists', 'start')
+    // albums
+    bar(2, calcWidth(data.albums))
+    legend(2, calcWidth(data.albums) , data.albums, 'albums', 'start')
+    // genres
+    bar(4, calcWidth(data.genres))
+    legend(4, calcWidth(data.genres) , data.genres, 'genres', 'start')
+
+
+
+
+}
 
 
 window.onload = () => {
+    // general stats
+    fetch('/stats/general')
+    .then(data => data.json())
+    .then(data => {
+        $('#general-stats-chart').removeClass('placeholder-broad')
+        generalStats(data);
+
+        $('#pie-charts .placeholder-circle').first().remove()
+        dailyPlaytime(data)
+    })
+
+    // clock
+    fetch('/times/top')
+    .then(data => data.json())
+    .then(data => {
+        $('#pie-charts .placeholder-circle').first().remove()
+        clock(data);
+    })
+    // nsfw
+    fetch('/stats/general')
+    .then(data => data.json())
+    .then(data => {
+        $('#pie-charts .placeholder-circle').first().remove()
+        nsfw(data)
+    })
+
+
+
+
     // monthly streams
     fetch('/times/monthly')
     .then(data => data.json())
@@ -621,28 +741,7 @@ window.onload = () => {
     })
 
 
-    // clock
-    fetch('/times/top')
-    .then(data => data.json())
-    .then(data => {
-        $('#pie-charts .placeholder-circle').first().remove()
-        clock(data);
 
-    })
-    // nsfw
-    fetch('/stats/general')
-    .then(data => data.json())
-    .then(data => {
-        $('#pie-charts .placeholder-circle').first().remove()
-        nsfw(data)
-    })
-    // nsfw
-    fetch('/stats/general')
-    .then(data => data.json())
-    .then(data => {
-        $('#pie-charts .placeholder-circle').first().remove()
-        dailyPlaytime(data)
-    })
 
 }
 

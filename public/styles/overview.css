@@ -162,11 +162,12 @@ footer {
 /* NAVIGATION */
 nav {
     padding-bottom: 1rem;
+    display: inline-grid;
+    grid-template-columns: auto auto auto auto;
+    width: 60%;
 }
 nav a {
     color: var(--clr-white);
-    background-color: var(--clr-primary);
-    padding: .5rem;
 }
 
 nav a:hover {
@@ -559,6 +560,13 @@ table[class="item-info"] {
     stroke-linecap:round;
 }
 
+.general-stat-bar {
+    rx: 3px;
+    fill: var(--clr-primary);
+    stroke: var(--clr-primary-darker);
+    stroke-width: 2px;
+}
+
 /* PLACEHOLDER */
 
 #streaming-plot {
@@ -580,6 +588,7 @@ table[class="item-info"] {
 
     animation: move-right 1s ease-in-out infinite;
     animation-direction: alternate;
+    transition: 1s;
 }
 
 .placeholder-square {
@@ -606,7 +615,7 @@ table[class="item-info"] {
         background-position: -200px 0;
     }
     to {
-        background-position: 0 0;
+        background-position: 200px 0;
     }
 
 
