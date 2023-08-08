@@ -40,7 +40,7 @@ app.get('/songs/top', (req, res) => {
         where_clause = `
         JOIN writtenBy ON writtenBy.songID = Song.ID
         JOIN Artist ON Artist.ID = writtenBy.artistID
-        WHERE Artist.ID = '${req.query.artist}'
+        WHERE Artist.ID = '${req.query.artist}' AND Album.type = 'album'
         `;
     } else if ( req.query.hasOwnProperty("oldest") ) {
         where_clause = `WHERE Stream.timeStamp >= '${req.query.oldest}'`;  // oldest date to include

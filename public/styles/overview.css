@@ -287,7 +287,22 @@ table[class="item-info"] {
     background: var(--clr-shade);
 }
 
+#album-streams {
+    display: grid;
+    grid-template-columns: auto auto auto;
+    gap: 10px;
+}
 
+.album-stream-cover {
+    /* filter:blur(4px); */
+    opacity: .4;
+
+}
+.album-stream-cover__song {
+    fill: black;
+    /* mix-blend-mode:screen; */
+    text-anchor: end;
+}
 /* SONG PAGE */
 #info-layout {
     display: grid;

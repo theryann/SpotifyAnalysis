@@ -1,6 +1,62 @@
 import { makeTable } from "./overview.js";
 import { timeChart } from "./stats.js";
 
+function albumStreamChart(album, mostStreames) {
+    const margin = {
+        top:    30,
+        bottom: 30,
+        left:   5,
+        right:  5,
+    }
+
+    let width = $('#wrapper').width() / 3
+    let height = width / 2;
+    let coverWidth = width / 2;
+    let spaceBetween = 1;
+
+    let fontSize = height / (Math.max( 14, album.length ) + spaceBetween ) ;
+
+    const yPos = function(i) {
+        return i * (fontSize + spaceBetween) + fontSize
+    }
+
+    const chart = d3
+    .select('#album-streams')
+    .append('svg')
+        .attr('width', width)
+        .attr('height', height)
+        .append('g')
+            .attr('transform', `translate( ${margin.left}, 0 )`)
+
+    chart.append('image')
+        .attr('x', 0)
+        .attr('y', 0)
+        .attr('width', coverWidth)
+        .attr('height', coverWidth)
+        .attr('href', album[0].img)
+        .attr('class', 'album-stream-cover')
+
+    album.forEach((song, i) => {
+        chart.append('text')
+            .attr('x', coverWidth - 5 )
+            .attr('y', yPos(i) )
+            .attr('class', 'album-stream-cover__song')
+            .attr('alignment-baseline', 'top')
+            .attr('font-size', fontSize)
+            .text(song.title)
+        chart.append('rect')
+            .attr('x', coverWidth )
+            .attr('y', yPos(i ) - fontSize)
+            .attr('fill', 'var(--clr-shade)')
+            .attr('height', fontSize)
+            .attr('width', song.streams / mostStreames * coverWidth)
+            .text(song.title)
+    })
+
+
+}
+
+
 window.onload = () => {
     const loader = document.querySelector('.loader');
     const fieldArtistImg = document.getElementById('item-info__img')
@@ -62,6 +118,16 @@ window.onload = () => {
                 }
             })
         });
+
+    fetch(`/songs/top?artist=${artistID}&flock-albums=true`)
+        .then(data => data.json())
+        .then(catalogue => {
+            let mostStreames = d3.max( Object.keys(catalogue).map( albumID => d3.max( catalogue[albumID].map( s => s.streams ) ) ) )
+
+            for (let albumID in catalogue) {
+                albumStreamChart( catalogue[albumID], mostStreames );
+            }
+        })
 
 
     fetch(`/songs/top?artist=${artistID}`)
