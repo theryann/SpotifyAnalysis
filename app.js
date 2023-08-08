@@ -48,7 +48,9 @@ app.get('/songs/top', (req, res) => {
     let top_songs = `
         SELECT
             Song.ID as            'ID',
+            Song.albumID as       'albumID',
             Song.title as         'title',
+            Song.trackNumber as   'trackNumber',
             Album.imgSmall as     'img',
             count(*) as           'streams',
             sum(Song.duration) as 'sumPlaytimeMS'
@@ -60,13 +62,25 @@ app.get('/songs/top', (req, res) => {
         ORDER BY ${order} desc
     `;
 
-
     if ( req.query.hasOwnProperty("limit") ) {
         top_songs += '\nLIMIT ' + req.query.limit;
     }
 
     db.all(top_songs, [], (err, rows)=> {
         if (err) throw err;
+
+        if (req.query["flock-albums"] === 'true') {
+            let catalogue = {};
+            let albumIDs = new Set( rows.map(a => a.albumID) )
+            albumIDs.forEach(albumID => {
+                let album = rows.filter(r => r.albumID === albumID)
+                album.sort( (a, b) => a.trackNumber > b.trackNumber ? 1 : -1 )
+                catalogue[albumID] = album
+            })
+            res.json(catalogue)
+            return;
+        }
+
         res.json(rows);
     });
 });
@@ -330,6 +344,7 @@ app.get('/album/top', (req, res) => {
     let offset = 0;
     let where_clause = "";
     let order = 'streams';
+    let artist = '';
     if ( req.query.order == 'playtime' ) {
         order = 'sumPlaytimeMS';
     }
@@ -341,6 +356,8 @@ app.get('/album/top', (req, res) => {
     }
     if ( req.query.hasOwnProperty("oldest") ) {
         where_clause = `WHERE Stream.timeStamp >= '${req.query.oldest}'`;  // oldest date to include
+    } else if ( req.query.hasOwnProperty("artist") ) {
+        where_clause = `WHERE Album.artistID = '${req.query.artist}' AND Album.type = 'album'`;
     }
 
     let top_albums = `
@@ -359,6 +376,7 @@ app.get('/album/top', (req, res) => {
                 sum(Song.duration) as 'sumPlaytimeMS'
             FROM Stream
             JOIN Song ON Stream.songID = Song.ID
+            JOIN Album ON Album.ID = Song.albumID
             ${where_clause}
             GROUP BY Song.albumID
             HAVING albumID NOT NULL
