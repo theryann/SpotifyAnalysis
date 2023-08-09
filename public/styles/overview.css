@@ -645,3 +645,11 @@ table[class="item-info"] {
 
 
 }
+
+/* ANALYSIS */
+#artist-graph {
+    width: 100%;
+    aspect-ratio: 2.5/1;
+    background-color: var(--clr-shade);
+    border-radius: 3px;
+}

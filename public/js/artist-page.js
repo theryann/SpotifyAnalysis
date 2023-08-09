@@ -33,7 +33,7 @@ function albumStreamChart(album, mostStreames) {
         .attr('y', 0)
         .attr('width', coverWidth)
         .attr('height', coverWidth)
-        .attr('href', album[0].img)
+        .attr('href', album[0].imgBig)
         .attr('class', 'album-stream-cover')
 
     album.forEach((song, i) => {

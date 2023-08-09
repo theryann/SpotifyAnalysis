@@ -52,6 +52,7 @@ app.get('/songs/top', (req, res) => {
             Song.title as         'title',
             Song.trackNumber as   'trackNumber',
             Album.imgSmall as     'img',
+            Album.imgBig as       'imgBig',
             count(*) as           'streams',
             sum(Song.duration) as 'sumPlaytimeMS'
         FROM Stream
@@ -452,26 +453,18 @@ app.get('/album/noskiplist', (req, res) => {
 });
 
 
-app.get('/vis/force-graph/nodes', (req, res) => {
+app.get('/vis/force-graph', (req, res) => {
     let node_query = `
         SELECT
             artist.ID as id,
             artist.name as 'name',
-            count(timeStamp) as streams,
-            artist.imgSmall as img
+            count(timeStamp) as streams
         FROM Stream
             JOIN writtenBy ON writtenBy.songID = Stream.songID
             JOIN Artist ON Artist.ID = writtenBy.artistID
         GROUP BY name
         ORDER BY streams desc
     `;
-
-    db.all(node_query, [], (err, rows)=> {
-        if (err) throw err;
-        res.json(rows);
-    });
-});
-app.get('/vis/force-graph/edges', (req, res) => {
     let edge_query = `
     SELECT
         a.artistID as source,
@@ -492,16 +485,21 @@ app.get('/vis/force-graph/edges', (req, res) => {
     ORDER BY weight desc
     `;
 
-    if ( req.query.hasOwnProperty("limit") ) {
-        edge_query += '\nLIMIT ' + req.query.limit;
-    }
 
-    db.all(edge_query, [], (err, rows)=> {
+    db.all(edge_query, [], (err, edgeRows)=> {
         if (err) throw err;
-        res.json(rows);
+
+        db.all(node_query, [], (err, nodeRows)=> {
+            if (err) throw err;
+
+            res.json({
+                nodes: nodeRows,
+                edges: edgeRows
+            });
+        });
+
     });
 });
-
 
 app.get('/times/top', (req, res) => {
     // streams per times of day

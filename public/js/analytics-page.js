@@ -1,6 +1,202 @@
+function forceGraph() {
+    fetch("/vis/force-graph")
+    .then(data => data.json())
+    .then(data => {
+        const font = 'Arial'
 
+        const nodes = [];
+        const edges = [];
+
+        ///////////////////////////////////
+        // prepare node list and array list
+        ///////////////////////////////////
+
+        // adds all nodes that have edges to not overwhel the scene
+        for (let i = 0; i < data.edges.length; i++) {
+            let i_source = add_node( data.edges[i].source ); // index in of source node in nodes array
+            let i_target = add_node( data.edges[i].target ); // index in of target node in nodes array
+
+            edges.push({
+                source: i_source,
+                target: i_target,
+                weight: data.edges[i].weight
+            })
+
+        };
+
+        function add_node(new_id) {
+            // adds node form raw_nodes to nodes (if not already in)
+            // returns index of the node in ny case
+            let node_index = 0;
+            // check if node already in array
+            for (let i = 0; i < nodes.length; i++) {
+                let node = nodes[i];
+                if (node.id == new_id) {
+                    return node_index;
+                }
+                node_index ++;
+            }
+            // if reached then node is not in array so it will be added
+            let index = data.nodes.findIndex(n => n.id === new_id);
+            nodes.push(data.nodes[index]);
+
+            return node_index;
+        }
+
+        // add some nodes that dont have edges (order by streames)
+        // because niche artist with a lot streams should be included,
+        // even if there are not many related artists
+
+        // remove nodes from raw_nodes that have edges and sort the remaining by views
+        for (let i = 0; i < nodes.length; i++) {
+            let raw_nodes_index = data.nodes.findIndex(n => n.id === nodes[i].id)
+            if (raw_nodes_index != -1) {
+                data.nodes.splice(raw_nodes_index, 1);
+            }
+        }
+        data.nodes.sort( (a,b) => (a.streams < b.streams ? 1 : -1) );
+
+        // add remaining raw_nodes to nodes, IF they have more than n streams
+        let threshold = 10;
+        for (let i = 0; i < data.nodes.length; i++) {
+            if (data.nodes[i].streams >= threshold) {
+                add_node(data.nodes[i].id);
+            }
+        }
+
+        ///////////////////////////////////
+        // append to chart
+        ///////////////////////////////////
+        let width = $('#graph').width()
+
+        var graph = d3
+            .select("#graph")
+            // .style("width", width +"px")
+            // .style("height", width/2 +"px")
+            .append("svg")
+            .attr("width", width)
+            .attr("height", width/2)
+            .attr("viewBox", `-${width} -${width/2} ${width*4} ${width*4}`)
+
+        let zoomGroup = graph.append('g')
+            .attr("id", "zoom-group");
+        zoomGroup.append('g')
+            .attr("class", "links");
+        zoomGroup.append('g')
+            .attr("class", "nodes");
+
+
+        ///////////////////////////////////
+        // simulation
+        ///////////////////////////////////
+        var simulation = d3
+            .forceSimulation(nodes)
+            .force('charge', d3.forceManyBody().strength(-100))
+            .force('link',   d3.forceLink().links(edges))
+            .force('center', d3.forceCenter(0,0))
+            .force('collision', d3.forceCollide().radius( d => bubbleRadius(d.streams) ))
+            .on('tick', ticked);
+
+        function bubbleRadius(streams) {
+            return 15* Math.sqrt( streams / Math.PI );
+        }
+        function updateNodes() {
+            // update nodes
+            var node = d3
+                .select('.nodes')
+                .selectAll('.node-group')
+                .data(nodes)
+                .join( function(group) {
+                    let bubble = group.append('g')
+                        .attr('class', 'node-group')
+                    bubble.append('circle')
+                        .attr('class', 'bubble')
+                        .attr('r', d => bubbleRadius(d.streams) / 1.2)
+                    bubble.append('text')
+                        .attr('class', 'bubble-label')
+                        .attr("text-anchor", "middle")
+                        .attr("font-size", d => bubbleRadius(d.streams)/4 )
+                        .attr("dy", '0.25em')
+                        .attr("font-family", font)
+                        .text(function(d) { return d.name })
+                    return bubble;
+                })
+                .attr('transform', d => `translate(${d.x}, ${d.y})` )
+                // .on('click', function(d) {
+                //     let diameter = 2*bubbleRadius(d.streams);
+                //     graph.attr("viewBox", `${d.x - 2*diameter} ${d.y - 2*diameter} ${4*diameter} ${4*diameter}`)
+                // })
+        }
+        function updateLinks() {
+            // update edges
+            var link = d3
+                .select('.links')
+                .selectAll('line')
+                .data(edges.filter(e => e.weight > 0))
+                .join("line")
+                .attr('x1', function(d) { return d.source.x } )
+                .attr('y1', function(d) { return d.source.y } )
+                .attr('x2', function(d) { return d.target.x } )
+                .attr('y2', function(d) { return d.target.y } )
+        }
+        function ticked() {
+            updateNodes();
+            // updateLinks();
+        }
+
+        ///////////////////////////////////
+        // navigating the svg
+        ///////////////////////////////////
+        let zoom = d3.zoom()
+            .on('zoom', (e) => {
+                d3.select("#zoom-group")
+                    .attr("transform", e.transform)
+            })
+        d3.select("#graph svg").call(zoom)
+
+
+        // zooming
+
+        let graphControls = document.getElementById("graph-controls");
+
+        let zoomInButton = document.createElement("button");
+        let zoomOutButton = document.createElement("button");
+        let zoomHomeButton = document.createElement("button");
+
+
+        zoomInButton.setAttribute('class', 'navigate-graph-button')
+        zoomOutButton.setAttribute('class', 'navigate-graph-button')
+        zoomHomeButton.setAttribute('class', 'navigate-graph-button')
+
+        zoomInButton.innerText = 'In'
+        zoomOutButton.innerText = 'Out'
+        zoomHomeButton.innerText = 'Full'
+
+        zoomInButton.onclick   = () => {
+            d3.select('#graph svg')
+              .call(zoom.scaleBy, 1.3)
+        };
+        zoomOutButton.onclick  = () => {
+            d3.select('#graph svg')
+              .call(zoom.scaleBy, 0.7)
+        };
+        zoomHomeButton.onclick = () => {
+            d3.select('#graph svg')
+              .transition()
+              .call(zoom.scaleTo, 1)
+        };
+
+        graphControls.appendChild(zoomInButton)
+        graphControls.appendChild(zoomOutButton)
+        graphControls.appendChild(zoomHomeButton)
+
+    })
+
+
+}
 
 
 window.onload = () => {
+    forceGraph()
 
 }
