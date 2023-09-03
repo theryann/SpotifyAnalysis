@@ -1,5 +1,3 @@
-import { makeTimestamp } from "./overview.js";
-
 function chart(data, type='bar') {
     const margin = {
         top:    6,

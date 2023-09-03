@@ -28,13 +28,33 @@ function albumStreamChart(album, mostStreames) {
         .append('g')
             .attr('transform', `translate( ${margin.left}, 0 )`)
 
-    chart.append('image')
-        .attr('x', 0)
+    let mask = chart.append('mask')
+        .attr('x', coverWidth)
+        .attr('y', 0)
+        .attr('id', 'mask-cover')
+        .attr('width', coverWidth)
+        .attr('height', coverWidth)
+        .attr('fill', 'black')
+
+
+    chart.append('rect')
+        .attr('x', coverWidth)
         .attr('y', 0)
         .attr('width', coverWidth)
         .attr('height', coverWidth)
         .attr('href', album[0].imgBig)
-        .attr('class', 'album-stream-cover')
+        // .attr('class', 'album-stream-cover')
+        .attr('fill', 'green')
+        .attr('mask', 'url(#mask-cover)')
+        
+    // chart.append('image')
+    //     .attr('x', coverWidth)
+    //     .attr('y', 0)
+    //     .attr('width', coverWidth)
+    //     .attr('height', coverWidth)
+    //     .attr('href', album[0].imgBig)
+    //     // .attr('class', 'album-stream-cover')
+    //     .attr('mask', 'url(#mask-cover)')
 
     album.forEach((song, i) => {
         chart.append('text')
@@ -44,13 +64,21 @@ function albumStreamChart(album, mostStreames) {
             .attr('alignment-baseline', 'top')
             .attr('font-size', fontSize)
             .text(song.title)
-        chart.append('rect')
+
+        // chart.append('rect')
+        //     .attr('x', coverWidth )
+        //     .attr('y', yPos(i ) - fontSize)
+        //     .attr('fill', 'var(--clr-shade)')
+        //     .attr('height', fontSize)
+        //     .attr('width', song.streams / mostStreames * coverWidth)
+
+        mask.append('rect')
             .attr('x', coverWidth )
             .attr('y', yPos(i ) - fontSize)
-            .attr('fill', 'var(--clr-shade)')
+            .attr('fill', 'white')
             .attr('height', fontSize)
             .attr('width', song.streams / mostStreames * coverWidth)
-            .text(song.title)
+
     })
 
 

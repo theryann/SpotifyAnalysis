@@ -476,7 +476,7 @@ app.get('/vis/force-graph', (req, res) => {
     WHERE
         a.genre = b.genre
         AND
-        a.artistID != b.artistID	-- remeove edges to same node
+        a.artistID != b.artistID	-- remove edges to same node
         AND
         a.artistID > b.artistID 	-- total order to not double each edge
 
@@ -690,7 +690,7 @@ app.get('/times/genre/:genre', (req, res) => {
     });
 });
 
-
+ 
 app.get('/stats/general', (req, res) => {
     // streams per times of day
     let stats = `
