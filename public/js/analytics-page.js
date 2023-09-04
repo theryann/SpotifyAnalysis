@@ -214,6 +214,13 @@ function albumDiscovery(data, htmlID='#wrapper') {
     const parent = document.querySelector(htmlID)
     parent.classList = parent.classList.remove('placeholder-broad')
 
+
+    $(htmlID).append(
+        $('<h2></h2>')
+        .addClass('stat-label')
+        .text('album obsessions')
+    )
+
     var chart = d3
         .select(htmlID)
         .append('svg')
@@ -223,16 +230,19 @@ function albumDiscovery(data, htmlID='#wrapper') {
         .append('g')
             .attr('transform', `translate(${margin.left}, ${margin.top})`)
 
+
     //////////////////////
     // X - Axis
     //////////////////////
-
-
     const x = d3
         .scaleTime()
         .domain( [ new Date('2022-05'), new Date( Date.now() )] )   // value intervall +- 1 to avoid having the data to stretch over the edge as their mid is on the value
         .range( [0, width] )                     // pixels the values map to
         .nice()                                  // spaces axis description to neatly start and end at axis endpoints
+
+    //////////////////////
+    // add album covers
+    //////////////////////
 
     // append streams
     let discoveredAlbums = [];
@@ -251,7 +261,6 @@ function albumDiscovery(data, htmlID='#wrapper') {
             let lastIdx = discoveredAlbums.length - 1
             if (xPos < discoveredAlbums[ lastIdx ].x + coverWidth && yPos < discoveredAlbums[ lastIdx ].y + coverHeight) {
                 yPos = (lastIdx % 3) * coverHeight + coverHeight / 2
-                console.log(yPos)
             }
         }
         chart.append('line')
