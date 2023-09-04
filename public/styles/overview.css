@@ -653,3 +653,7 @@ table[class="item-info"] {
     background-color: var(--clr-shade);
     border-radius: 3px;
 }
+
+.analytics-album-cover:hover {
+    cursor: pointer;
+}

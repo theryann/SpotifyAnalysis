@@ -252,8 +252,8 @@ function albumDiscovery(data, htmlID='#wrapper') {
         if (discoveredAlbums.map(a => a.id).includes(d.ID)) { continue }
 
         let [year, week] = d.time.split('-')
-        let coverWidth  = height / 5
-        let coverHeight = height / 5
+        let coverWidth  = height / 4
+        let coverHeight = height / 4
         let xPos = x( new Date(year, 0, 1 + (week - 1) * 7  ) ) - coverWidth / 2
         let yPos = 0
 
@@ -271,12 +271,15 @@ function albumDiscovery(data, htmlID='#wrapper') {
             .attr('class', 'section-line')
 
         chart.append('image')
-            .attr('class', 'bar')
+            .attr('class', 'analytics-album-cover')
             .attr('x', xPos )
             .attr('y', yPos)
             .attr('height', coverHeight)
             .attr('width', coverWidth)
             .attr('href', d.img )
+            .on('click', () => {
+                window.location = `/album.html?album-id=${d.ID}`
+            })
 
 
         discoveredAlbums.push({
@@ -295,7 +298,7 @@ function albumDiscovery(data, htmlID='#wrapper') {
 
 
 window.onload = () => {
-    // forceGraph()
+    forceGraph()
 
     fetch('/stats/album-discovery')
     .then(data => data.json())
