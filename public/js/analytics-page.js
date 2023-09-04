@@ -195,8 +195,101 @@ function forceGraph() {
 
 }
 
+function albumDiscovery(data, htmlID='#wrapper') {
+    const margin = {
+        top:    10,
+        bottom: 10,
+        left:   30,
+        right:  30,
+    };
+
+    // const charWidth = $('#wrapper').width();
+    let wrapper = document.getElementById('wrapper')
+    const charWidth = wrapper.getBoundingClientRect().width
+
+    const width  = charWidth - margin.left - margin.right;
+    const height = charWidth / 4 - margin.top  - margin.bottom;
+    const baseline = height - margin.bottom;
+
+    const parent = document.querySelector(htmlID)
+    parent.classList = parent.classList.remove('placeholder-broad')
+
+    var chart = d3
+        .select(htmlID)
+        .append('svg')
+            .attr('id', 'album-discovery')
+            .attr('width', charWidth)
+            .attr('height', height + margin.top + margin.bottom)
+        .append('g')
+            .attr('transform', `translate(${margin.left}, ${margin.top})`)
+
+    //////////////////////
+    // X - Axis
+    //////////////////////
+
+
+    const x = d3
+        .scaleTime()
+        .domain( [ new Date('2022-05'), new Date( Date.now() )] )   // value intervall +- 1 to avoid having the data to stretch over the edge as their mid is on the value
+        .range( [0, width] )                     // pixels the values map to
+        .nice()                                  // spaces axis description to neatly start and end at axis endpoints
+
+    // append streams
+    let discoveredAlbums = [];
+    for (let i = 0; i < data.length; i++ ) {
+        let d = data[i];
+
+        if (discoveredAlbums.map(a => a.id).includes(d.ID)) { continue }
+
+        let [year, week] = d.time.split('-')
+        let coverWidth  = height / 5
+        let coverHeight = height / 5
+        let xPos = x( new Date(year, 0, 1 + (week - 1) * 7  ) ) - coverWidth / 2
+        let yPos = 0
+
+        if (i > 0) {
+            let lastIdx = discoveredAlbums.length - 1
+            if (xPos < discoveredAlbums[ lastIdx ].x + coverWidth && yPos < discoveredAlbums[ lastIdx ].y + coverHeight) {
+                yPos = (lastIdx % 3) * coverHeight + coverHeight / 2
+                console.log(yPos)
+            }
+        }
+        chart.append('line')
+            .attr('x1', xPos + coverWidth / 2 )
+            .attr('x2', xPos + coverWidth / 2 )
+            .attr('y1', baseline )
+            .attr('y2', yPos )
+            .attr('class', 'section-line')
+
+        chart.append('image')
+            .attr('class', 'bar')
+            .attr('x', xPos )
+            .attr('y', yPos)
+            .attr('height', coverHeight)
+            .attr('width', coverWidth)
+            .attr('href', d.img )
+
+
+        discoveredAlbums.push({
+            id: d.ID,
+            x: xPos,
+            y: yPos
+        })
+    }
+
+    //  append x axis last do be ontop
+    chart.append('g')
+        .attr('transform', `translate(0, ${height - margin.bottom})`)
+        .call( d3.axisBottom(x) )
+
+}
+
 
 window.onload = () => {
-    forceGraph()
+    // forceGraph()
+
+    fetch('/stats/album-discovery')
+    .then(data => data.json())
+    .then( data => albumDiscovery(data) )
 
 }

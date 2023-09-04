@@ -556,7 +556,7 @@ app.get('/times/weekly', (req, res) => {
         months += '\nLIMIT ' + req.query.limit;
     }
 
-    db.all(months, [], (err, rows)=> {
+    db.all(months, [], (err, rows) => {
         if (err) throw err;
         res.json({
             ticks: "weekly",
@@ -690,7 +690,7 @@ app.get('/times/genre/:genre', (req, res) => {
     });
 });
 
- 
+
 app.get('/stats/general', (req, res) => {
     // streams per times of day
     let stats = `
@@ -755,6 +755,35 @@ app.get('/stats/general', (req, res) => {
 
 
     db.get(stats, [], (err, rows)=> {
+        if (err) throw err;
+        res.json(rows);
+    });
+});
+app.get('/stats/album-discovery', (req, res) => {
+    // streams per times of day
+    let stats = `
+    SELECT z.time,
+        z.ID,
+        z.imgSmall as img
+    FROM (
+        SELECT
+            strftime('%Y-%W', Stream.timeStamp) as time,
+            count(albumID) as 'streams',
+            Album.totalTracks,
+            Album.imgSmall,
+            Album.ID
+        FROM Stream
+        JOIN Song ON Song.ID = Stream.songID
+        JOIN Album ON Album.ID = Song.albumID
+        WHERE Album.type = 'album'
+
+        GROUP BY time, Album.ID
+        ORDER BY time
+    ) as z
+    WHERE z.streams >= CAST(2 * z.totalTracks as INTEGER);
+`
+
+    db.all(stats, [], (err, rows)=> {
         if (err) throw err;
         res.json(rows);
     });

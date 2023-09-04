@@ -291,14 +291,10 @@ function timeChart(data, htmlID='#wrapper', lowerLimit=0, upperLimit=3000) {
         .attr('y', d => yStreams(d.streams))
         .delay( (d, i) => i * 10)
 
-
-
     //  append x axis last do be ontop
     chart.append('g')
         .attr('transform', `translate(0, ${height - margin.bottom})`)
         .call( d3.axisBottom(x) )
-
-
 
 }
 
@@ -685,7 +681,7 @@ window.onload = () => {
 
         chart(data, 'bar')
     })
-    // monthly streams
+    // weekly streams
     fetch('/times/weekly')
     .then(data => data.json())
     .then(data => {
