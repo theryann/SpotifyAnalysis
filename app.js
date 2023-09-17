@@ -3,6 +3,7 @@ const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 const path = require('path');
+const fs = require('fs');
 
 
 app.use( bodyParser.json() );
@@ -787,6 +788,15 @@ app.get('/stats/album-discovery', (req, res) => {
         if (err) throw err;
         res.json(rows);
     });
+});
+app.get('/stats/album-playthrough', (req, res) => {
+    let analytics = JSON.parse( fs.readFileSync('analytics.json', 'utf8') )
+    res.json(
+        Object
+        .entries(analytics.darian.albumPlaythrough)
+        .map(a => a[1])
+        .sort((a,b) => a.playthroughs < b.playthroughs ? 1: -1)
+    )
 });
 
 app.get('/search/:search', (req, res) => {
