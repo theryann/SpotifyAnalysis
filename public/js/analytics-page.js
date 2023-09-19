@@ -297,11 +297,95 @@ function albumDiscovery(data, htmlID='#wrapper') {
 }
 
 
+function albumPlaythrough(data, htmlID='#wrapper') {
+    const margin = {
+        top:    20,
+        bottom: 50,
+        left:   15,
+        right:  5,
+    };
+
+    $(htmlID).append(
+        $('<h2></h2>')
+        .addClass('stat-label')
+        .text('album playthroughs front to back')
+    )
+
+    let resultAmount = 15;
+
+    const chartWidth = $(htmlID).width();
+    const width  = chartWidth - margin.left - margin.right;
+
+    let coverWidth  =  width / resultAmount;
+    let coverHeight = coverWidth
+
+    const height = coverHeight * d3.max(data.map(d => d.playthroughs))
+
+
+    var chart = d3
+        .select(htmlID)
+        .append('svg')
+            .attr('width', chartWidth)
+            .attr('height', height + margin.top + margin.bottom)
+        .append('g')
+            .attr('transform', `translate(${margin.left}, ${margin.top})`)
+
+    //////////////////////
+    // Axis
+    //////////////////////
+    const baseline = height - margin.bottom;
+
+    // LIMIT DISPLAYED RESULTS
+    data = data.splice(0, resultAmount)
+
+    const x = d3
+        .scaleBand()
+        .range([0, width])
+        .domain(data.map(d => d.name))
+        .padding(.15)
+
+    chart.append('g')
+        .attr('transform', `translate(0, ${baseline})`)
+        .call( d3.axisBottom(x))
+        .selectAll('text')
+        .attr('transform', 'translate(-10,10) rotate(-45)')
+        .style('text-anchor', 'end')
+
+
+
+
+    //////////////////////
+    // add data to chart
+    //////////////////////
+
+    data.forEach((d, i) => {
+        for(let yPos = 0; yPos < d.playthroughs; yPos++) {
+            chart.append('image')
+                .attr('class', 'analytics-album-cover')
+                .attr('x', x(d.name))
+                .attr('y',  baseline - yPos * coverHeight - coverHeight)
+                .attr('height', coverHeight)
+                .attr('width', coverWidth)
+                .attr('href', d.imgSmall )
+                .on('click', () => {
+                    window.location = `/album.html?album-id=${d.albumID}`
+                })
+
+        }
+    })
+
+
+}
+
 window.onload = () => {
-    forceGraph()
+    // forceGraph()
 
     fetch('/stats/album-discovery')
     .then(data => data.json())
     .then( data => albumDiscovery(data) )
+
+    fetch('/stats/album-playthrough')
+    .then(data => data.json())
+    .then( data => albumPlaythrough(data) )
 
 }
