@@ -218,7 +218,7 @@ function albumDiscovery(data, htmlID='#wrapper') {
     $(htmlID).append(
         $('<h2></h2>')
         .addClass('stat-label')
-        .text('album obsessions')
+        .text('album obsessions (first time played two times a day)')
     )
 
     var chart = d3
@@ -342,7 +342,7 @@ function albumPlaythrough(data, htmlID='#wrapper') {
         .scaleBand()
         .range([0, width])
         .domain(data.map(d => d.name))
-        .padding(.15)
+        // .padding(.15)
 
     chart.append('g')
         .attr('transform', `translate(0, ${baseline})`)
