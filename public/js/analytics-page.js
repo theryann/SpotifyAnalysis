@@ -379,6 +379,11 @@ function topArtistPerMonth(data, htmlID='#wrapper') {
             .attr('height', logoWidth)
             .attr('align', 'center')
             .attr('clip-path','inset(0% round 50%)')
+            .style('cursor', 'pointer')
+            .on('click', (e, d) => {
+                window.location = `/artist.html?artist-id=${d.artistID}`
+            })
+
 
     //  append x axis last do be ontop
     chart.append('g')
@@ -469,18 +474,18 @@ function albumPlaythrough(data, htmlID='#wrapper') {
 }
 
 window.onload = () => {
-    forceGraph()
+    // forceGraph()
 
     fetch('/stats/top-artists-per-month')
         .then(data => data.json())
         .then(data => topArtistPerMonth(data) )
 
-    fetch('/stats/album-discovery')
-        .then(data => data.json())
-        .then(data => albumDiscovery(data) )
+    // fetch('/stats/album-discovery')
+    //     .then(data => data.json())
+    //     .then(data => albumDiscovery(data) )
 
-    fetch('/stats/album-playthrough')
-        .then(data => data.json())
-        .then(data => albumPlaythrough(data) )
+    // fetch('/stats/album-playthrough')
+    //     .then(data => data.json())
+    //     .then(data => albumPlaythrough(data) )
 
 }
