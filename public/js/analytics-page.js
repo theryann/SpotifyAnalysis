@@ -236,7 +236,7 @@ function albumDiscovery(data, htmlID='#wrapper') {
     //////////////////////
     const x = d3
         .scaleTime()
-        .domain( [ new Date('2022-05'), new Date( Date.now() )] )   // value intervall +- 1 to avoid having the data to stretch over the edge as their mid is on the value
+        .domain( [ new Date('2022-04'), new Date( Date.now() )] )   // value intervall +- 1 to avoid having the data to stretch over the edge as their mid is on the value
         .range( [0, width] )                     // pixels the values map to
         .nice()                                  // spaces axis description to neatly start and end at axis endpoints
 
