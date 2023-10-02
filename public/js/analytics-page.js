@@ -296,6 +296,97 @@ function albumDiscovery(data, htmlID='#wrapper') {
 
 }
 
+function topArtistPerMonth(data, htmlID='#wrapper') {
+    const margin = {
+        top:    10,
+        bottom: 10,
+        left:   30,
+        right:  30,
+    };
+
+    // const charWidth = $('#wrapper').width();
+    let wrapper = document.getElementById('wrapper')
+    const charWidth = wrapper.getBoundingClientRect().width
+
+    const width  = charWidth - margin.left - margin.right;
+    let logoWidth = width / data.length * 0.8
+
+    const height = logoWidth * 4 - margin.top  - margin.bottom;
+    const baseline = height - margin.bottom;
+
+    const parent = document.querySelector(htmlID)
+    parent.classList = parent.classList.remove('placeholder-broad')
+
+
+    $(htmlID).append(
+        $('<h2></h2>')
+        .addClass('stat-label')
+        .text('most streamed artist of every month')
+    )
+
+    var chart = d3
+        .select(htmlID)
+        .append('svg')
+            .attr('id', 'top-artists-per-month')
+            .attr('width', charWidth)
+            .attr('height', height + margin.top + margin.bottom)
+        .append('g')
+            .attr('transform', `translate(${margin.left}, ${margin.top})`)
+
+
+    //////////////////////
+    // X - Axis
+    //////////////////////
+    const x = d3
+        .scaleTime()
+        .domain( [ new Date('2022-04'), new Date( Date.now() )] )   // value intervall +- 1 to avoid having the data to stretch over the edge as their mid is on the value
+        .range( [0, width] )                     // pixels the values map to
+        .nice()                                  // spaces axis description to neatly start and end at axis endpoints
+
+    //////////////////////
+    // add album covers
+    //////////////////////
+
+    // append streams
+
+    function calcX(d) {
+        let [year, month] = d.month.split('-')
+        return x( new Date(year, month - 1, 1) ) //- logoWidth / 2
+    }
+
+    function calcY(i) {
+        return baseline - logoWidth * (i % 2 + 2)
+    }
+
+    chart.selectAll('line')
+        .data(data)
+        .enter()
+        .append('line')
+            .attr('x1', d => calcX(d) )
+            .attr('x2', d => calcX(d) )
+            .attr('y1', baseline )
+            .attr('y2', (d, i) => calcY(i))
+            .attr('class', 'section-line')
+
+    chart.selectAll()
+        .data(data)
+        .enter()
+        .append('image')
+            .attr('href', d => d.imgSmall)
+            .attr('x', d => calcX(d) - logoWidth / 2)
+            .attr('y', (d, i) => calcY(i))
+            .attr('width', logoWidth)
+            .attr('height', logoWidth)
+            .attr('align', 'center')
+            .attr('clip-path','inset(0% round 50%)')
+
+    //  append x axis last do be ontop
+    chart.append('g')
+        .attr('transform', `translate(0, ${height - margin.bottom})`)
+        .call( d3.axisBottom(x) )
+
+}
+
 
 function albumPlaythrough(data, htmlID='#wrapper') {
     const margin = {
@@ -378,14 +469,18 @@ function albumPlaythrough(data, htmlID='#wrapper') {
 }
 
 window.onload = () => {
-    // forceGraph()
+    forceGraph()
+
+    fetch('/stats/top-artists-per-month')
+        .then(data => data.json())
+        .then(data => topArtistPerMonth(data) )
 
     fetch('/stats/album-discovery')
-    .then(data => data.json())
-    .then( data => albumDiscovery(data) )
+        .then(data => data.json())
+        .then(data => albumDiscovery(data) )
 
     fetch('/stats/album-playthrough')
-    .then(data => data.json())
-    .then( data => albumPlaythrough(data) )
+        .then(data => data.json())
+        .then(data => albumPlaythrough(data) )
 
 }
