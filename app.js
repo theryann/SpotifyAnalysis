@@ -798,6 +798,30 @@ app.get('/stats/album-playthrough', (req, res) => {
         .sort((a,b) => a.playthroughs < b.playthroughs ? 1: -1)
     )
 });
+app.get('/stats/top-artists-per-month', (req, res) => {
+    let query = `
+    SELECT *
+    FROM (
+        SELECT
+            SUBSTR(Stream.timeStamp, 0, 8) as month,
+            Artist.ID as artistID,
+            Artist.name as artistName,
+            Artist.imgSmall as imgSmall,
+            count(*) as streams
+        FROM Stream
+        JOIN writtenBy ON writtenBy.songID = Stream.songID
+        JOIN Artist ON Artist.ID = writtenBy.artistID
+        GROUP BY month, writtenBy.artistID
+        ORDER BY month, streams desc
+    ) as z
+    GROUP BY z.month
+    `
+    db.all(query, [], (err, rows)=> {
+        if (err) throw err;
+        res.json(rows);
+    });
+
+});
 
 app.get('/search/:search', (req, res) => {
     // search for string in titles, album names and lyrics

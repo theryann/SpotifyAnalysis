@@ -359,7 +359,7 @@ function albumPlaythrough(data, htmlID='#wrapper') {
     //////////////////////
 
     data.forEach((d, i) => {
-        for(let yPos = 0; yPos < d.playthroughs; yPos++) {
+        for (let yPos = 0; yPos < d.playthroughs; yPos++) {
             chart.append('image')
                 .attr('class', 'analytics-album-cover')
                 .attr('x', x(d.name))
