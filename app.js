@@ -892,3 +892,6 @@ const port = 8000;
 app.listen(port, () => {
     console.log(`[ SERVER STARTED ]\nlisten at port ${port}.`)
 })
+
+
+// fetch('/times/yearly').then(data => data.json()).then(data => console.log(data))

@@ -1,5 +1,6 @@
 __pycache__/
 node_modules/
+my_spotify_data/
 package-lock.json
 history.csv
 song_database.json

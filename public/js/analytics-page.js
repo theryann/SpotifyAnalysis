@@ -474,18 +474,18 @@ function albumPlaythrough(data, htmlID='#wrapper') {
 }
 
 window.onload = () => {
-    // forceGraph()
+    forceGraph()
 
     fetch('/stats/top-artists-per-month')
         .then(data => data.json())
         .then(data => topArtistPerMonth(data) )
 
-    // fetch('/stats/album-discovery')
-    //     .then(data => data.json())
-    //     .then(data => albumDiscovery(data) )
+    fetch('/stats/album-discovery')
+        .then(data => data.json())
+        .then(data => albumDiscovery(data) )
 
-    // fetch('/stats/album-playthrough')
-    //     .then(data => data.json())
-    //     .then(data => albumPlaythrough(data) )
+    fetch('/stats/album-playthrough')
+        .then(data => data.json())
+        .then(data => albumPlaythrough(data) )
 
 }
