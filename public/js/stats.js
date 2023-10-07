@@ -641,6 +641,76 @@ function generalStats(data) {
 
 }
 
+function bpmHistogram(data) {
+
+    const margin = {
+        top:    30,
+        bottom: 30,
+        left:   50,
+        right:  30,
+    }
+
+    const charWidth = $('#wrapper').width();
+    const width  = charWidth - margin.left - margin.right;
+    const height = charWidth / 3 - margin.top  - margin.bottom;
+
+    var chart = d3
+        .select('#wrapper')
+        .append('svg')
+            .attr('id', 'bpm-histogram')
+            .attr('width', charWidth)
+            .attr('height', height + margin.top + margin.bottom)
+        .append('g')
+            .attr('transform', `translate(${margin.left}, ${margin.top})`)
+
+    //////////////////////
+    // Axis
+    //////////////////////
+    const baseline = height - margin.bottom;
+
+    const x = d3
+        .scaleLinear()
+        .range([0, width])
+        .domain([0, 250])
+        .nice()
+        // .padding(.15)
+
+    const y = d3
+        .scaleLinear()
+        .domain( [0, d3.max(data.map(d => d.amount))] )
+        .range([baseline, 0])
+        .nice()
+
+
+    // append streams
+    let bandWidth = 3
+    chart.selectAll()
+        .data(data)
+        .enter()
+        .append('rect')
+        .attr('class', 'bar')
+        .attr('x', d => x( d.bpm ))
+        .attr('y', d => y(0))
+        .attr('height', d => baseline - y(0))
+        .attr('width', bandWidth )
+
+    // Animation
+    chart.selectAll('.bar')
+        .transition()
+        .duration(800)
+        .attr('height', d => baseline - y(d.amount))
+        .attr('y', d => y(d.amount))
+        .delay( (d, i) => i * 10)
+
+    chart.append('g')
+        .attr('transform', `translate(0, ${baseline})`)
+        .call( d3.axisBottom(x))
+
+    chart.append('g')
+        .call(d3.axisLeft(y))
+
+
+}
 
 window.onload = () => {
     // general stats
@@ -692,6 +762,19 @@ window.onload = () => {
 
         chart(data, 'bar')
     })
+
+    // BPM Histogram
+    fetch('/stats/bpm-histogram')
+    .then(data => data.json())
+    .then(data => {
+        $('#wrapper')
+        .append($('<h2></h2>')
+        .addClass('stat-label')
+        .text(`bpm in songs`))
+
+        bpmHistogram(data)
+    })
+
 
     // songs/albums per year
     fetch('/album/publications-by-year')
