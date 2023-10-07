@@ -822,6 +822,19 @@ app.get('/stats/top-artists-per-month', (req, res) => {
     });
 
 });
+app.get('/stats/bpm-histogram', (req, res) => {
+    let query = `
+    SELECT CAST(Song.tempo as INT) as bpm, count(*) as amount
+    FROM Song
+    GROUP BY bpm
+    ORDER BY bpm
+    `
+    db.all(query, [], (err, rows)=> {
+        if (err) throw err;
+        res.json(rows);
+    });
+
+});
 
 app.get('/search/:search', (req, res) => {
     // search for string in titles, album names and lyrics
