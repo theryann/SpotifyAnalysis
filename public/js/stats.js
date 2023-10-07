@@ -646,7 +646,7 @@ function bpmHistogram(data) {
     const margin = {
         top:    30,
         bottom: 30,
-        left:   50,
+        left:   40,
         right:  30,
     }
 
