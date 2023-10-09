@@ -4,5 +4,6 @@ official_data/
 package-lock.json
 history.csv
 song_database.json
+analytics.json
 fetch-database.bat
 *.db

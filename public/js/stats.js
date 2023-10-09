@@ -209,7 +209,7 @@ function timeChart(data, htmlID='#wrapper', lowerLimit=0, upperLimit=3000) {
     const margin = {
         top:    40,
         bottom: 30,
-        left:   30,
+        left:   40,
         right:  30,
     };
 
