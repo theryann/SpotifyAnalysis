@@ -34,8 +34,8 @@ pd.set_option('display.max_rows', None)
 print(merged.query('msPlayed > 10000')['perc'].mean(), merged['msPlayed'].median(), merged['duration'].median())
 
 
-# sns.scatterplot(data=merged, x='duration', y='msPlayed', hue='blue')
-# sns.boxplot(data=merged, x='duration' )
+sns.catplot(data=merged, x='duration', y='msPlayed',)
+# sns.heatmap(data=merged, x='tempo', y='duration', hue='tempo')
 
 
-# plt.show()
+plt.show()

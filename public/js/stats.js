@@ -643,6 +643,8 @@ function generalStats(data) {
 
 function bpmHistogram(data) {
 
+    data = data.filter(d => d.bpm > 0)
+
     const margin = {
         top:    30,
         bottom: 30,

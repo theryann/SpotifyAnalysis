@@ -203,12 +203,12 @@ function albumDiscovery(data, htmlID='#wrapper') {
         right:  30,
     };
 
-    // const charWidth = $('#wrapper').width();
+    // const chartWidth = $('#wrapper').width();
     let wrapper = document.getElementById('wrapper')
-    const charWidth = wrapper.getBoundingClientRect().width
+    const chartWidth = wrapper.getBoundingClientRect().width
 
-    const width  = charWidth - margin.left - margin.right;
-    const height = charWidth / 4 - margin.top  - margin.bottom;
+    const width  = chartWidth - margin.left - margin.right;
+    const height = chartWidth / 4 - margin.top  - margin.bottom;
     const baseline = height - margin.bottom;
 
     const parent = document.querySelector(htmlID)
@@ -225,7 +225,7 @@ function albumDiscovery(data, htmlID='#wrapper') {
         .select(htmlID)
         .append('svg')
             .attr('id', 'album-discovery')
-            .attr('width', charWidth)
+            .attr('width', chartWidth)
             .attr('height', height + margin.top + margin.bottom)
         .append('g')
             .attr('transform', `translate(${margin.left}, ${margin.top})`)
@@ -236,7 +236,7 @@ function albumDiscovery(data, htmlID='#wrapper') {
     //////////////////////
     const x = d3
         .scaleTime()
-        .domain( [ new Date('2022-04'), new Date( Date.now() )] )   // value intervall +- 1 to avoid having the data to stretch over the edge as their mid is on the value
+        .domain( [ new Date('2019-03'), new Date( Date.now() )] )   // value intervall +- 1 to avoid having the data to stretch over the edge as their mid is on the value
         .range( [0, width] )                     // pixels the values map to
         .nice()                                  // spaces axis description to neatly start and end at axis endpoints
 
@@ -304,14 +304,14 @@ function topArtistPerMonth(data, htmlID='#wrapper') {
         right:  30,
     };
 
-    // const charWidth = $('#wrapper').width();
+    // const chartWidth = $('#wrapper').width();
     let wrapper = document.getElementById('wrapper')
-    const charWidth = wrapper.getBoundingClientRect().width
+    const chartWidth = wrapper.getBoundingClientRect().width
 
-    const width  = charWidth - margin.left - margin.right;
+    const width  = chartWidth - margin.left - margin.right;
     let logoWidth = width / data.length * 0.8
 
-    const height = logoWidth * 4 - margin.top  - margin.bottom;
+    const height = logoWidth * 8 - margin.top  - margin.bottom;
     const baseline = height - margin.bottom;
 
     const parent = document.querySelector(htmlID)
@@ -328,7 +328,7 @@ function topArtistPerMonth(data, htmlID='#wrapper') {
         .select(htmlID)
         .append('svg')
             .attr('id', 'top-artists-per-month')
-            .attr('width', charWidth)
+            .attr('width', chartWidth)
             .attr('height', height + margin.top + margin.bottom)
         .append('g')
             .attr('transform', `translate(${margin.left}, ${margin.top})`)
@@ -339,7 +339,7 @@ function topArtistPerMonth(data, htmlID='#wrapper') {
     //////////////////////
     const x = d3
         .scaleTime()
-        .domain( [ new Date('2022-04'), new Date( Date.now() )] )   // value intervall +- 1 to avoid having the data to stretch over the edge as their mid is on the value
+        .domain( [ new Date('2019-03'), new Date( Date.now() )] )   // value intervall +- 1 to avoid having the data to stretch over the edge as their mid is on the value
         .range( [0, width] )                     // pixels the values map to
         .nice()                                  // spaces axis description to neatly start and end at axis endpoints
 
@@ -407,7 +407,7 @@ function albumPlaythrough(data, htmlID='#wrapper') {
         .text('album playthroughs front to back')
     )
 
-    let resultAmount = 15;
+    let resultAmount = 30;
 
     const chartWidth = $(htmlID).width();
     const width  = chartWidth - margin.left - margin.right;
@@ -422,9 +422,9 @@ function albumPlaythrough(data, htmlID='#wrapper') {
         .select(htmlID)
         .append('svg')
             .attr('width', chartWidth)
-            .attr('height', height + margin.top + margin.bottom)
+            .attr('height', height + margin.top + margin.bottom )
         .append('g')
-            .attr('transform', `translate(${margin.left}, ${margin.top})`)
+            .attr('transform', `translate(${margin.left}, ${2*margin.top})`)
 
     //////////////////////
     // Axis
