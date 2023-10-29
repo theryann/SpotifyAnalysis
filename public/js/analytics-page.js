@@ -473,19 +473,58 @@ function albumPlaythrough(data, htmlID='#wrapper') {
 
 }
 
+function genreEvolution(data, htmlID="#wrapper") {
+    const margin = {
+        top:    0,
+        bottom: 0,
+        left:   50,
+        right:  0,
+    };
+
+    $(htmlID).append(
+        $('<h2></h2>')
+        .addClass('stat-label')
+        .text('evolution of genres listened to')
+    )
+
+    const chartWidth = $(htmlID).width();
+    const width  = chartWidth - margin.left - margin.right;
+    const height = 0.5 * width;
+    const baseline = height - margin.bottom;
+
+    const chart = d3
+        .select(htmlID)
+        .append('svg')
+            .attr('width', chartWidth)
+            .attr('height', height + margin.top + margin.bottom )
+        .append('g')
+            .attr('transform', `translate(${margin.left}, ${2*margin.top})`)
+
+    let points = [ ['rock', ''], ['metal', ''], ['pop', ''], ['rap', ''], ['r&b', ''], ['electronic', ''], ['indie', ''], ['classic', ''], ['jazz', ''], ['blues', ''], ['hoerspiel', ''], ['other', '']];
+
+    for (let i = 0; i < data.length; i++ ) {
+        
+    }
+
+}
+
 window.onload = () => {
-    forceGraph()
+    // forceGraph()
 
-    fetch('/stats/top-artists-per-month')
-        .then(data => data.json())
-        .then(data => topArtistPerMonth(data) )
+    // fetch('/stats/top-artists-per-month')
+    //     .then(data => data.json())
+    //     .then(data => topArtistPerMonth(data) )
 
-    fetch('/stats/album-discovery')
-        .then(data => data.json())
-        .then(data => albumDiscovery(data) )
+    // fetch('/stats/album-discovery')
+    //     .then(data => data.json())
+    //     .then(data => albumDiscovery(data) )
 
-    fetch('/stats/album-playthrough')
+    fetch('/stats/genre-evolution')
         .then(data => data.json())
-        .then(data => albumPlaythrough(data) )
+        .then(data => genreEvolution(data) )
+
+    // fetch('/stats/album-playthrough')
+    //     .then(data => data.json())
+    //     .then(data => albumPlaythrough(data) )
 
 }
