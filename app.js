@@ -835,6 +835,88 @@ app.get('/stats/bpm-histogram', (req, res) => {
     });
 
 });
+app.get('/stats/genre-evolution', (req, res) => {
+    let query = `
+    SELECT
+        SUBSTR(timeStamp, 0,8) as month,
+        genre,
+        count(genre) as streams
+    FROM Stream
+    JOIN writtenBy ON writtenBy.songID = Stream.songID
+    JOIN genre ON Genre.artistID = writtenBy.artistID
+    GROUP BY month, genre
+    ORDER BY month asc, streams desc
+    `
+
+    function getGeneralGenre(genre) {
+        let generalGenres = [
+            'rock', 'metal', 'pop', 'rap', 'r&b',
+            'electronic', 'indie', 'classic',
+            'jazz', 'blues', 'hoerspiel'
+        ];
+
+        if (generalGenres.includes(genre)) {
+            return genre
+        }
+
+        for ( let g of genre.split(' ').reverse() ) {
+            if (generalGenres.includes(g)) {
+                return g
+            }
+        }
+
+        for (let g of generalGenres) {
+            if (genre.endsWith(g)) {
+                return g
+            }
+            if (genre.includes(g)) {
+                return g
+            }
+        }
+
+
+        if (genre.endsWith('hardcore')) return 'metal'
+        if (genre.endsWith('punk')) return 'rock'
+        if (genre.endsWith('rock')) return 'rock'
+        if (genre.includes('lo-fi')) return 'electronic'
+        if (genre.endsWith('rave')) return 'electronic'
+        if (genre.endsWith('hip hop')) return 'rap'
+        if (genre.endsWith('r&b')) return 'r&b'
+        if (genre.endsWith('alternative')) return 'indie'
+        if (genre == 'schlager') return 'pop'
+        if (genre == 'orchestra') return 'classic'
+        if (genre == 'alt y') return 'indie'
+
+        return 'other'
+
+    }
+
+
+    db.all(query, [], (err, rows) => {
+        if (err) throw err;
+
+        let months = {};
+
+        // console.log(getGeneralGenre("black metal"))
+        for (let i = 0; i < rows.length; i++) {
+
+            let genre = getGeneralGenre(rows[i].genre)
+
+            if (!months.hasOwnProperty(rows[i].month)) {
+                months[ rows[i].month ] = {};
+            }
+            if (!months[rows[i].month].hasOwnProperty(genre)) {
+                months[ rows[i].month ][ genre ] = 0;
+            }
+
+            months[ rows[i].month ][ genre ] += rows[i].streams
+        }
+
+        res.json(months)
+
+    });
+
+});
 
 app.get('/search/:search', (req, res) => {
     // search for string in titles, album names and lyrics
