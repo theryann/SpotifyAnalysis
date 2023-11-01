@@ -1,4 +1,8 @@
 function markKeyword(text, keyword) {
+    if (typeof text !== 'string') {
+        text = '';
+    }
+
     text = text.toLowerCase();
     text = text.replaceAll('\\n', '');
 
@@ -65,8 +69,10 @@ window.onload = async () => {
 
         resultArticle.appendChild(resultLink)
         resultArticle.appendChild(albumLink)
-        if (song.lyrics !== "%not available%" && song.lyrics.length > 0) {
-            resultArticle.appendChild(resultLyrics)
+        if (song.lyrics !== "%not available%" && typeof song.lyrics === 'string' ) {
+            if (song.lyrics.length > 0) {
+                resultArticle.appendChild(resultLyrics)
+            }
         }
         sectionSongs.appendChild(resultArticle);
 
