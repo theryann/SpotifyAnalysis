@@ -4,7 +4,7 @@ function forceGraph() {
     .then(data => {
         const font = 'Arial'
 
-        const nodes = [];
+        let nodes = [];
         const edges = [];
 
         ///////////////////////////////////
@@ -27,6 +27,7 @@ function forceGraph() {
         function add_node(new_id) {
             // adds node form raw_nodes to nodes (if not already in)
             // returns index of the node in ny case
+            nodes = nodes.filter(n => n != undefined)
             let node_index = 0;
             // check if node already in array
             for (let i = 0; i < nodes.length; i++) {
@@ -500,31 +501,84 @@ function genreEvolution(data, htmlID="#wrapper") {
         .append('g')
             .attr('transform', `translate(${margin.left}, ${2*margin.top})`)
 
-    let points = [ ['rock', ''], ['metal', ''], ['pop', ''], ['rap', ''], ['r&b', ''], ['electronic', ''], ['indie', ''], ['classic', ''], ['jazz', ''], ['blues', ''], ['hoerspiel', ''], ['other', '']];
+    // array to preserve order
+    // 0 ..genre
+    // 1 ..cursor for the current height of the pile of genres. its used in the loop and incemented
+    // 2 ..points of the polygon that marks the evolution of a genre
+    let points = [ ['rock', '0,'+height], ['metal', '0,'+height], ['pop', '0,'+height], ['rap', '0,'+height], ['r&b', '0,'+height], ['electronic', '0,'+height], ['indie', '0,'+height], ['classic', '0,'+height], ['jazz', '0,'+height], ['blues', '0,'+height], ['hoerspiel', '0,'+height], ['other', '0,'+height]];
+    let monthWidth = width / points.length;
 
+    // prepare data
+    data = Object.entries(data)
+    data.map(d => d.push(0))
+
+    let totalStreamsThisMonth = 0;
+    let streams;
+    let percOfMonth = 0;
+
+    let thisMonth;
     for (let i = 0; i < data.length; i++ ) {
-        
+        thisMonth = data[i]
+        totalStreamsThisMonth = d3.sum(Object.values(data[i][1]))
+
+        for (let j = 0; j < points.length; j++ ) {
+            if ( thisMonth[1][ points[j][0] ] == undefined ) {
+                streams = 0
+            } else {
+                streams = thisMonth[1][ points[j][0] ]
+            }
+
+            percOfMonth = streams / totalStreamsThisMonth * height
+
+            points[j][1] += ` ${i * monthWidth},${data[i][2] + percOfMonth}`
+            data[i][2] += percOfMonth
+
+            // create last corner of plygon
+            if ( i == data.length - 1 ) {
+                points[j][1] += ' ' + width + ',' + height
+            }
+        }
+
     }
+    console.log(data)
+    console.log(points)
+
+    let colAngle = 0;
+    let randColor = () => {
+        let col = `hsl( ${colAngle} , 53%, 50%, 1)`
+        colAngle += (.5 * points.length) % 360
+        console.log(colAngle)
+        return col
+    }
+
+    chart.selectAll()
+        .data(points)
+        .enter()
+        .append('polygon')
+        .attr('points', d=> d[1] )
+        .style('fill', (d) => {console.table(d[0]); return randColor()})
+        // .attr('stroke', 'black')
+        // .attr('stroke-width', 2)
 
 }
 
 window.onload = () => {
-    // forceGraph()
+    forceGraph()
 
-    // fetch('/stats/top-artists-per-month')
-    //     .then(data => data.json())
-    //     .then(data => topArtistPerMonth(data) )
+    fetch('/stats/top-artists-per-month')
+        .then(data => data.json())
+        .then(data => topArtistPerMonth(data) )
 
-    // fetch('/stats/album-discovery')
-    //     .then(data => data.json())
-    //     .then(data => albumDiscovery(data) )
+    fetch('/stats/album-discovery')
+        .then(data => data.json())
+        .then(data => albumDiscovery(data) )
 
     fetch('/stats/genre-evolution')
         .then(data => data.json())
         .then(data => genreEvolution(data) )
 
-    // fetch('/stats/album-playthrough')
-    //     .then(data => data.json())
-    //     .then(data => albumPlaythrough(data) )
+    fetch('/stats/album-playthrough')
+        .then(data => data.json())
+        .then(data => albumPlaythrough(data) )
 
 }
