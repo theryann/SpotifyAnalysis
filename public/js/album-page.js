@@ -42,6 +42,12 @@ window.onload = async () => {
 
     fieldArtistName.appendChild(artistLink)
 
+    if (albumInfo.fullPlaythroughs) {
+        document.querySelector('#item-info__playthroughs').innerText = albumInfo.fullPlaythroughs
+    } else {
+        document.querySelector('#item-info__playthroughs').parentElement.remove()
+    }
+
 
     fieldYear.innerText = new Date(albumInfo.releaseDate).toLocaleDateString('de-DE', {
         'day': '2-digit',
