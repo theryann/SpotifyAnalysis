@@ -790,13 +790,23 @@ app.get('/stats/album-discovery', (req, res) => {
     });
 });
 app.get('/stats/album-playthrough', (req, res) => {
-    let analytics = JSON.parse( fs.readFileSync('analytics.json', 'utf8') )
-    res.json(
-        Object
-        .entries(analytics.darian.albumPlaythrough)
-        .map(a => a[1])
-        .sort((a,b) => a.playthroughs < b.playthroughs ? 1: -1)
-    )
+    let stats = `
+    SELECT
+        ID as albumID,
+        totalTracks,
+        name,
+        imgSmall,
+        fullPlaythroughs as playthroughs
+
+    FROM Album
+    WHERE fullPlaythroughs >= 1 AND type != 'single'
+    ORDER BY fullPlaythroughs desc
+`
+
+    db.all(stats, [], (err, rows)=> {
+        if (err) throw err;
+        res.json(rows);
+    });
 });
 app.get('/stats/top-artists-per-month', (req, res) => {
     let query = `
