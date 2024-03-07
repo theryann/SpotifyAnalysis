@@ -1,6 +1,77 @@
 import { makeTimestamp } from "./overview.js";
 import { timeChart } from "./stats.js";
 
+function audioCurve(data, htmlID) {
+    const parent = document.querySelector(htmlID)
+
+    if (data.segments.length == 0) {
+        parent.remove()
+        return
+    }
+
+    const margin = {
+        top:    0,
+        bottom: 0,
+        left:   10,
+        right:  10,
+    };
+
+    // const charWidth = $('#wrapper').width();
+    let wrapper = document.getElementById('wrapper')
+    const charWidth = wrapper.getBoundingClientRect().width
+
+    const width  = charWidth - margin.left - margin.right;
+    const height = charWidth / 4 - margin.top  - margin.bottom;
+    const baseline = height/2 - margin.bottom;
+
+    parent.classList = parent.classList.remove('placeholder-broad')
+
+    var chart = d3
+        .select(htmlID)
+        .append('svg')
+            .attr('id', 'waveform-chart')
+            .attr('width', charWidth)
+            .attr('height', height + margin.top + margin.bottom)
+        .append('g')
+            .attr('transform', `translate(${margin.left}, ${margin.top})`)
+
+    //////////////////////
+    // X - Axis
+    //////////////////////
+
+    const xTime = d3
+        .scaleLinear()
+        .domain([0, data.segments[ data.segments.length-1 ].start + 1 ])
+        .range( [0, width] )   // pixels the values map to
+
+    const yLoudness = d3
+        .scaleLinear()
+        .domain([
+            -60,
+            d3.max(data.segments.map(d => d.loudnessMax))
+        ])
+        .range([baseline, 0])
+
+
+    let path = `0,${baseline} `
+    path += data.segments
+                .map(d => `${xTime(d.start)},${yLoudness(d.loudnessStartSec)} ${xTime( d.start + d.loudnessMaxTimeSec)},${yLoudness(d.loudnessMax)}` )
+                .join(' ')
+    path += ' '
+    path += data.segments
+                .reverse()
+                .map(d => `${xTime(d.start)},${baseline-yLoudness(d.loudnessStartSec)} ${xTime( d.start + d.loudnessMaxTimeSec)},${baseline-yLoudness(d.loudnessMax)}` )
+                .join(' ')
+
+    chart.append('polygon')
+        .attr('points', path)
+        .attr('stroke-width', .5)
+        .attr('fill', 'var(--clr-primary)')
+        // .attr('fill', 'transparent')
+        .attr('stroke', 'var(--clr-primary-darker)')
+}
+
+
 window.onload = async () => {
     const loader = document.querySelector('.loader');
     const fieldSongImg = document.getElementById('item-info__img')
@@ -52,6 +123,12 @@ window.onload = async () => {
     .then(data => data.json())
     .then(data => {
         timeChart(data, '#streaming-plot')
+    })
+
+    fetch(`/songs/score/${songID}`)
+    .then(data => data.json())
+    .then(data => {
+        audioCurve(data, '#audio-curve')
     })
 
     // lyrics

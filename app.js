@@ -118,6 +118,33 @@ app.get('/songs/id/:id', (req, res) => {
         });
     });
 });
+app.get('/songs/score/:id', (req, res) => {
+    let data = {
+        beats: [],
+        bars: [],
+        segments: [],
+        sections: [],
+    }
+    let segmentQuery = `
+    SELECT
+        start,
+        durationSec,
+        loudnessStartSec,
+        loudnessMax,
+        loudnessMaxTimeSec,
+        loudnessEnd
+
+    FROM Segments
+    WHERE songID = '${req.params.id}'
+    `;
+
+    db.all(segmentQuery, [], (err, rows) => {
+        if (err) throw err;
+        data.segments = rows;
+        res.json(data);
+
+    });
+});
 app.get('/songs/history', (req, res) => {
     let offset = 0;
     if (req.query.hasOwnProperty('offset')) {
