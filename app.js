@@ -137,12 +137,20 @@ app.get('/songs/score/:id', (req, res) => {
     FROM Segments
     WHERE songID = '${req.params.id}'
     `;
+    let sectionQuery = `
+    SELECT *
+    FROM Sections
+    WHERE songID = '${req.params.id}'
+    `;
 
     db.all(segmentQuery, [], (err, rows) => {
         if (err) throw err;
         data.segments = rows;
-        res.json(data);
-
+        db.all(sectionQuery, [], (err, rows) => {
+            if (err) throw err;
+            data.sections = rows;
+            res.json(data);
+        });
     });
 });
 app.get('/songs/history', (req, res) => {

@@ -10,19 +10,18 @@ function audioCurve(data, htmlID) {
     }
 
     const margin = {
-        top:    0,
-        bottom: 0,
+        top:    20,
+        bottom: 10,
         left:   10,
         right:  10,
     };
 
-    // const charWidth = $('#wrapper').width();
     let wrapper = document.getElementById('wrapper')
     const charWidth = wrapper.getBoundingClientRect().width
 
     const width  = charWidth - margin.left - margin.right;
-    const height = charWidth / 4 - margin.top  - margin.bottom;
-    const baseline = height/2 - margin.bottom;
+    const height = charWidth / 7 - margin.top  - margin.bottom;
+    const baseline = height - margin.bottom;
 
     parent.classList = parent.classList.remove('placeholder-broad')
 
@@ -38,6 +37,7 @@ function audioCurve(data, htmlID) {
     //////////////////////
     // X - Axis
     //////////////////////
+    let middle = baseline - height / 2;
 
     const xTime = d3
         .scaleLinear()
@@ -46,14 +46,17 @@ function audioCurve(data, htmlID) {
 
     const yLoudness = d3
         .scaleLinear()
+        // .scaleLog()
+        // .base(10)
         .domain([
             -60,
             d3.max(data.segments.map(d => d.loudnessMax))
         ])
-        .range([baseline, 0])
+        .range([middle, 0])
 
 
-    let path = `0,${baseline} `
+
+    let path = `0,${middle} `
     path += data.segments
                 .map(d => `${xTime(d.start)},${yLoudness(d.loudnessStartSec)} ${xTime( d.start + d.loudnessMaxTimeSec)},${yLoudness(d.loudnessMax)}` )
                 .join(' ')
@@ -69,7 +72,19 @@ function audioCurve(data, htmlID) {
         .attr('fill', 'var(--clr-primary)')
         // .attr('fill', 'transparent')
         .attr('stroke', 'var(--clr-primary-darker)')
-}
+
+    chart.selectAll()
+        .data(data.sections)
+        .enter()
+        .append('line')
+            .attr('x1', d => xTime(d.start))
+            .attr('x2', d => xTime(d.start + d.durationSec))
+            .attr('y1', -margin.top/2)
+            .attr('y2', -margin.top/2)
+            .style('stroke-width', 6)
+            .style('stroke', d => ['darkgray', 'grey'][ Number.parseInt(data.sections.indexOf(d)) % 2 ])
+
+    }
 
 
 window.onload = async () => {
