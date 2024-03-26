@@ -46,25 +46,21 @@ function audioCurve(data, htmlID) {
 
     const yLoudness = d3
         .scaleLinear()
-        // .scaleLog()
-        // .base(10)
         .domain([
             -60,
-            d3.max(data.segments.map(d => d.loudnessMax))
+            d3.max(data.segments.map(d => d.loudnessMax)) + 1
         ])
         .range([middle, 0])
 
-
-
     let path = `0,${middle} `
     path += data.segments
-                .map(d => `${xTime(d.start)},${yLoudness(d.loudnessStartSec)} ${xTime( d.start + d.loudnessMaxTimeSec)},${yLoudness(d.loudnessMax)}` )
-                .join(' ')
+            .map(d => `${xTime(d.start)},${yLoudness(d.loudnessStartSec)} ${xTime( d.start + d.loudnessMaxTimeSec)},${yLoudness(d.loudnessMax)}` )
+            .join(' ')
     path += ' '
     path += data.segments
-                .reverse()
-                .map(d => `${xTime(d.start)},${baseline-yLoudness(d.loudnessStartSec)} ${xTime( d.start + d.loudnessMaxTimeSec)},${baseline-yLoudness(d.loudnessMax)}` )
-                .join(' ')
+            .reverse()
+            .map(d => `${xTime(d.start)},${baseline-yLoudness(d.loudnessStartSec)} ${xTime( d.start + d.loudnessMaxTimeSec)},${baseline-yLoudness(d.loudnessMax)}` )
+            .join(' ')
 
     chart.append('polygon')
         .attr('points', path)
