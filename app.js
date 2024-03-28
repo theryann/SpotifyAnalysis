@@ -4,6 +4,7 @@ const app = express();
 const bodyParser = require('body-parser');
 const path = require('path');
 const fs = require('fs');
+const cheerio = require('cheerio');
 
 
 app.use( bodyParser.json() );
@@ -15,6 +16,30 @@ let db = new sqlite3.Database('develop.db', (err) => {
     if (err) throw err;
     console.log('[ CONNECTED ] to spotify.db');
 });
+
+
+// setup PREFERENCES
+let preferences = {}
+
+function loadPreferences() {
+    try {
+        preferences = JSON.parse( fs.readFileSync('preferences.json') );
+    } catch (error) {
+        fs.writeFileSync('preferences.json', JSON.stringify(preferences));
+        console.error('No preference file found. Now created');
+    }
+}
+
+function savePreferences() {
+    try {
+        fs.writeFileSync('preferences.json', JSON.stringify(preferences));
+    } catch (error) {
+        console.error('Error occured while saving preferences:\n', error);
+    }
+}
+
+
+// GET Requests
 
 app.get('/', (req, res) => {
     res.status(200);
@@ -1034,5 +1059,5 @@ app.listen(port, () => {
     console.log(`[ SERVER STARTED ]\nlisten at port ${port}.`)
 })
 
-
-// fetch('/times/yearly').then(data => data.json()).then(data => console.log(data))
+// load preferences like theme and preplotted graphics
+loadPreferences()
