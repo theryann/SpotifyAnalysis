@@ -261,12 +261,21 @@ function timeChart(data, htmlID='#wrapper', lowerLimit=0, upperLimit=3000) {
             .tickFormat(d3.format('d'))
         )
 
+    // year labels
+    // interpolate them from the smalles and highest year
+    // if we didn't do that, year in which there were no streams wouldn't get a sparation line
+    let minYear = Math.min(...data.map(d => d.day.slice(0, 4)))
+    let maxYear = Math.max(...data.map(d => d.day.slice(0, 4)))
+    let yearList = [];
 
-    let yearSet = new Set( data.map(d => d.day.slice(0, 4)) )  // only contain 'smooth' year numbers without dublicates
-    yearSet.forEach(year => {
+    for (let i = minYear; i <= maxYear; i++) {
+        yearList.push( i )
+    }
+
+    yearList.forEach(year => {
         chart.append('line')
-            .attr('x1', x(new Date(year)) )
-            .attr('x2', x(new Date(year)) )
+            .attr('x1', x(new Date(year.toString())) )
+            .attr('x2', x(new Date(year.toString())) )
             .attr('y1', yStreams(0) )
             .attr('y2', 0 )
             .attr('class', 'section-line')

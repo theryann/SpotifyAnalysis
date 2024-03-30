@@ -7,3 +7,5 @@ song_database.json
 analytics.json
 fetch-database.bat
 *.db
+*.json
+
