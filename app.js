@@ -71,6 +71,13 @@ app.get('/songs/top', (req, res) => {
     } else if ( req.query.hasOwnProperty("oldest") ) {
         where_clause = `WHERE Stream.timeStamp >= '${req.query.oldest}'`;  // oldest date to include
     }
+
+    // the ID used tothe songs group by. Either Song ID or the UUID
+    // with UUID re-released songs with the same title and artist but under different spotify ID
+    // are still counted together
+    // so we read the current setting from the preferences json file
+    let groupingID = preferences.grouping === 'uuid' ? 'Song.UUID' : 'Song.ID';
+
     let top_songs = `
         SELECT
             Song.ID as            'ID',
@@ -85,7 +92,7 @@ app.get('/songs/top', (req, res) => {
         JOIN Song ON Stream.songID = Song.ID
         JOIN Album On Album.ID = Song.albumID
         ${where_clause}
-        GROUP BY Song.ID
+        GROUP BY ${groupingID}
         ORDER BY ${order} desc
     `;
 
