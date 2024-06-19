@@ -210,6 +210,40 @@ app.get('/songs/history', (req, res) => {
         res.json(rows)
     });
 });
+app.get('/songs/forgotten-hits', (req, res) => {
+    // get Top Songs that weren't listened to in at least a year
+    let today = new Date()
+    today.setFullYear( today.getFullYear() - 1 ) // subtract the year by one so we get roughly a year ago
+    let dateOneYearAgoString = today.toISOString()
+
+    let query = `
+        SELECT
+            Song.ID as            'ID',
+            Song.UUID as            'UUID',
+            Song.title as         'title',
+            Album.imgSmall as     'img',
+            count(*) as           'streams',
+            max(Stream.timeStamp) as 'lastPlayed'
+        FROM Stream
+        JOIN Song ON Stream.songID = Song.ID
+        JOIN Album On Album.ID = Song.albumID
+        WHERE Song.ID NOt IN (
+            SELECT DISTINCT Stream.songID
+            FROM Stream
+            WHERE Stream.timeStamp >= '${dateOneYearAgoString}'
+        )
+        GROUP BY Song.ID
+        ORDER BY streams desc
+        LIMIT 10
+    `;
+
+    db.all(query, [], (err, rows)=> {
+        if (err) throw err;
+        res.json(
+            rows.sort((a,b) => a.lastPlayed > b.lastPlayed ? 1 : -1)
+        )
+    });
+});
 
 
 app.get('/artists/top', (req, res) => {
