@@ -602,7 +602,7 @@ function completedAlbums(data, htmlID='#wrapper') {
         link.attr('href', `/album.html?album-id=${data[i].albumID}` )
         link.append(
             $('<img>')
-            .attr('src', data[i].imgBig)
+            .attr('src', data[i].img)
         )
         link.append(
             $('<div></div>')
