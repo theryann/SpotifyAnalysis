@@ -554,6 +554,31 @@ app.get('/album/noskiplist', (req, res) => {
         res.json(rows);
     });
 });
+app.get('/album/completed-albums', (req, res) => {
+    // Albums that have be listened through completely
+    let query = `
+    SELECT
+        Album.ID as albumID,
+        Artist.ID as artistID,
+        Artist.name as artistName,
+        Album.name as albumTitle,
+        Album.totalTracks,
+        Artist.popularity,
+        Album.fullPlaythroughs,
+        Album.releaseDate,
+        Album.imgBig
+
+    FROM Album
+    JOIN Artist ON Artist.ID = Album.artistID
+    WHERE fullPlaythroughs NOT NULL
+    --ORDER BY popularity DESC, fullPlaythroughs DESC
+    ORDER BY artistName, releaseDate
+    `;
+    db.all(query, [], (err, rows)=> {
+        if (err) throw err;
+        res.json(rows);
+    });
+});
 
 
 app.get('/vis/force-graph', (req, res) => {
