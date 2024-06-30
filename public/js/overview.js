@@ -49,10 +49,37 @@ function makeTimestamp(milliseconds) {
     let durationMin   = Math.floor(milliseconds / 1000 / 60);
     let durationHours = Math.floor(durationMin / 60);
     let remainingSec  = Math.floor((milliseconds / 1000) - durationMin * 60)
+
+    let durationDays   = Math.floor(durationHours / 24);
+    let durationMonths = Math.floor(durationDays / 30);
+    let durationYears  = Math.floor(durationDays / 365);
+
     let timeStamp = '';
 
     remainingSec = remainingSec.toString()
     remainingSec = (remainingSec.length > 1) ? remainingSec : '0'.concat(remainingSec)
+
+    if (durationDays > 0) {
+        // if greater than 1 days its not a time stamp but a time difference
+        // most likely for how long an event id in the past
+
+        if (durationYears > 0) {
+            timeStamp += durationYears + (durationYears > 1 ? ' years ' : ' year ')
+
+            let remainingMonths = durationMonths - durationYears * 12
+            if (remainingMonths > 0) {
+                timeStamp += remainingMonths + (remainingMonths > 1 ? ' months ' : ' month ')
+            }
+
+        } else if (durationMonths > 0) {
+            timeStamp += durationMonths + (durationMonths > 1 ? ' months ' : ' month ')
+
+        } else {
+            timeStamp += durationDays + ' days'
+        }
+
+        return timeStamp + 'ago'
+    }
 
     if (durationHours > 0) {
         timeStamp += `${durationHours}h `
@@ -67,7 +94,7 @@ function makeTimestamp(milliseconds) {
     return timeStamp;
 }
 
-function fillOverviewTabs(orderBy='streams', limit=10) {
+function fillOverviewTabs(orderBy='streams', limit=20) {
     // orderBy ... 'streams' | 'playtime'
     // timeLimitDays ... timeframe to consider (earliest included date)
 
@@ -130,6 +157,40 @@ function fillOverviewTabs(orderBy='streams', limit=10) {
     })
 }
 
+function fillForgottenHits(data, limit=10) {
+    let table = $('#forgotten-hits__table')
+    for (let i = 0; i < limit; i++) {
+        let row = $('<tr></tr>')
+        row.append(
+            $('<td></td>')
+            .addClass('')
+            .append(
+                $('<img>')
+                .attr('src', data[i].img)
+                .addClass('table-icon')
+            )
+
+        )
+        row.append(
+            $('<td></td>')
+            .append(
+                $('<a></a>')
+                .addClass('hyperlink')
+                .attr('href', '/song.html?song-id=' + data[i].ID)
+                .text( data[i].title )
+            )
+        )
+        let today = new Date();
+        let lastPlayed = new Date(data[i].lastPlayed)
+
+        row.append(
+            $('<td></td>')
+            .text(makeTimestamp( today - lastPlayed ))
+        )
+
+        table.append(row)
+    }
+}
 
 window.onload = () => {
 
@@ -160,9 +221,14 @@ window.onload = () => {
     $('#select-timeframe').on('change', refreshTable )
 
 
-    loadSongs(0); // streaming history
+    // short streaming History
+    loadSongs(0);
     // vinyChart(400);
 
+    // forgotten hits
+    fetch('/songs/forgotten-hits')
+        .then(data => data.json())
+        .then(data => fillForgottenHits(data))
 
 }
 

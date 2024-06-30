@@ -256,6 +256,13 @@ select {
     width: 50%;
 }
 
+.table-icon {
+    object-fit: cover;
+    vertical-align: center;
+    border-radius: 50%;
+    aspect-ratio: 1/1;
+    height: 2em;
+}
 
 /* ARTIST PAGE */
 table[class="item-info"] {

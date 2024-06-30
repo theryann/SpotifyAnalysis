@@ -34,7 +34,7 @@
 
     <div class="halfs-grid">
         <!-- left half (ranked lists) -->
-        <div>
+        <div id="left-half">
             <!-- <h2 id="label-timeframe"></h2> -->
             <select name="timeframe" id="select-timeframe">
                 <option value="today">today</option>
@@ -76,9 +76,12 @@
         </div>
 
         <!-- right halt (log) -->
-        <div>
+        <div id="right-half">
             <h2>recently played <a href="log.html" class="hyperlink">(&#8689; full list)</a></h2>
             <table class="item-info" id="song-log__table"></table>
+
+            <h2>forgotten favourites</h2>
+            <table class="item-info" id="forgotten-hits__table"></table>
         </div>
 
     </div>
