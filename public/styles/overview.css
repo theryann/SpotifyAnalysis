@@ -657,3 +657,8 @@ table[class="item-info"] {
 .analytics-album-cover:hover {
     cursor: pointer;
 }
+
+.album-grid {
+    display: grid;
+    grid-template-columns: repeat(10);
+}

@@ -540,14 +540,14 @@ function genreEvolution(data, htmlID="#wrapper") {
         }
 
     }
-    console.log(data)
-    console.log(points)
+    // console.log(data)
+    // console.log(points)
 
     let colAngle = 0;
     let randColor = () => {
         let col = `hsl( ${colAngle} , 53%, 50%, 1)`
         colAngle += (.5 * points.length) % 360
-        console.log(colAngle)
+        // console.log(colAngle)
         return col
     }
 
@@ -556,14 +556,57 @@ function genreEvolution(data, htmlID="#wrapper") {
         .enter()
         .append('polygon')
         .attr('points', d=> d[1] )
-        .style('fill', (d) => {console.table(d[0]); return randColor()})
+        .style('fill', (d) => {return randColor()})
         // .attr('stroke', 'black')
         // .attr('stroke-width', 2)
 
 }
 
+function completedAlbums(data, htmlID='#wrapper') {
+    $(htmlID).append(
+        $('<h2></h2>')
+        .addClass('stat-label')
+        .text('all Albums listened to completely')
+    )
+
+    let numberOfUniqueAlbums = data.length;
+    let numberPlaythroughs   = d3.sum( data.map(d => d.fullPlaythroughs) );
+    let numberOfUniqueSongs  = d3.sum( data.map(d => d.totalTracks) );
+    let numberOfSongStreams  = d3.sum( data.map(d => d.totalTracks * d.fullPlaythroughs) );
+
+    // find how many albums make up the most streams percentage
+    let dataSortedByPlaythroughs = data.sort((a,b) => a.fullPlaythroughs < b.fullPlaythroughs ? 1 : -1)
+    let streamCummulator = 0;
+    let albumsNecessary  = 0;
+
+    for (let i = 0; i < numberOfUniqueAlbums; i++) {
+        streamCummulator += dataSortedByPlaythroughs[i].totalTracks * dataSortedByPlaythroughs[i].fullPlaythroughs;
+        albumsNecessary  += 1;
+
+        if (streamCummulator >= numberOfSongStreams * 0.25) break
+    }
+
+
+    $(htmlID).append(
+        $('<p></p>').text(`listened to ${parseInt(numberOfUniqueAlbums).toLocaleString()} albums ${parseInt(numberPlaythroughs).toLocaleString()} times`)
+    )
+    $(htmlID).append(
+        $('<p></p>').text(`with ${parseInt(numberOfUniqueSongs).toLocaleString()} unique songs streamed ${parseInt(numberOfSongStreams).toLocaleString()} times`)
+    )
+    $(htmlID).append(
+        $('<p></p>').text(`with ${Number(albumsNecessary/numberOfUniqueAlbums*100).toFixed(2)}% of albums making up ${Number(streamCummulator/numberOfSongStreams*100).toFixed(2)}% of streams`)
+    )
+    // $(htmlID).append(
+    //     $('<div></div>')
+    //     .addClass('stat-label')
+    //     .text('all Albums listened to completely')
+    // )
+
+
+}
+
 window.onload = () => {
-    forceGraph()
+    // forceGraph()
 
     fetch('/stats/top-artists-per-month')
         .then(data => data.json())
@@ -580,5 +623,9 @@ window.onload = () => {
     fetch('/stats/album-playthrough')
         .then(data => data.json())
         .then(data => albumPlaythrough(data) )
+
+    fetch('/album/completed-albums')
+        .then(data => data.json())
+        .then(data => completedAlbums(data) )
 
 }
