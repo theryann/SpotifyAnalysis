@@ -575,7 +575,7 @@ function completedAlbums(data, htmlID='#wrapper') {
     let numberOfSongStreams  = d3.sum( data.map(d => d.totalTracks * d.fullPlaythroughs) );
 
     // find how many albums make up the most streams percentage
-    let dataSortedByPlaythroughs = data.sort((a,b) => a.fullPlaythroughs < b.fullPlaythroughs ? 1 : -1)
+    let dataSortedByPlaythroughs = [...data].sort((a,b) => a.fullPlaythroughs < b.fullPlaythroughs ? 1 : -1)
     let streamCummulator = 0;
     let albumsNecessary  = 0;
 
@@ -583,7 +583,7 @@ function completedAlbums(data, htmlID='#wrapper') {
         streamCummulator += dataSortedByPlaythroughs[i].totalTracks * dataSortedByPlaythroughs[i].fullPlaythroughs;
         albumsNecessary  += 1;
 
-        if (streamCummulator >= numberOfSongStreams * 0.25) break
+        if (streamCummulator >= numberOfSongStreams * 0.5) break
     }
 
 
@@ -596,11 +596,18 @@ function completedAlbums(data, htmlID='#wrapper') {
     $(htmlID).append(
         $('<p></p>').text(`with ${Number(albumsNecessary/numberOfUniqueAlbums*100).toFixed(2)}% of albums making up ${Number(streamCummulator/numberOfSongStreams*100).toFixed(2)}% of streams`)
     )
-    // $(htmlID).append(
-    //     $('<div></div>')
-    //     .addClass('stat-label')
-    //     .text('all Albums listened to completely')
-    // )
+    let coverContainer = $('<div></div>').addClass('album-grid')
+    for (let i = 0; i < data.length; i++) {
+        coverContainer.append(
+            $('<a></a>')
+            .attr('href', `/album.html?album-id=${data[i].albumID}` )
+            .append(
+                $('<img>')
+                .attr('src', data[i].imgBig)
+            )
+        )
+    }
+    $(htmlID).append(coverContainer)
 
 
 }
