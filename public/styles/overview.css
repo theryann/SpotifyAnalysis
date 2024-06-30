@@ -668,7 +668,24 @@ table[class="item-info"] {
     max-width: fit-content;
     max-height: fit-content;
     object-fit: cover;
+    position: relative;
+    text-align: center;
+    font-size: xx-large;
+    color: var(--clr-text);
 }
 .album-grid img {
     max-height: 100%;
+}
+.centered-text {
+    visibility: hidden;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+.album-grid a:hover .centered-text{
+    visibility: visible;
+}
+.album-grid a:hover img{
+    opacity: .3;
 }

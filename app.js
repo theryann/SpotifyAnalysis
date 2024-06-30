@@ -566,7 +566,7 @@ app.get('/album/completed-albums', (req, res) => {
         Artist.popularity,
         Album.fullPlaythroughs,
         Album.releaseDate,
-        Album.imgBig
+        Album.imgSmall as imgBig
 
     FROM Album
     JOIN Artist ON Artist.ID = Album.artistID

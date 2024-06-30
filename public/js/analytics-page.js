@@ -598,14 +598,18 @@ function completedAlbums(data, htmlID='#wrapper') {
     )
     let coverContainer = $('<div></div>').addClass('album-grid')
     for (let i = 0; i < data.length; i++) {
-        coverContainer.append(
-            $('<a></a>')
-            .attr('href', `/album.html?album-id=${data[i].albumID}` )
-            .append(
-                $('<img>')
-                .attr('src', data[i].imgBig)
-            )
+        let link = $('<a></a>')
+        link.attr('href', `/album.html?album-id=${data[i].albumID}` )
+        link.append(
+            $('<img>')
+            .attr('src', data[i].imgBig)
         )
+        link.append(
+            $('<div></div>')
+            .addClass('centered-text')
+            .text(data[i].fullPlaythroughs)
+        )
+        coverContainer.append(link)
     }
     $(htmlID).append(coverContainer)
 
@@ -613,7 +617,7 @@ function completedAlbums(data, htmlID='#wrapper') {
 }
 
 window.onload = () => {
-    // forceGraph()
+    forceGraph()
 
     fetch('/stats/top-artists-per-month')
         .then(data => data.json())
