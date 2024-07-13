@@ -46,7 +46,7 @@ function albumStreamChart(album, mostStreames) {
         // .attr('class', 'album-stream-cover')
         .attr('fill', 'green')
         .attr('mask', 'url(#mask-cover)')
-        
+
     // chart.append('image')
     //     .attr('x', coverWidth)
     //     .attr('y', 0)
@@ -162,7 +162,9 @@ window.onload = () => {
         .then(data => data.json())
         .then(artistSongs => {
             $('#wrapper').append(
-                $('<h3></h3>').addClass('stat-label').text('songs')
+                $('<h3></h3>')
+                    .addClass('stat-label')
+                    .text('songs (' + artistSongs.length + ')')
             )
 
             let details = document.createElement('details')
@@ -170,7 +172,7 @@ window.onload = () => {
 
             let detailsSummary = document.createElement('summary')
             detailsSummary.innerText = 'songs'
-            detailsSummary.classList = 'details__summary'
+            detailsSummary.classList.add('details__summary')
             details.appendChild(detailsSummary)
             details.appendChild( makeTable(artistSongs, 'title') )
             wrapper.appendChild(details)
