@@ -155,7 +155,29 @@ window.onload = async () => {
 
         fetch(similarSongsUrlString)
         .then(data => data.json())
-        .then(data => console.log(data))
+        .then(data => {
+            let similarSongTable = $('<table></table>')
+
+            data.forEach(song => {
+                similarSongTable.append(
+                    $('<tr></tr>').append(
+                        $('<td></td>').append(
+                            $('<a></a>')
+                                .attr('href', 'song.html?song-id=' + song.ID)
+                                .addClass('hyperlink')
+                                .text(song.title)
+                        )
+                    )
+                )
+            })
+
+            $('#info-layout').append(
+                $('<div></div>')
+                .append( $('<h2></h2>').addClass('stat-label').text('similar Songs') )
+                .append( similarSongTable )
+            )
+
+        })
 
     })
 
