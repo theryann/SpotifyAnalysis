@@ -140,6 +140,23 @@ window.onload = async () => {
     .then(data => data.json())
     .then(data => {
         audioCurve(data, '#audio-curve')
+
+        // similar songs
+        // needs number of sections thats why this is called here
+        let similarSongsUrlString = '/songs/similar-songs'
+        similarSongsUrlString += '?songid='+ songID
+        similarSongsUrlString += '&duration='+ songInfo.duration
+        similarSongsUrlString += '&tempo='+ songInfo.tempo
+        similarSongsUrlString += '&key='+ songInfo.key
+        similarSongsUrlString += '&mode='+ songInfo.mode
+        similarSongsUrlString += '&explicit='+ songInfo.explicit
+        similarSongsUrlString += '&energy='+ songInfo.energy
+        similarSongsUrlString += '&numsections='+ data.sections.length
+
+        fetch(similarSongsUrlString)
+        .then(data => data.json())
+        .then(data => console.log(data))
+
     })
 
     // lyrics
@@ -155,6 +172,8 @@ window.onload = async () => {
         fieldLyrics.appendChild(lyrics)
 
     }
+
+
 
     // info table
 

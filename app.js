@@ -244,6 +244,33 @@ app.get('/songs/forgotten-hits', (req, res) => {
         )
     });
 });
+app.get('/songs/similar-songs', (req, res) => {
+    let query = `
+    SELECT
+        Song.ID, Song.title, sectable.numSections,
+        ABS(Song.tempo - ${req.query.tempo} ) as diffTempo,
+        ABS(Song.energy - ${req.query.energy} ) as diffEnergy
+    FROM Song
+    JOIN (
+        SELECT Sections.songID, count(*) as numSections
+        FROM Sections
+        GROUP BY Sections.songID
+    ) as sectable ON sectable.songID = Song.ID
+    WHERE
+        Song.ID != '${req.query.songid}' AND
+        Song.mode = ${req.query.mode}    AND
+        Song.key  = ${req.query.key}     AND
+        Song.explicit  = ${req.query.explicit}     AND
+        sectable.numSections  = ${req.query.numsections}
+    ORDER BY diffTempo * diffEnergy + diffTempo
+    LIMIT 10
+    `;
+
+    db.all(query, [], (err, rows)=> {
+        if (err) throw err;
+        res.json(rows)
+    });
+});
 
 
 app.get('/artists/top', (req, res) => {
