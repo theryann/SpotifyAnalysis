@@ -38,6 +38,49 @@ function savePreferences() {
     }
 }
 
+function getGeneralGenre(genre) {
+    let generalGenres = [
+        'rock', 'metal', 'pop', 'rap', 'r&b',
+        'electronic', 'indie', 'classic',
+        'jazz', 'blues', 'hoerspiel'
+    ];
+
+    if (generalGenres.includes(genre)) {
+        return genre
+    }
+
+    for ( let g of genre.split(' ').reverse() ) {
+        if (generalGenres.includes(g)) {
+            return g
+        }
+    }
+
+    for (let g of generalGenres) {
+        if (genre.endsWith(g)) {
+            return g
+        }
+        if (genre.includes(g)) {
+            return g
+        }
+    }
+
+
+    if (genre.endsWith('hardcore')) return 'metal'
+    if (genre.endsWith('punk')) return 'rock'
+    if (genre.endsWith('rock')) return 'rock'
+    if (genre.includes('lo-fi')) return 'electronic'
+    if (genre.endsWith('rave')) return 'electronic'
+    if (genre.endsWith('hip hop')) return 'rap'
+    if (genre.endsWith('r&b')) return 'r&b'
+    if (genre.endsWith('alternative')) return 'indie'
+    if (genre == 'schlager') return 'pop'
+    if (genre == 'orchestra') return 'classic'
+    if (genre == 'alt y') return 'indie'
+
+    return 'other'
+
+}
+
 
 // GET Requests
 
@@ -597,7 +640,12 @@ app.get('/album/completed-albums', (req, res) => {
 
     FROM Album
     JOIN Artist ON Artist.ID = Album.artistID
-    WHERE fullPlaythroughs NOT NULL
+    WHERE
+        fullPlaythroughs NOT NULL
+        AND
+        'hoerspiel' NOT IN (
+            SELECT genre FROM Genre WHERE Genre.artistID = Artist.ID
+        )
     --ORDER BY popularity DESC, fullPlaythroughs DESC
     ORDER BY artistName, releaseDate
     `;
@@ -1012,48 +1060,6 @@ app.get('/stats/genre-evolution', (req, res) => {
     ORDER BY month asc, streams desc
     `
 
-    function getGeneralGenre(genre) {
-        let generalGenres = [
-            'rock', 'metal', 'pop', 'rap', 'r&b',
-            'electronic', 'indie', 'classic',
-            'jazz', 'blues', 'hoerspiel'
-        ];
-
-        if (generalGenres.includes(genre)) {
-            return genre
-        }
-
-        for ( let g of genre.split(' ').reverse() ) {
-            if (generalGenres.includes(g)) {
-                return g
-            }
-        }
-
-        for (let g of generalGenres) {
-            if (genre.endsWith(g)) {
-                return g
-            }
-            if (genre.includes(g)) {
-                return g
-            }
-        }
-
-
-        if (genre.endsWith('hardcore')) return 'metal'
-        if (genre.endsWith('punk')) return 'rock'
-        if (genre.endsWith('rock')) return 'rock'
-        if (genre.includes('lo-fi')) return 'electronic'
-        if (genre.endsWith('rave')) return 'electronic'
-        if (genre.endsWith('hip hop')) return 'rap'
-        if (genre.endsWith('r&b')) return 'r&b'
-        if (genre.endsWith('alternative')) return 'indie'
-        if (genre == 'schlager') return 'pop'
-        if (genre == 'orchestra') return 'classic'
-        if (genre == 'alt y') return 'indie'
-
-        return 'other'
-
-    }
 
 
     db.all(query, [], (err, rows) => {
