@@ -649,9 +649,55 @@ app.get('/album/completed-albums', (req, res) => {
     --ORDER BY popularity DESC, fullPlaythroughs DESC
     ORDER BY artistName, releaseDate
     `;
-    db.all(query, [], (err, rows)=> {
+    db.all(query, [], (err, rowsAlbums) => {
         if (err) throw err;
-        res.json(rows);
+
+        let genreQuery = `
+        SELECT *
+        FROM Genre
+        WHERE Genre.artistID IN (
+            SELECT artistID FROM Album where fullPlaythroughs NOT NULL
+        )
+        `
+        db.all(genreQuery, [], (err, rowsGenres) => {
+            if (err) throw err;
+
+            let albumsByGenre = {}
+
+            for (let i = 0; i < rowsAlbums.length; i++) {
+                let genresOfCurrentArtist = rowsGenres.filter(r => r.artistID == rowsAlbums[i].artistID)
+                let genreCounts = {}
+
+                for (const num of genresOfCurrentArtist) {
+                    let generalGenre = getGeneralGenre(num.genre)
+                    genreCounts[generalGenre] = genreCounts[generalGenre] ? genreCounts[generalGenre] + 1 : 1;
+                }
+
+                if (Object.keys(genreCounts).includes('other')) {
+                    if (Object.keys(genreCounts).length > 1) {
+                        delete genreCounts['other']
+                    }
+                }
+                // find most common genre
+                let mostCommonGenreOccurence = Object.values(genreCounts).sort((a,b) => b - a)[0]
+
+                for (const genre in genreCounts) {
+                    if (genreCounts[genre] == mostCommonGenreOccurence) {
+                        if (albumsByGenre[ genre ]) {
+                            albumsByGenre[ genre ].push(rowsAlbums[i])
+                        } else {
+                            albumsByGenre[ genre ] = [ rowsAlbums[i] ]
+                        }
+                        break;
+                    }
+                }
+
+            }
+            res.json(albumsByGenre)
+
+        });
+
+
     });
 });
 
