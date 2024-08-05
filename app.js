@@ -749,6 +749,36 @@ app.get('/vis/force-graph', (req, res) => {
 
     });
 });
+app.get('/vis/collab-graph', (req, res) => {
+    let query = `
+    SELECT
+        a.artistID as sourceID,
+        t.name as sourceName,
+        b.artistID as targetID,
+        z.name as targetName,
+        count(*) as collabs
+    FROM writtenBy as a, writtenBy as b
+    JOIN Artist as t ON t.ID = sourceID
+    JOIN Artist as z ON z.ID = targetID
+    WHERE
+        a.artistID != b.artistID
+        AND
+        a.songID = b.songID
+        AND
+        a.artistID > b.artistID
+        AND
+        a.artistID NOT IN (SELECT artistID FROM Genre WHERE Genre.genre = 'hoerspiel')
+
+    GROUP BY sourceID, targetID
+    ORDER BY collabs desc
+    `;
+
+
+    db.all(query, [], (err, rows)=> {
+        if (err) throw err;
+        res.json(rows)
+    });
+});
 
 app.get('/times/top', (req, res) => {
     // streams per times of day
