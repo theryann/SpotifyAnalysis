@@ -196,6 +196,77 @@ function forceGraph() {
 
 }
 
+function collabGraph(data) {
+    let width = $('#wrapper').width()
+    $('#wrapper').append(
+        $('<div></div>')
+        .attr('id', 'collab-graph')
+        .append(
+            $('<div></div>').attr('id', 'collab-graph-canvas')
+        )
+        .append(
+            $('<div></div>').attr('id', 'collab-graph-controls')
+        )
+    )
+
+    let graph = d3
+        .select("#collab-graph-canvas")
+        .append("svg")
+        .attr("width", width)
+        .attr("height", width/2)
+        .attr("viewBox", `-${width} -${width/2} ${width*4} ${width*4}`)
+
+    let zoomGroup = graph.append('g')
+            .attr("id", "collab-zoom-group");
+        zoomGroup.append('g')
+            .attr("class", "links");
+        zoomGroup.append('g')
+            .attr("class", "nodes");
+
+    let simulation = d3
+        .forceSimulation(data.nodes)
+        .force('charge', d3.forceManyBody().strength(-100))
+        .force('link',   d3.forceLink().links(data.edges))
+        .force('center', d3.forceCenter(0,0))
+        .force('collision', d3.forceCollide().radius( d => d.collabs * 10))
+        .on('tick', ticked);
+
+    function ticked() {
+        updateLinks()
+        updateNodes()
+    }
+
+    function updateNodes() {
+        d3.select('.nodes')
+        .selectAll('text')
+        .data(data.nodes)
+        .join('text')
+        .text(d => d.name)
+        .attr('x', d => d.x)
+        .attr('y', d => d.y)
+        .attr("text-anchor", "middle")
+        .attr("font-size", d => d.collabs )
+        .attr("dy", '0.25em')
+    }
+    function updateLinks() {
+        d3.select('.links')
+        .selectAll('line')
+        .data(data.edges)
+        .join("line")
+        .attr('x1', d => d.source.x )
+        .attr('y1', d => d.source.y )
+        .attr('x2', d => d.target.x )
+        .attr('y2', d => d.target.y )
+    }
+    let zoom = d3.zoom()
+    .on('zoom', (e) => {
+        d3.select("#collab-zoom-group")
+            .attr("transform", e.transform)
+    })
+    d3.select("#collab-graph-canvas svg").call(zoom)
+
+}
+
 function albumDiscovery(data, htmlID='#wrapper') {
     const margin = {
         top:    10,
@@ -617,26 +688,29 @@ function completedAlbums(data, htmlID='#wrapper') {
 }
 
 window.onload = () => {
-    forceGraph()
+    // forceGraph()
 
-    fetch('/stats/top-artists-per-month')
+    fetch('/vis/collab-graph')
         .then(data => data.json())
-        .then(data => topArtistPerMonth(data) )
+        .then(data => collabGraph(data) )
+    // fetch('/stats/top-artists-per-month')
+    //     .then(data => data.json())
+    //     .then(data => topArtistPerMonth(data) )
 
-    fetch('/stats/album-discovery')
-        .then(data => data.json())
-        .then(data => albumDiscovery(data) )
+    // fetch('/stats/album-discovery')
+    //     .then(data => data.json())
+    //     .then(data => albumDiscovery(data) )
 
-    fetch('/stats/genre-evolution')
-        .then(data => data.json())
-        .then(data => genreEvolution(data) )
+    // fetch('/stats/genre-evolution')
+    //     .then(data => data.json())
+    //     .then(data => genreEvolution(data) )
 
-    fetch('/stats/album-playthrough')
-        .then(data => data.json())
-        .then(data => albumPlaythrough(data) )
+    // fetch('/stats/album-playthrough')
+    //     .then(data => data.json())
+    //     .then(data => albumPlaythrough(data) )
 
-    fetch('/album/completed-albums')
-        .then(data => data.json())
-        .then(data => completedAlbums(data) )
+    // fetch('/album/completed-albums')
+    //     .then(data => data.json())
+    //     .then(data => completedAlbums(data) )
 
 }

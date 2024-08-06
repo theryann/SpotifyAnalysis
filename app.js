@@ -768,6 +768,8 @@ app.get('/vis/collab-graph', (req, res) => {
         a.artistID > b.artistID
         AND
         a.artistID NOT IN (SELECT artistID FROM Genre WHERE Genre.genre = 'hoerspiel')
+        --AND
+        --t.popularity > 60
 
     GROUP BY sourceID, targetID
     ORDER BY collabs desc
