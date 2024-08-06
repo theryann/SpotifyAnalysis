@@ -776,7 +776,36 @@ app.get('/vis/collab-graph', (req, res) => {
 
     db.all(query, [], (err, rows)=> {
         if (err) throw err;
-        res.json(rows)
+
+        let nodes = new Map();
+        let edges = new Array();
+
+        // fill nodes
+        let nodeNumber = 0
+        for (let i = 0; i < rows.length; i++) {
+            if ( !nodes.has(rows[i].sourceID) ) {
+                nodes.set( rows[i].sourceID, [nodeNumber, rows[i].sourceName] )
+                nodeNumber ++;
+            }
+            if ( !nodes.has(rows[i].targetID) ) {
+                nodes.set( rows[i].targetID, [nodeNumber, rows[i].targetName] )
+                nodeNumber ++;
+            }
+        }
+
+        // fill edges
+        for (let i = 0; i < rows.length; i++) {
+            edges.push({
+                source: nodes.get(rows[i].sourceID)[0],
+                target: nodes.get(rows[i].targetID)[0],
+                weight: rows[i].collabs,
+            })
+        }
+
+        res.json({
+            nodes: Array.from(nodes, d => ({name: d[1][1]})),
+            edges: edges,
+        })
     });
 });
 
