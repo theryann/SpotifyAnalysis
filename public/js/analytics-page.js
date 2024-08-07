@@ -225,39 +225,54 @@ function collabGraph(data) {
 
     let simulation = d3
         .forceSimulation(data.nodes)
-        .force('charge', d3.forceManyBody().strength(-100))
+        .force('charge', d3.forceManyBody().strength(-200))
+        // .force('collision', d3.forceCollide().radius( d => d.collabs * 10))
         .force('link',   d3.forceLink().links(data.edges))
         .force('center', d3.forceCenter(0,0))
-        .force('collision', d3.forceCollide().radius( d => d.collabs * 10))
-        .on('tick', ticked);
+        // .on('tick', ticked);
+        .stop()
 
-    function ticked() {
-        updateLinks()
-        updateNodes()
-    }
-
-    function updateNodes() {
-        d3.select('.nodes')
+    let nodes = d3.select('.nodes')
         .selectAll('text')
         .data(data.nodes)
         .join('text')
         .text(d => d.name)
-        .attr('x', d => d.x)
-        .attr('y', d => d.y)
         .attr("text-anchor", "middle")
         .attr("font-size", d => d.collabs )
         .attr("dy", '0.25em')
-    }
-    function updateLinks() {
-        d3.select('.links')
+
+    let edges = d3.select('.links')
         .selectAll('line')
         .data(data.edges)
         .join("line")
-        .attr('x1', d => d.source.x )
-        .attr('y1', d => d.source.y )
-        .attr('x2', d => d.target.x )
-        .attr('y2', d => d.target.y )
+
+    function start() {
+        let ticksPerRender = 20;
+        requestAnimationFrame( function render() {
+            simulation.tick(ticksPerRender)
+
+            nodes
+                .attr('x', d => d.x)
+                .attr('y', d => d.y)
+            edges
+                .attr('x1', d => d.source.x )
+                .attr('y1', d => d.source.y )
+                .attr('x2', d => d.target.x )
+                .attr('y2', d => d.target.y )
+
+            if (simulation.alpha() > 0.01) {
+                console.log(simulation.alpha())
+                requestAnimationFrame(render)
+            }
+            simulation.stop()
+
+        })
+
     }
+
+
+    start()
+
     let zoom = d3.zoom()
     .on('zoom', (e) => {
         d3.select("#collab-zoom-group")
