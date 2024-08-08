@@ -141,7 +141,9 @@ function forceGraph() {
                 .attr('y2', function(d) { return d.target.y } )
         }
         function ticked() {
-            updateNodes();
+            if (Math.floor(simulation.alpha()*100) % 10 == 0 ) {
+                updateNodes();
+            }
             // updateLinks();
         }
 
@@ -229,7 +231,7 @@ function collabGraph(data) {
         .force('link',   d3.forceLink().links(data.edges))
         // .force('collision', d3.forceCollide().radius( d => d.collabs * 10))
         .force('center', d3.forceCenter(0,0))
-        .stop()
+        .on('tick', render)
 
     let nodes = d3.select('.nodes')
         .selectAll('text')
@@ -245,31 +247,24 @@ function collabGraph(data) {
         .data(data.edges)
         .join("line")
 
-    function start() {
-        let ticksPerRender = 1000;
-        requestAnimationFrame( function render() {
-            simulation.tick(ticksPerRender)
+    function render() {
+        if (simulation.alpha() > 0.01) {
+            return
+        }
+        simulation.tick(100)
 
+        nodes
+            .attr('x', d => d.x)
+            .attr('y', d => d.y)
+        edges
+            .attr('x1', d => d.source.x )
+            .attr('y1', d => d.source.y )
+            .attr('x2', d => d.target.x )
+            .attr('y2', d => d.target.y )
 
-            if (simulation.alpha() > 0.01) {
-                requestAnimationFrame(render)
-            }
-            simulation.stop()
-            nodes
-                .attr('x', d => d.x)
-                .attr('y', d => d.y)
-            edges
-                .attr('x1', d => d.source.x )
-                .attr('y1', d => d.source.y )
-                .attr('x2', d => d.target.x )
-                .attr('y2', d => d.target.y )
-
-        })
 
     }
 
-
-    start()
 
     let zoom = d3.zoom()
     .on('zoom', (e) => {
