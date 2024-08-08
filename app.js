@@ -817,8 +817,10 @@ app.get('/vis/collab-graph', (req, res) => {
         }
 
         // other case: specific subgraph that contains artist
-        let artistSubgraphNodes = new Set();         // list of artistIDs that are part of the subgraph
-        let nodesAsList = Array.from(nodes, d => d[0]) // list of artist IDs of all artists (as a lookuptable for IDs through index)
+        let artistSubgraphNodes = new Map();  // Map[ artistId: str, nodeNumber: int ] of artistIDs that are part of the subgraph and a index to reference the edges
+        let artistSubgraphEdges = new Array() // Array[ [target: int, source: int, weight: int], ]
+
+        let nodesAsList = Array.from(nodes, d => d[0]) // list of artist IDs of ALL artists (as a lookuptable for IDs through index)
 
         const findArtistSubgraphNodes = artistID => {
             let nodeIndex = nodes.get(artistID)[0]
@@ -831,7 +833,8 @@ app.get('/vis/collab-graph', (req, res) => {
                     continue
                 }
 
-                artistSubgraphNodes.add( nodesAsList[targetIndex] )
+                artistSubgraphNodes.set( nodesAsList[targetIndex], artistSubgraphNodes.size )
+
                 findArtistSubgraphNodes( nodesAsList[targetIndex] )
             }
 
@@ -843,6 +846,19 @@ app.get('/vis/collab-graph', (req, res) => {
             return;
         }
         findArtistSubgraphNodes( artistID );
+
+        for (let i = 0; i < rows.length; i++) {
+            if ( !artistSubgraphNodes.has(rows[i].sourceID) ) {
+                continue
+            }
+
+            artistSubgraphEdges.push([
+                artistSubgraphNodes.get(rows[i].sourceID),
+                artistSubgraphNodes.get(rows[i].targetID),
+                rows[i].collabs
+            ])
+        }
+
         res.json(artistSubgraphNodes)
 
 
