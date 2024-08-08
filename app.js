@@ -804,10 +804,48 @@ app.get('/vis/collab-graph', (req, res) => {
             })
         }
 
-        res.json({
-            nodes: Array.from(nodes, d => ({name: d[1][1]})),
-            edges: edges,
-        })
+        // IF specific artist is requested as a query parameter
+        // create new nodes and edges that only contain the subgraph that contains that artist
+
+        // default case: whole graph
+        if (!req.query.artist) {
+            res.json({
+                nodes: Array.from(nodes, d => ({name: d[1][1]})),
+                edges: edges,
+            })
+            return;
+        }
+
+        // other case: specific subgraph that contains artist
+        let artistSubgraphNodes = new Set();         // list of artistIDs that are part of the subgraph
+        let nodesAsList = Array.from(nodes, d => d[0]) // list of artist IDs of all artists (as a lookuptable for IDs through index)
+
+        const findArtistSubgraphNodes = artistID => {
+            let nodeIndex = nodes.get(artistID)[0]
+            let adjacentEdges = edges.filter(e => e.source == nodeIndex || e.target == nodeIndex)
+
+            for (let i = 0; i < adjacentEdges.length; i++) {
+                let targetIndex = adjacentEdges[i].source == nodeIndex ? adjacentEdges[i].target : adjacentEdges[i].source
+
+                if (artistSubgraphNodes.has( nodesAsList[targetIndex] )) {
+                    continue
+                }
+
+                artistSubgraphNodes.add( nodesAsList[targetIndex] )
+                findArtistSubgraphNodes( nodesAsList[targetIndex] )
+            }
+
+        };
+
+        let artistID = req.query.artist
+        if ( !nodesAsList.includes(artistID) ) {
+            res.status(404).send('No artist with the ID "' + artistID + '"')
+            return;
+        }
+        findArtistSubgraphNodes( artistID );
+        res.json(artistSubgraphNodes)
+
+
     });
 });
 
