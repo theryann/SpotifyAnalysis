@@ -701,29 +701,29 @@ function completedAlbums(data, htmlID='#wrapper') {
 }
 
 window.onload = () => {
-    // forceGraph()
+    forceGraph()
 
     fetch('/vis/collab-graph')
         .then(data => data.json())
         .then(data => collabGraph(data) )
-    // fetch('/stats/top-artists-per-month')
-    //     .then(data => data.json())
-    //     .then(data => topArtistPerMonth(data) )
+    fetch('/stats/top-artists-per-month')
+        .then(data => data.json())
+        .then(data => topArtistPerMonth(data) )
 
-    // fetch('/stats/album-discovery')
-    //     .then(data => data.json())
-    //     .then(data => albumDiscovery(data) )
+    fetch('/stats/album-discovery')
+        .then(data => data.json())
+        .then(data => albumDiscovery(data) )
 
-    // fetch('/stats/genre-evolution')
-    //     .then(data => data.json())
-    //     .then(data => genreEvolution(data) )
+    fetch('/stats/genre-evolution')
+        .then(data => data.json())
+        .then(data => genreEvolution(data) )
 
-    // fetch('/stats/album-playthrough')
-    //     .then(data => data.json())
-    //     .then(data => albumPlaythrough(data) )
+    fetch('/stats/album-playthrough')
+        .then(data => data.json())
+        .then(data => albumPlaythrough(data) )
 
-    // fetch('/album/completed-albums')
-    //     .then(data => data.json())
-    //     .then(data => completedAlbums(data) )
+    fetch('/album/completed-albums')
+        .then(data => data.json())
+        .then(data => completedAlbums(data) )
 
 }
